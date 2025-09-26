@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg0:#0b1220; --bg1:#0e1528; --bg2:#101827;
+  --bg0:#0b1220; --bg2:#101827;
   --cyan:#35d0ff; --turq:#23b6d9; --elec:#56e1ff;
   --text:#e6f3ff; --muted:#9fb6c7; --card:#0f1a2c;
   --ring: 0 0 0 1px rgba(86,225,255,.18), 0 0 24px rgba(86,225,255,.22), inset 0 0 18px rgba(35,182,217,.12);
@@ -25,7 +25,7 @@ html,body{
 a{color:var(--cyan); text-decoration:none}
 .container{width:min(1200px, 92vw); margin-inline:auto}
 
-/* Top ribbon */
+/* Ribbon */
 .ribbon{
   position:relative; z-index:60; text-align:center; font-size:13px; letter-spacing:.3px;
   background:linear-gradient(90deg,rgba(86,225,255,.12),rgba(35,182,217,.08));
@@ -47,15 +47,26 @@ nav li{opacity:.9}
   background:linear-gradient(135deg,var(--elec),var(--turq));
   box-shadow: 0 10px 30px rgba(86,225,255,.25)}
 
-/* mobile nav */
+/* Mobile nav */
 .menu-btn{display:none}
 @media (max-width:860px){
   nav ul{display:none}
   .menu-btn{display:block; margin-left:auto; border:1px solid rgba(255,255,255,.14);
     background:rgba(15,25,41,.6); color:var(--text); border-radius:10px; padding:8px 10px}
-  .drawer{position:fixed; inset:56px 0 0 0; background:rgba(10,16,29,.96); padding:18px; display:none}
+  /* >>> FIXED DRAWER BACKGROUND <<< */
+  .drawer{
+    position:fixed; inset:56px 0 0 0; z-index:100;
+    background:rgba(10,16,29,.95);           /* solid/dim */
+    backdrop-filter: blur(12px) saturate(140%); /* frosted */
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+    padding:18px; display:none;
+    border-top:1px solid rgba(255,255,255,.06);
+  }
   .drawer.open{display:block}
-  .drawer a{display:block; padding:12px 8px; border-bottom:1px solid rgba(255,255,255,.06)}
+  .drawer a{
+    display:block; padding:14px 10px; font-size:17px;
+    border-bottom:1px solid rgba(255,255,255,.08); color:#e6f3ff;
+  }
 }
 
 /* HERO */
@@ -99,7 +110,7 @@ nav li{opacity:.9}
   box-shadow: inset 0 0 18px rgba(86,225,255,.18), 0 0 24px rgba(86,225,255,.12);
   filter:drop-shadow(0 8px 26px rgba(86,225,255,.14));
 }
-.icon.shield{clip-path: polygon(50% 0%, 90% 18%, 90% 55%, 50% 100%, 10% 55%, 10% 18%);} /* hex-shield */
+.icon.shield{clip-path: polygon(50% 0%, 90% 18%, 90% 55%, 50% 100%, 10% 55%, 10% 18%);}
 .icon.rounded{border-radius:14px}
 
 /* Feature / KPIs */
@@ -130,7 +141,7 @@ nav li{opacity:.9}
 .person h4{margin:10px 0 2px}
 .person small{color:var(--muted)}
 
-/* Live buttons */
+/* CTA buttons */
 .cta-row{display:flex; gap:12px; flex-wrap:wrap; margin-top:16px}
 .button-ghost{
   padding:10px 14px; border-radius:12px; color:#cfefff; font-weight:600;
@@ -204,21 +215,9 @@ footer{padding:40px 0; color:#94a9bd; border-top:1px solid rgba(255,255,255,.06)
     </div>
     <div>
       <div class="grid cols-3">
-        <div class="card">
-          <div class="icon shield"></div>
-          <h3>GeaGuard</h3>
-          <p>Seismic-time awareness for structural context.</p>
-        </div>
-        <div class="card">
-          <div class="icon shield"></div>
-          <h3>SweepGuard</h3>
-          <p>Orbit-style sweep efficiency & voidage signals.</p>
-        </div>
-        <div class="card">
-          <div class="icon rounded"></div>
-          <h3>Prodcast</h3>
-          <p>Rapid forecasting and scenario stitching.</p>
-        </div>
+        <div class="card"><div class="icon shield"></div><h3>GeaGuard</h3><p>Seismic-time context.</p></div>
+        <div class="card"><div class="icon shield"></div><h3>SweepGuard</h3><p>Voidage & sweep signals.</p></div>
+        <div class="card"><div class="icon rounded"></div><h3>Prodcast</h3><p>Rapid scenario forecasting.</p></div>
       </div>
     </div>
   </div>
@@ -227,7 +226,6 @@ footer{padding:40px 0; color:#94a9bd; border-top:1px solid rgba(255,255,255,.06)
 <section id="workstreams" class="section container reveal">
   <h2>Digital Workstreams (15)</h2>
   <p class="lead">Design system: shields for “Guard”, rounded squares for applications. All glow in turquoise/cyan to signal intelligent energy.</p>
-
   <div class="grid cols-4" style="margin-top:16px">
     <!-- Guard family (6) -->
     <div class="card"><div class="icon shield"></div><h3>GeaGuard</h3><p>Shield + 4 stacked seismic curves.</p></div>
@@ -289,10 +287,10 @@ footer{padding:40px 0; color:#94a9bd; border-top:1px solid rgba(255,255,255,.06)
   <!-- Leadership -->
   <h3 style="margin-top:8px">Leadership</h3>
   <div class="team-grid" style="margin-top:10px">
-    <div class="person"><div class="avatar"></div><h4>VP</h4><small>Vision & sponsorship</small><p style="margin-top:8px; color:var(--muted)">Sets direction, enables strategic funding & partnerships.</p></div>
-    <div class="person"><div class="avatar"></div><h4>RM Manager</h4><small>Program orchestration</small><p style="margin-top:8px; color:var(--muted)">Coordinates delivery across disciplines & stakeholders.</p></div>
-    <div class="person"><div class="avatar"></div><h4>RM Head</h4><small>Strategy & impact</small><p style="margin-top:8px; color:var(--muted)">Aligns digital to field outcomes and reservoir strategy.</p></div>
-    <div class="person"><div class="avatar"></div><h4>RM Lead</h4><small>Technical execution</small><p style="margin-top:8px; color:var(--muted)">Owns architecture, integration, and quality of delivery.</p></div>
+    <div class="person"><div class="avatar"></div><h4>VP</h4><small>Vision & sponsorship</small><p style="margin-top:8px; color:#9fb6c7">Sets direction, enables strategic funding & partnerships.</p></div>
+    <div class="person"><div class="avatar"></div><h4>RM Manager</h4><small>Program orchestration</small><p style="margin-top:8px; color:#9fb6c7">Coordinates delivery across disciplines & stakeholders.</p></div>
+    <div class="person"><div class="avatar"></div><h4>RM Head</h4><small>Strategy & impact</small><p style="margin-top:8px; color:#9fb6c7">Aligns digital to field outcomes and reservoir strategy.</p></div>
+    <div class="person"><div class="avatar"></div><h4>RM Lead</h4><small>Technical execution</small><p style="margin-top:8px; color:#9fb6c7">Owns architecture, integration, and quality of delivery.</p></div>
   </div>
 
   <!-- Product Owners -->
@@ -324,11 +322,6 @@ footer{padding:40px 0; color:#94a9bd; border-top:1px solid rgba(255,255,255,.06)
     <a class="button-ghost" href="#" target="_blank" rel="noopener">Open WellWatch</a>
     <a class="button-ghost" href="#" target="_blank" rel="noopener">Start Prodcast Scenarios</a>
   </div>
-  <!-- Optional: embed an internal video/iframe demo (uncomment & set src)
-  <div style="margin-top:18px; aspect-ratio:16/9; background:#0a1424; border:1px solid rgba(255,255,255,.08); border-radius:12px; box-shadow:var(--ring); overflow:hidden">
-    <iframe src="YOUR_INTERNAL_VIDEO_URL" style="width:100%; height:100%; border:0" allowfullscreen></iframe>
-  </div>
-  -->
 </section>
 
 <footer>
