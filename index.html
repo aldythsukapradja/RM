@@ -11,7 +11,7 @@
   --bg0:#0b1220; --bg2:#0f1a2c;
   --cyan:#35d0ff; --turq:#23b6d9; --elec:#56e1ff;
   --text:#e6f3ff; --muted:#9fb6c7;
-  --surface: rgba(15,25,41,.55);   /* translucent surfaces */
+  --surface: rgba(15,25,41,.55);
   --card:    rgba(15,25,41,.60);
   --ring: 0 0 0 1px rgba(86,225,255,.18), 0 0 24px rgba(86,225,255,.22), inset 0 0 18px rgba(35,182,217,.12);
   --radius:16px;
@@ -24,18 +24,19 @@ html,body{
   margin:0; color:var(--text); font-family:Outfit, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   background: linear-gradient(180deg,var(--bg0),var(--bg2));
   scroll-behavior:smooth;
-  /* ensures anchor scroll lands with title fully visible */
-  scroll-padding-top: calc(var(--navH) + 28px);
+  scroll-padding-top: calc(var(--navH) + 28px); /* titles fully visible after anchor scroll */
 }
 a{color:var(--cyan); text-decoration:none}
 .container{width:min(1200px, 92vw); margin-inline:auto}
 
-/* ===== Futuristic animated background (glows + digital lines) ===== */
+/* ===== Animated background layers (Safari-safe) ===== */
+#fx, #lines{position:fixed; inset:0; z-index:0; pointer-events:none}
+.site{position:relative; z-index:1}
+
 #fx{
-  position:fixed; inset:0; z-index:-2; pointer-events:none;
   background:
-    radial-gradient(1100px 700px at 10% -10%, rgba(86,225,255,.12), transparent 60%),
-    radial-gradient(900px 600px at 110% 10%, rgba(35,182,217,.10), transparent 60%);
+   radial-gradient(1100px 700px at 10% -10%, rgba(86,225,255,.12), transparent 60%),
+   radial-gradient(900px 600px at 110% 10%, rgba(35,182,217,.10), transparent 60%);
   filter:saturate(120%);
 }
 #fx::before,#fx::after{content:"";position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen}
@@ -44,21 +45,17 @@ a{color:var(--cyan); text-decoration:none}
     radial-gradient(closest-side, rgba(86,225,255,.28), transparent 70%) 10% -10% / 60vmin 60vmin no-repeat,
     radial-gradient(closest-side, rgba(35,182,217,.22), transparent 70%) 85% 0% / 50vmin 50vmin no-repeat,
     radial-gradient(closest-side, rgba(86,225,255,.18), transparent 70%) 50% 90% / 70vmin 70vmin no-repeat;
-  animation: driftA 18s ease-in-out infinite alternate; filter: blur(40px);
+  animation: driftA 18s ease-in-out infinite alternate; filter: blur(60px) saturate(140%); opacity:.9;
 }
 @keyframes driftA{0%{transform:translate3d(-2vw,-1vh,0)}100%{transform:translate3d(3vw,2vh,0)}}
 #fx::after{
   background:
     repeating-linear-gradient(to bottom, rgba(86,225,255,.10) 0 1px, transparent 1px 28px),
     repeating-linear-gradient(to right, rgba(86,225,255,.06) 0 1px, transparent 1px 32px);
-  mask: radial-gradient(1000px 600px at 50% 40%, #000 40%, transparent 70%);
-  animation: gridFlow 10s linear infinite; opacity:.45;
+  opacity:.65; /* no mask so grid shows on mobile */
 }
-@keyframes gridFlow{0%{background-position:0 0,0 0}100%{background-position:0 200px,200px 0}}
-#lines{position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.35; filter: drop-shadow(0 0 18px rgba(86,225,255,.35))}
-@media (prefers-reduced-motion:reduce){
-  #fx::before,#fx::after{animation:none}
-}
+#lines{opacity:.35; filter: drop-shadow(0 0 18px rgba(86,225,255,.35))}
+@media (prefers-reduced-motion:reduce){#fx::before,#fx::after{animation:none}}
 
 /* Ribbon */
 .ribbon{position:relative; z-index:60; text-align:center; font-size:13px; letter-spacing:.3px;
@@ -73,7 +70,9 @@ nav{position:sticky; top:0; z-index:50; backdrop-filter:saturate(140%) blur(10px
 .brand .orb{width:28px; height:28px; border-radius:50%;
   background: radial-gradient(circle at 35% 30%, var(--elec), transparent 60%),
               radial-gradient(circle at 65% 70%, var(--turq), transparent 60%),
-              #14243d; box-shadow: 0 0 22px rgba(86,225,255,.35)}
+              #14243d; box-shadow: 0 0 22px rgba(86,225,255,.35);
+  animation: orbBreath 6s ease-in-out infinite}
+@keyframes orbBreath{0%,100%{filter:drop-shadow(0 0 10px rgba(86,225,255,.45))}50%{filter:drop-shadow(0 0 22px rgba(86,225,255,.75))}}
 nav ul{display:flex; gap:18px; margin-left:auto; list-style:none; padding:0}
 nav li{opacity:.9}
 .cta{padding:10px 14px; border-radius:10px; color:#06101a;
@@ -105,11 +104,10 @@ nav li{opacity:.9}
   color:#e6f3ff; border:1px solid rgba(255,255,255,.14); background:rgba(15,25,41,.55)
 }
 
-/* Sticky sub-nav pills */
+/* Sticky sub-nav pills (no clipping) */
 .subnav{
   position:sticky; top:var(--navH); z-index:49; background:rgba(10,16,29,.55);
-  border-bottom:1px solid rgba(255,255,255,.06); backdrop-filter: blur(8px) saturate(140%);
-  padding-block:10px; /* prevents clipping */
+  border-bottom:1px solid rgba(255,255,255,.06); backdrop-filter: blur(8px) saturate(140%); padding-block:10px;
 }
 .subnav .row{display:flex; gap:10px; padding:0 8px; overflow-x:auto; overflow-y:visible;
   -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%);
@@ -131,7 +129,7 @@ nav li{opacity:.9}
 .section h2{font-size:clamp(24px,3.2vw,36px); margin:0 0 10px}
 .section p.lead{color:var(--muted); max-width:820px}
 
-/* Grids & Cards */
+/* Grid & Card */
 .grid{display:grid; gap:16px}
 .grid.cols-3{grid-template-columns:repeat(3,1fr)}
 .grid.cols-4{grid-template-columns:repeat(4,1fr)}
@@ -148,7 +146,7 @@ nav li{opacity:.9}
 .card h3{margin:10px 0 4px; font-size:18px}
 .card p{margin:0; color:rgba(230,243,255,.92); font-size:14.5px}
 
-/* Feature */
+/* Feature / KPIs */
 .feature{display:grid; grid-template-columns:1.1fr .9fr; gap:36px; align-items:center;
   background: linear-gradient(180deg, rgba(17,30,54,.55), rgba(17,30,54,.35));
   border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:26px; box-shadow:var(--ring)}
@@ -157,27 +155,29 @@ nav li{opacity:.9}
 .kpi{min-width:140px; padding:14px 16px; border-radius:14px; border:1px solid rgba(255,255,255,.10); background:rgba(15,25,41,.55)}
 .kpi .n{font-size:28px; font-weight:700}
 
-/* Icon frames */
-.icon{width:56px; height:56px; display:grid; place-items:center; border-radius:14px; margin-bottom:6px;
-  background:linear-gradient(145deg, rgba(86,225,255,.18), rgba(35,182,217,.10));
-  box-shadow: inset 0 0 18px rgba(86,225,255,.18), 0 0 24px rgba(86,225,255,.12);
-  filter:drop-shadow(0 8px 26px rgba(86,225,255,.14));
-}
-.icon.shield{clip-path: polygon(50% 0%, 90% 18%, 90% 55%, 50% 100%, 10% 55%, 10% 18%);}
-.icon.rounded{border-radius:14px}
-
 /* Theme accordions */
 .theme{margin-top:18px; border:1px solid rgba(255,255,255,.10); border-radius:18px; background:rgba(15,25,41,.45); box-shadow:var(--ring)}
-.theme-head{display:flex; align-items:center; gap:10px; padding:14px 16px; cursor:pointer}
+.theme-head{display:flex; align-items:center; gap:12px; padding:14px 16px; cursor:pointer}
 .theme-head h3{margin:0; font-size:18px}
 .theme-head small{color:#9fc9dd}
 .theme-head .count{margin-left:auto; padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.12); color:#cfefff; font-size:12px}
 .theme-head .chev{transition:transform .25s ease}
 .theme[aria-expanded="true"] .chev{transform:rotate(180deg)}
 .placeholder{display:flex; align-items:center; gap:12px; margin:0 16px 14px; padding:14px; border-radius:14px;
-  background: radial-gradient(180px 120px at 15% 0%, rgba(86,225,255,.08), transparent 40%), rgba(15,25,41,.45); border:1px dashed rgba(255,255,255,.16)}
+  background: radial-gradient(180px 120px at 15% 0%, rgba(86,225,255,.08), transparent 40%), rgba(15,25,41,.45); border:1px dashed rgba(255,255,255,.2)}
 .theme-body{max-height:0; overflow:hidden; transition:max-height .4s ease}
 .theme[aria-expanded="true"] .theme-body{max-height:2000px}
+
+/* Icon animations */
+.icon-ani{width:28px; height:28px; flex-shrink:0; color:var(--cyan)}
+.icon-shield{animation:pulse 3s infinite}
+.icon-bot{animation:float 4s ease-in-out infinite}
+.icon-chart{animation:flicker 2s infinite}
+.icon-globe{animation:spin 12s linear infinite}
+@keyframes pulse{0%,100%{opacity:.85; transform:scale(1)}50%{opacity:1; transform:scale(1.15)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes flicker{0%,19%,21%,23%,25%,54%,56%,100%{opacity:1}20%,24%,55%{opacity:.4}}
+@keyframes spin{to{transform:rotate(360deg)}}
 
 /* Partners */
 .partnerbar{display:grid; grid-template-columns:repeat(6,1fr); gap:12px}
@@ -252,7 +252,7 @@ nav li{opacity:.9}
     <symbol id="ico-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
     <symbol id="ico-up" viewBox="0 0 64 64"><path d="M32 18 L20 30 M32 18 L44 30" stroke="currentColor" stroke-width="4" stroke-linecap="round" fill="none"/><line x1="32" y1="18" x2="32" y2="46" stroke="currentColor" stroke-width="4" stroke-linecap="round" opacity=".3"/></symbol>
   </defs>
-  <!-- pulse strokes -->
+  <!-- animated strokes -->
   <polyline points="0,15 35,25 60,18 100,28" fill="none" stroke="url(#pulse)" stroke-width="0.6">
     <animate attributeName="stroke-dasharray" values="0,200;50,200;0,200" dur="6s" repeatCount="indefinite"/>
     <animate attributeName="stroke-dashoffset" values="0;-60;0" dur="6s" repeatCount="indefinite"/>
@@ -263,43 +263,31 @@ nav li{opacity:.9}
   </polyline>
 </svg>
 
-<div class="ribbon">🔒 Internal Use Only — share inside the company</div>
+<div class="site">
 
-<nav>
-  <div class="container nav-inner">
-    <div class="brand"><span class="orb"></span> RMO Chronos (pilot)</div>
-    <ul>
-      <li><a href="#why">Why</a></li>
-      <li><a href="#workstreams">Workstreams</a></li>
-      <li><a href="#roadmap">Roadmap</a></li>
-      <li><a href="#impact">Impact</a></li>
-      <li><a href="#partners">Partners</a></li>
-      <li><a href="#team">Team</a></li>
-      <li><a href="#live" class="cta">Live</a></li>
-    </ul>
-    <div id="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="menuOverlay" role="button" tabindex="0">
-      <span></span><span></span><span></span>
+  <div class="ribbon">🔒 Internal Use Only — share inside the company</div>
+
+  <nav>
+    <div class="container nav-inner">
+      <div class="brand"><span class="orb"></span> RMO Chronos (pilot)</div>
+      <ul>
+        <li><a href="#why">Why</a></li>
+        <li><a href="#workstreams">Workstreams</a></li>
+        <li><a href="#roadmap">Roadmap</a></li>
+        <li><a href="#impact">Impact</a></li>
+        <li><a href="#partners">Partners</a></li>
+        <li><a href="#team">Team</a></li>
+        <li><a href="#live" class="cta">Live</a></li>
+      </ul>
+      <div id="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="menuOverlay" role="button" tabindex="0">
+        <span></span><span></span><span></span>
+      </div>
     </div>
-  </div>
-</nav>
+  </nav>
 
-<!-- Full-screen menu -->
-<div id="menuOverlay" aria-hidden="true">
-  <div class="links">
-    <a href="#why">Why</a>
-    <a href="#workstreams">Workstreams</a>
-    <a href="#roadmap">Roadmap</a>
-    <a href="#impact">Impact</a>
-    <a href="#partners">Partners</a>
-    <a href="#team">Team</a>
-    <a href="#live">Live</a>
-  </div>
-</div>
-
-<!-- Sub-nav pills -->
-<div class="subnav">
-  <div class="container">
-    <div class="row">
+  <!-- Full-screen menu -->
+  <div id="menuOverlay" aria-hidden="true">
+    <div class="links">
       <a href="#why">Why</a>
       <a href="#workstreams">Workstreams</a>
       <a href="#roadmap">Roadmap</a>
@@ -309,262 +297,269 @@ nav li{opacity:.9}
       <a href="#live">Live</a>
     </div>
   </div>
-</div>
 
-<header class="hero" id="hero">
-  <div class="glow" aria-hidden="true"></div>
-  <div class="container">
-    <h1>RMO Chronos (pilot)</h1>
-    <p>15 agentic modules turn well signals into field actions — live in pilot.</p>
-    <div class="badges">
-      <span class="badge">Neon-glow UI</span>
-      <span class="badge">Agentic AI</span>
-      <span class="badge">CLRM-ready</span>
-      <span class="badge">Reservoir-grade analytics</span>
-    </div>
-  </div>
-</header>
-
-<section id="why" class="section container reveal" role="region" aria-labelledby="whyTitle">
-  <h2 id="whyTitle">Why Chronos</h2>
-  <p class="lead">Deterministic models fused with AI to shorten the path from signal → decision → action.</p>
-  <div class="feature" style="margin-top:18px">
-    <div>
-      <h3>Agentic workflows across the lifecycle</h3>
-      <p>From well surveillance to sweep efficiency and forecasting, modules are autonomous yet orchestrated—so actions compound into field-level outcomes.</p>
-      <div class="kpis" style="margin-top:14px">
-        <div class="kpi"><div class="n">↑ 15–30%</div><small>Faster diagnostics</small></div>
-        <div class="kpi"><div class="n">↓ 20–40%</div><small>Time-to-action</small></div>
-        <div class="kpi"><div class="n">→ CLRM</div><small>Closed-loop ready</small></div>
-      </div>
-    </div>
-    <div>
-      <div class="grid cols-3">
-        <div class="card"><div class="icon shield" aria-hidden="true"></div><h3>GeaGuard</h3><p>Seismic-time context.</p></div>
-        <div class="card"><div class="icon shield" aria-hidden="true"></div><h3>SweepGuard</h3><p>Voidage & sweep signals.</p></div>
-        <div class="card"><div class="icon rounded" aria-hidden="true"></div><h3>Prodcast</h3><p>Rapid scenario forecasting.</p></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="workstreams" class="section container reveal" role="region" aria-labelledby="wsTitle">
-  <h2 id="wsTitle">Digital Workstreams (15)</h2>
-  <p class="lead">Grouped by families for clarity. Shields = “Guard”. Rounded squares = applications.</p>
-
-  <!-- THEME 1 -->
-  <div class="theme" id="th-guard" aria-expanded="true">
-    <div class="theme-head" role="button" tabindex="0" aria-controls="tb-guard">
-      <svg width="20" height="20" aria-hidden="true"><use href="#ico-shield"/></svg>
-      <h3>Guard Family — Protection & Assurance</h3>
-      <small>Risk detection, surveillance, integrity</small>
-      <span class="count">6 apps</span>
-      <svg class="chev" width="18" height="18" aria-hidden="true"><use href="#ico-chevron"/></svg>
-    </div>
-    <div class="placeholder"><svg width="22" height="22" aria-hidden="true"><use href="#ico-shield"/></svg><span>Tap to expand and explore solutions.</span></div>
-    <div class="theme-body" id="tb-guard">
-      <div class="grid cols-4" style="margin:0 16px 16px">
-        <div class="card"><div class="icon shield"></div><h3>GeaGuard</h3><p>4D seismic-time context.</p></div>
-        <div class="card"><div class="icon shield"></div><h3>TerraGuard</h3><p>Fault & fracture risk.</p></div>
-        <div class="card"><div class="icon shield"></div><h3>FlowGuard</h3><p>Flow performance.</p></div>
-        <div class="card"><div class="icon shield"></div><h3>FracGuard</h3><p>Early fracture warning.</p></div>
-        <div class="card"><div class="icon shield"></div><h3>WellGuard</h3><p>Non-conformance alerts.</p></div>
-        <div class="card"><div class="icon shield"></div><h3>SweepGuard</h3><p>Sweep efficiency.</p></div>
+  <!-- Sub-nav pills -->
+  <div class="subnav">
+    <div class="container">
+      <div class="row">
+        <a href="#why">Why</a>
+        <a href="#workstreams">Workstreams</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#impact">Impact</a>
+        <a href="#partners">Partners</a>
+        <a href="#team">Team</a>
+        <a href="#live">Live</a>
       </div>
     </div>
   </div>
 
-  <!-- THEME 2 -->
-  <div class="theme" id="th-agentic" aria-expanded="true">
-    <div class="theme-head" role="button" tabindex="0" aria-controls="tb-agentic">
-      <svg width="20" height="20" aria-hidden="true"><use href="#ico-bot"/></svg>
-      <h3>Agentic Solutions — Autonomous Well Intelligence</h3>
-      <small>Monitoring & post-drill insights</small>
-      <span class="count">2 apps</span>
-      <svg class="chev" width="18" height="18" aria-hidden="true"><use href="#ico-chevron"/></svg>
-    </div>
-    <div class="placeholder"><svg width="22" height="22" aria-hidden="true"><use href="#ico-bot"/></svg><span>Tap to expand and explore solutions.</span></div>
-    <div class="theme-body" id="tb-agentic">
-      <div class="grid cols-4" style="margin:0 16px 16px">
-        <div class="card"><div class="icon rounded"></div><h3>WellWatch</h3><p>Continuous monitoring.</p></div>
-        <div class="card"><div class="icon rounded"></div><h3>WellNova</h3><p>Post-drill insights.</p></div>
+  <header class="hero" id="hero">
+    <div class="glow" aria-hidden="true"></div>
+    <div class="container">
+      <h1>RMO Chronos (pilot)</h1>
+      <p>15 agentic modules turn well signals into field actions — live in pilot.</p>
+      <div class="badges">
+        <span class="badge">Neon-glow UI</span>
+        <span class="badge">Agentic AI</span>
+        <span class="badge">CLRM-ready</span>
+        <span class="badge">Reservoir-grade analytics</span>
       </div>
     </div>
-  </div>
+  </header>
 
-  <!-- THEME 3 -->
-  <div class="theme" id="th-analytics" aria-expanded="true">
-    <div class="theme-head" role="button" tabindex="0" aria-controls="tb-analytics">
-      <svg width="20" height="20" aria-hidden="true"><use href="#ico-chart"/></svg>
-      <h3>Analytics & Intelligence</h3>
-      <small>Forecasting, stimulation, screening</small>
-      <span class="count">5 apps</span>
-      <svg class="chev" width="18" height="18" aria-hidden="true"><use href="#ico-chevron"/></svg>
-    </div>
-    <div class="placeholder"><svg width="22" height="22" aria-hidden="true"><use href="#ico-chart"/></svg><span>Tap to expand and explore solutions.</span></div>
-    <div class="theme-body" id="tb-analytics">
-      <div class="grid cols-4" style="margin:0 16px 16px">
-        <div class="card"><div class="icon rounded"></div><h3>Stimatlas</h3><p>Stimulation screening.</p></div>
-        <div class="card"><div class="icon rounded"></div><h3>AquaMan</h3><p>Intelligent water injection.</p></div>
-        <div class="card"><div class="icon rounded"></div><h3>Prodcast</h3><p>Scenario forecasting.</p></div>
-        <div class="card"><div class="icon rounded"></div><h3>Sypher</h3><p>Balance prod & injectivity.</p></div>
-        <div class="card"><div class="icon rounded"></div><h3>Aura</h3><p>Wave inversion & rings.</p></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- THEME 4 -->
-  <div class="theme" id="th-eco" aria-expanded="true">
-    <div class="theme-head" role="button" tabindex="0" aria-controls="tb-eco">
-      <svg width="20" height="20" aria-hidden="true"><use href="#ico-globe"/></svg>
-      <h3>Ecosystem & Integration</h3>
-      <small>Orchestration & visualization</small>
-      <span class="count">2 apps</span>
-      <svg class="chev" width="18" height="18" aria-hidden="true"><use href="#ico-chevron"/></svg>
-    </div>
-    <div class="placeholder"><svg width="22" height="22" aria-hidden="true"><use href="#ico-globe"/></svg><span>Tap to expand and explore solutions.</span></div>
-    <div class="theme-body" id="tb-eco">
-      <div class="grid cols-4" style="margin:0 16px 16px">
-        <div class="card"><div class="icon rounded"></div><h3>RMO Dashboard</h3><p>Unified BI & panels.</p></div>
-        <div class="card"><div class="icon rounded"></div><h3>RMO360</h3><p>Integrated ecosystem.</p></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="roadmap" class="section container reveal" role="region" aria-labelledby="rdTitle">
-  <h2 id="rdTitle">Roadmap</h2>
-  <div class="grid cols-3" style="margin-top:14px">
-    <div class="card"><h3>Phase 1 — 2025</h3><p class="lead">Pilot</p><p>Launch core modules with selected assets; validate value & ops fit.</p></div>
-    <div class="card"><h3>Phase 2 — 2026</h3><p class="lead">Scale</p><p>Expand adoption, strengthen data fabric, integrate advanced AI/ML.</p></div>
-    <div class="card"><h3>Phase 3 — 2027</h3><p class="lead">Deploy</p><p>Enterprise-wide rollout with closed-loop reservoir management (CLRM).</p></div>
-  </div>
-</section>
-
-<section id="impact" class="section container reveal" role="region" aria-labelledby="imTitle">
-  <h2 id="imTitle">From insights to impact</h2>
-  <div class="feature" style="margin-top:16px">
-    <div>
-      <p>Agentic assistants monitor wells, recommend actions, and simulate outcomes—closing the loop between diagnosis and execution.</p>
-      <div class="kpis" style="margin-top:14px">
-        <div class="kpi"><div class="n">T-15 min</div><small>From alert to plan</small></div>
-        <div class="kpi"><div class="n">+7 kbopd</div><small>Potential uplift scenario</small></div>
-        <div class="kpi"><div class="n">≥ 4D</div><small>Seismic-aware decisions</small></div>
-      </div>
-    </div>
-    <div>
-      <div class="grid cols-3">
-        <div class="card"><h3>WellWatch → Action</h3><p>Auto-detects anomalies and drafts work orders.</p></div>
-        <div class="card"><h3>SweepGuard Loop</h3><p>Optimizes injector/producer pairs for voidage.</p></div>
-        <div class="card"><h3>Prodcast Scenarios</h3><p>Rapid what-if forecasts for pacing.</p></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="partners" class="section container reveal" role="region" aria-labelledby="paTitle">
-  <h2 id="paTitle">Partners</h2>
-  <div class="partnerbar" style="margin-top:14px">
-    <div class="partner">Tech Company</div>
-    <div class="partner">Service Company</div>
-    <div class="partner">University</div>
-  </div>
-</section>
-
-<section id="team" class="section container reveal" role="region" aria-labelledby="tmTitle">
-  <h2 id="tmTitle">Team</h2>
-  <p class="lead">Leadership and contributors who drive the RMO Chronos (pilot) digital ecosystem.</p>
-
-  <h3>Leadership</h3>
-  <div class="team-grid" style="margin-top:10px">
-    <div class="person"><div class="avatar"></div><h4>VP</h4><small>Vision & sponsorship</small><p style="margin-top:8px; color:#9fb6c7">Sets direction, enables strategic funding & partnerships.</p></div>
-    <div class="person"><div class="avatar"></div><h4>RM Manager</h4><small>Program orchestration</small><p style="margin-top:8px; color:#9fb6c7">Coordinates delivery across disciplines & stakeholders.</p></div>
-    <div class="person"><div class="avatar"></div><h4>RM Head</h4><small>Strategy & impact</small><p style="margin-top:8px; color:#9fb6c7">Aligns digital to field outcomes and reservoir strategy.</p></div>
-    <div class="person"><div class="avatar"></div><h4>RM Lead</h4><small>Technical execution</small><p style="margin-top:8px; color:#9fb6c7">Owns architecture, integration, and quality of delivery.</p></div>
-  </div>
-
-  <div class="collapsible">
-    <button type="button">Product Owners (15)</button>
-    <div class="collapsible-content">
-      <div class="team-grid" style="margin-top:10px">
-        <div class="person"><div class="avatar"></div><h4>Product Owner — GeaGuard</h4><small>Seismic context</small></div>
-        <div class="person"><div class="avatar"></div><h4>Product Owner — TerraGuard</h4><small>Fracture risk</small></div>
-        <div class="person"><div class="avatar"></div><h4>Product Owner — FlowGuard</h4><small>Flow efficiency</small></div>
-        <div class="person"><div class="avatar"></div><h4>Product Owner — FracGuard</h4><small>Early fracture</small></div>
-        <div class="person"><div class="avatar"></div><h4>Product Owner — WellGuard</h4><small>Non-conformance</small></div>
-        <div class="person"><div class="avatar"></div><h4>Product Owner — SweepGuard</h4><small>Sweep efficiency</small></div>
-        <div class="person"><div class="avatar"></div><h4>Product Owner — WellWatch</h4><small>Monitoring</small></div>
-        <div class="person"><div class="avatar"></div><h4>Product Owner — WellNova</h4><small>Post-drill insights</small></div>
-        <div class="person"><div class="avatar"></div><h4>Product Owner — Stimatlas</h4><small>Stimulation</small></div>
-        <div class="person"><div class="avatar"></div><h4>Product Owner — AquaMan</h4><small>Water injection</small></div>
-        <div class="person"><div class="avatar"></div><h4>Product Owner — Prodcast</h4><small>Forecasting</small></div>
-        <div class="person"><div class="avatar"></div><h4>Product Owner — Sypher</h4><small>Prod/Injectivity</small></div>
-        <div class="person"><div class="avatar"></div><h4>Product Owner — Aura</h4><small>Wave inversion</small></div>
-        <div class="person"><div class="avatar"></div><h4>Product Owner — RMO Dashboard</h4><small>BI & UX</small></div>
-        <div class="person"><div class="avatar"></div><h4>Product Owner — RMO360</h4><small>Ecosystem</small></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="collapsible">
-    <button type="button">Contributors (40)</button>
-    <div class="collapsible-content">
-      <div class="table-wrap">
-        <div class="table-controls">
-          <input id="contribSearch" placeholder="Search name, discipline, company">
+  <section id="why" class="section container reveal" role="region" aria-labelledby="whyTitle">
+    <h2 id="whyTitle">Why Chronos</h2>
+    <p class="lead">Deterministic models fused with AI to shorten the path from signal → decision → action.</p>
+    <div class="feature" style="margin-top:18px">
+      <div>
+        <h3>Agentic workflows across the lifecycle</h3>
+        <p>From well surveillance to sweep efficiency and forecasting, modules are autonomous yet orchestrated—so actions compound into field-level outcomes.</p>
+        <div class="kpis" style="margin-top:14px">
+          <div class="kpi"><div class="n">↑ 15–30%</div><small>Faster diagnostics</small></div>
+          <div class="kpi"><div class="n">↓ 20–40%</div><small>Time-to-action</small></div>
+          <div class="kpi"><div class="n">→ CLRM</div><small>Closed-loop ready</small></div>
         </div>
-        <div class="table-scroll">
-          <table class="table40">
-            <thead><tr><th>Name</th><th>Discipline</th><th>Company</th></tr></thead>
-            <tbody>
-              <!-- Replace with real data -->
-              <tr><td>Person 1</td><td>Geologist</td><td>Tech Company</td></tr>
-              <tr><td>Person 2</td><td>Geophysicist</td><td>Service Company</td></tr>
-              <tr><td>Person 3</td><td>Reservoir Engineer</td><td>Tech Company</td></tr>
-              <!-- … up to 40 -->
-            </tbody>
-          </table>
+      </div>
+      <div>
+        <div class="grid cols-3">
+          <div class="card"><div class="icon shield"></div><h3>GeaGuard</h3><p>Seismic-time context.</p></div>
+          <div class="card"><div class="icon shield"></div><h3>SweepGuard</h3><p>Voidage & sweep signals.</p></div>
+          <div class="card"><div class="icon rounded"></div><h3>Prodcast</h3><p>Rapid scenario forecasting.</p></div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section id="live" class="section container reveal" role="region" aria-labelledby="lvTitle">
-  <h2 id="lvTitle">See it in action</h2>
-  <p class="lead">Open the live modules with your company SSO. Replace the links below with your internal URLs.</p>
-  <div class="cta-row">
-    <a class="button-ghost" href="#" target="_blank" rel="noopener">Launch RMO Dashboard</a>
-    <a class="button-ghost" href="#" target="_blank" rel="noopener">Open WellWatch</a>
-    <a class="button-ghost" href="#" target="_blank" rel="noopener">Start Prodcast Scenarios</a>
-  </div>
-</section>
+  <section id="workstreams" class="section container reveal" role="region" aria-labelledby="wsTitle">
+    <h2 id="wsTitle">Digital Workstreams (15)</h2>
+    <p class="lead">Grouped by families for clarity. Shields = “Guard”. Rounded squares = applications.</p>
 
-<footer>
-  <div class="container">© 2025 RMO Chronos (pilot) • Internal showcase — not for external distribution</div>
-</footer>
+    <!-- THEME 1 -->
+    <div class="theme" id="th-guard" aria-expanded="true">
+      <div class="theme-head" role="button" tabindex="0" aria-controls="tb-guard">
+        <svg class="icon-ani icon-shield" width="28" height="28" aria-hidden="true"><use href="#ico-shield"/></svg>
+        <div><h3>Guard Family — Protection & Assurance</h3><small>Risk detection, surveillance, integrity</small></div>
+        <span class="count">6 apps</span>
+        <svg class="chev" width="18" height="18" aria-hidden="true"><use href="#ico-chevron"/></svg>
+      </div>
+      <div class="placeholder"><svg class="icon-ani icon-shield" width="22" height="22" aria-hidden="true"><use href="#ico-shield"/></svg><span>Tap to expand and explore solutions.</span></div>
+      <div class="theme-body" id="tb-guard">
+        <div class="grid cols-4" style="margin:0 16px 16px">
+          <div class="card"><div class="icon shield"></div><h3>GeaGuard</h3><p>4D seismic-time context.</p></div>
+          <div class="card"><div class="icon shield"></div><h3>TerraGuard</h3><p>Fault & fracture risk.</p></div>
+          <div class="card"><div class="icon shield"></div><h3>FlowGuard</h3><p>Flow performance.</p></div>
+          <div class="card"><div class="icon shield"></div><h3>FracGuard</h3><p>Early fracture warning.</p></div>
+          <div class="card"><div class="icon shield"></div><h3>WellGuard</h3><p>Non-conformance alerts.</p></div>
+          <div class="card"><div class="icon shield"></div><h3>SweepGuard</h3><p>Sweep efficiency.</p></div>
+        </div>
+      </div>
+    </div>
 
-<!-- Centered Futuristic Up Arrow -->
-<button id="totop" aria-label="Back to top" title="Back to top">
-  <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="g" x1="0" x2="1">
-        <stop offset="0" stop-color="#56e1ff"/><stop offset="1" stop-color="#23b6d9"/>
-      </linearGradient>
-      <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-        <feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
-    </defs>
-    <circle cx="32" cy="32" r="22" fill="url(#g)" opacity=".12"/>
-    <g stroke="url(#g)" filter="url(#glow)"><use href="#ico-up"/></g>
-  </svg>
-</button>
+    <!-- THEME 2 -->
+    <div class="theme" id="th-agentic" aria-expanded="true">
+      <div class="theme-head" role="button" tabindex="0" aria-controls="tb-agentic">
+        <svg class="icon-ani icon-bot" width="28" height="28" aria-hidden="true"><use href="#ico-bot"/></svg>
+        <div><h3>Agentic Solutions — Autonomous Well Intelligence</h3><small>Monitoring & post-drill insights</small></div>
+        <span class="count">2 apps</span>
+        <svg class="chev" width="18" height="18" aria-hidden="true"><use href="#ico-chevron"/></svg>
+      </div>
+      <div class="placeholder"><svg class="icon-ani icon-bot" width="22" height="22" aria-hidden="true"><use href="#ico-bot"/></svg><span>Tap to expand and explore solutions.</span></div>
+      <div class="theme-body" id="tb-agentic">
+        <div class="grid cols-4" style="margin:0 16px 16px">
+          <div class="card"><div class="icon rounded"></div><h3>WellWatch</h3><p>Continuous monitoring.</p></div>
+          <div class="card"><div class="icon rounded"></div><h3>WellNova</h3><p>Post-drill insights.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THEME 3 -->
+    <div class="theme" id="th-analytics" aria-expanded="true">
+      <div class="theme-head" role="button" tabindex="0" aria-controls="tb-analytics">
+        <svg class="icon-ani icon-chart" width="28" height="28" aria-hidden="true"><use href="#ico-chart"/></svg>
+        <div><h3>Analytics & Intelligence</h3><small>Forecasting, stimulation, screening</small></div>
+        <span class="count">5 apps</span>
+        <svg class="chev" width="18" height="18" aria-hidden="true"><use href="#ico-chevron"/></svg>
+      </div>
+      <div class="placeholder"><svg class="icon-ani icon-chart" width="22" height="22" aria-hidden="true"><use href="#ico-chart"/></svg><span>Tap to expand and explore solutions.</span></div>
+      <div class="theme-body" id="tb-analytics">
+        <div class="grid cols-4" style="margin:0 16px 16px">
+          <div class="card"><div class="icon rounded"></div><h3>Stimatlas</h3><p>Stimulation screening.</p></div>
+          <div class="card"><div class="icon rounded"></div><h3>AquaMan</h3><p>Intelligent water injection.</p></div>
+          <div class="card"><div class="icon rounded"></div><h3>Prodcast</h3><p>Scenario forecasting.</p></div>
+          <div class="card"><div class="icon rounded"></div><h3>Sypher</h3><p>Balance prod & injectivity.</p></div>
+          <div class="card"><div class="icon rounded"></div><h3>Aura</h3><p>Wave inversion & rings.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THEME 4 -->
+    <div class="theme" id="th-eco" aria-expanded="true">
+      <div class="theme-head" role="button" tabindex="0" aria-controls="tb-eco">
+        <svg class="icon-ani icon-globe" width="28" height="28" aria-hidden="true"><use href="#ico-globe"/></svg>
+        <div><h3>Ecosystem & Integration</h3><small>Orchestration & visualization</small></div>
+        <span class="count">2 apps</span>
+        <svg class="chev" width="18" height="18" aria-hidden="true"><use href="#ico-chevron"/></svg>
+      </div>
+      <div class="placeholder"><svg class="icon-ani icon-globe" width="22" height="22" aria-hidden="true"><use href="#ico-globe"/></svg><span>Tap to expand and explore solutions.</span></div>
+      <div class="theme-body" id="tb-eco">
+        <div class="grid cols-4" style="margin:0 16px 16px">
+          <div class="card"><div class="icon rounded"></div><h3>RMO Dashboard</h3><p>Unified BI & panels.</p></div>
+          <div class="card"><div class="icon rounded"></div><h3>RMO360</h3><p>Integrated ecosystem.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="roadmap" class="section container reveal" role="region" aria-labelledby="rdTitle">
+    <h2 id="rdTitle">Roadmap</h2>
+    <div class="grid cols-3" style="margin-top:14px">
+      <div class="card"><h3>Phase 1 — 2025</h3><p class="lead">Pilot</p><p>Launch core modules with selected assets; validate value & ops fit.</p></div>
+      <div class="card"><h3>Phase 2 — 2026</h3><p class="lead">Scale</p><p>Expand adoption, strengthen data fabric, integrate advanced AI/ML.</p></div>
+      <div class="card"><h3>Phase 3 — 2027</h3><p class="lead">Deploy</p><p>Enterprise-wide rollout with closed-loop reservoir management (CLRM).</p></div>
+    </div>
+  </section>
+
+  <section id="impact" class="section container reveal" role="region" aria-labelledby="imTitle">
+    <h2 id="imTitle">From insights to impact</h2>
+    <div class="feature" style="margin-top:16px">
+      <div>
+        <p>Agentic assistants monitor wells, recommend actions, and simulate outcomes—closing the loop between diagnosis and execution.</p>
+        <div class="kpis" style="margin-top:14px">
+          <div class="kpi"><div class="n">T-15 min</div><small>From alert to plan</small></div>
+          <div class="kpi"><div class="n">+7 kbopd</div><small>Potential uplift scenario</small></div>
+          <div class="kpi"><div class="n">≥ 4D</div><small>Seismic-aware decisions</small></div>
+        </div>
+      </div>
+      <div>
+        <div class="grid cols-3">
+          <div class="card"><h3>WellWatch → Action</h3><p>Auto-detects anomalies and drafts work orders.</p></div>
+          <div class="card"><h3>SweepGuard Loop</h3><p>Optimizes injector/producer pairs for voidage.</p></div>
+          <div class="card"><h3>Prodcast Scenarios</h3><p>Rapid what-if forecasts for pacing.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="partners" class="section container reveal" role="region" aria-labelledby="paTitle">
+    <h2 id="paTitle">Partners</h2>
+    <div class="partnerbar" style="margin-top:14px">
+      <div class="partner">Tech Company</div>
+      <div class="partner">Service Company</div>
+      <div class="partner">University</div>
+    </div>
+  </section>
+
+  <section id="team" class="section container reveal" role="region" aria-labelledby="tmTitle">
+    <h2 id="tmTitle">Team</h2>
+    <p class="lead">Leadership and contributors who drive the RMO Chronos (pilot) digital ecosystem.</p>
+
+    <h3>Leadership</h3>
+    <div class="team-grid" style="margin-top:10px">
+      <div class="person"><div class="avatar"></div><h4>VP</h4><small>Vision & sponsorship</small><p style="margin-top:8px; color:#9fb6c7">Sets direction, enables strategic funding & partnerships.</p></div>
+      <div class="person"><div class="avatar"></div><h4>RM Manager</h4><small>Program orchestration</small><p style="margin-top:8px; color:#9fb6c7">Coordinates delivery across disciplines & stakeholders.</p></div>
+      <div class="person"><div class="avatar"></div><h4>RM Head</h4><small>Strategy & impact</small><p style="margin-top:8px; color:#9fb6c7">Aligns digital to field outcomes and reservoir strategy.</p></div>
+      <div class="person"><div class="avatar"></div><h4>RM Lead</h4><small>Technical execution</small><p style="margin-top:8px; color:#9fb6c7">Owns architecture, integration, and quality of delivery.</p></div>
+    </div>
+
+    <div class="collapsible">
+      <button type="button">Product Owners (15)</button>
+      <div class="collapsible-content">
+        <div class="team-grid" style="margin-top:10px">
+          <div class="person"><div class="avatar"></div><h4>Product Owner — GeaGuard</h4><small>Seismic context</small></div>
+          <div class="person"><div class="avatar"></div><h4>Product Owner — TerraGuard</h4><small>Fracture risk</small></div>
+          <div class="person"><div class="avatar"></div><h4>Product Owner — FlowGuard</h4><small>Flow efficiency</small></div>
+          <div class="person"><div class="avatar"></div><h4>Product Owner — FracGuard</h4><small>Early fracture</small></div>
+          <div class="person"><div class="avatar"></div><h4>Product Owner — WellGuard</h4><small>Non-conformance</small></div>
+          <div class="person"><div class="avatar"></div><h4>Product Owner — SweepGuard</h4><small>Sweep efficiency</small></div>
+          <div class="person"><div class="avatar"></div><h4>Product Owner — WellWatch</h4><small>Monitoring</small></div>
+          <div class="person"><div class="avatar"></div><h4>Product Owner — WellNova</h4><small>Post-drill insights</small></div>
+          <div class="person"><div class="avatar"></div><h4>Product Owner — Stimatlas</h4><small>Stimulation</small></div>
+          <div class="person"><div class="avatar"></div><h4>Product Owner — AquaMan</h4><small>Water injection</small></div>
+          <div class="person"><div class="avatar"></div><h4>Product Owner — Prodcast</h4><small>Forecasting</small></div>
+          <div class="person"><div class="avatar"></div><h4>Product Owner — Sypher</h4><small>Prod/Injectivity</small></div>
+          <div class="person"><div class="avatar"></div><h4>Product Owner — Aura</h4><small>Wave inversion</small></div>
+          <div class="person"><div class="avatar"></div><h4>Product Owner — RMO Dashboard</h4><small>BI & UX</small></div>
+          <div class="person"><div class="avatar"></div><h4>Product Owner — RMO360</h4><small>Ecosystem</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="collapsible">
+      <button type="button">Contributors (40)</button>
+      <div class="collapsible-content">
+        <div class="table-wrap">
+          <div class="table-controls">
+            <input id="contribSearch" placeholder="Search name, discipline, company">
+          </div>
+          <div class="table-scroll">
+            <table class="table40">
+              <thead><tr><th>Name</th><th>Discipline</th><th>Company</th></tr></thead>
+              <tbody>
+                <tr><td>Person 1</td><td>Geologist</td><td>Tech Company</td></tr>
+                <tr><td>Person 2</td><td>Geophysicist</td><td>Service Company</td></tr>
+                <tr><td>Person 3</td><td>Reservoir Engineer</td><td>Tech Company</td></tr>
+                <!-- … up to 40 rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="live" class="section container reveal" role="region" aria-labelledby="lvTitle">
+    <h2 id="lvTitle">See it in action</h2>
+    <p class="lead">Open the live modules with your company SSO. Replace the links below with your internal URLs.</p>
+    <div class="cta-row">
+      <a class="button-ghost" href="#" target="_blank" rel="noopener">Launch RMO Dashboard</a>
+      <a class="button-ghost" href="#" target="_blank" rel="noopener">Open WellWatch</a>
+      <a class="button-ghost" href="#" target="_blank" rel="noopener">Start Prodcast Scenarios</a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">© 2025 RMO Chronos (pilot) • Internal showcase — not for external distribution</div>
+  </footer>
+
+  <!-- Centered Futuristic Up Arrow -->
+  <button id="totop" aria-label="Back to top" title="Back to top">
+    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#56e1ff"/><stop offset="1" stop-color="#23b6d9"/></linearGradient>
+        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <circle cx="32" cy="32" r="22" fill="url(#g)" opacity=".12"/>
+      <g stroke="url(#g)" filter="url(#glow)"><use href="#ico-up"/></g>
+    </svg>
+  </button>
+
+</div> <!-- /.site -->
 
 <script>
-/* set CSS var for scroll-padding based on real nav height */
+/* dynamic nav height for scroll padding */
 document.documentElement.style.setProperty('--navH', document.querySelector('nav').offsetHeight + 'px');
 
-/* Hamburger + Menu overlay with glow */
+/* Hamburger + Menu overlay */
 const ham = document.getElementById('hamburger');
 const overlay = document.getElementById('menuOverlay');
 function setMenu(open){
@@ -572,19 +567,17 @@ function setMenu(open){
   ham.classList.toggle('active', open);
   ham.setAttribute('aria-expanded', open);
   overlay.setAttribute('aria-hidden', !open);
-  if(open){ overlay.querySelector('a').focus(); }
-  else { ham.focus(); }
+  if(open){ overlay.querySelector('.links a').focus(); } else { ham.focus(); }
 }
 ham.addEventListener('click', ()=> setMenu(!overlay.classList.contains('open')));
 overlay.addEventListener('click', (e)=>{ if(e.target===overlay) setMenu(false); });
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') setMenu(false); });
 
-/* Smooth anchor with offset handled by CSS scroll-padding; still flash target */
+/* Smooth anchor + flash target */
 document.querySelectorAll('a[href^="#"]').forEach(a=>{
   a.addEventListener('click', e=>{
     const href=a.getAttribute('href'); if(!href || href.length<2) return;
     setMenu(false);
-    // Flash target after scroll
     const id=href.slice(1); const t=document.getElementById(id);
     if(t){ setTimeout(()=>{ t.classList.add('flash'); setTimeout(()=>t.classList.remove('flash'),1200); }, 250); }
   });
@@ -596,7 +589,7 @@ const io = new IntersectionObserver((entries)=> {
 }, {threshold:.14});
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
-/* Centered Back-to-top visibility & action */
+/* Up button */
 const fab=document.getElementById('totop');
 fab.addEventListener('click', ()=> window.scrollTo({top:0, behavior:'smooth'}));
 window.addEventListener('scroll',()=>{
@@ -604,7 +597,7 @@ window.addEventListener('scroll',()=>{
   fab.style.opacity= on?1:0; fab.style.pointerEvents= on?'auto':'none';
 });
 
-/* Collapsibles (Product Owners & Contributors) */
+/* Collapsibles */
 document.querySelectorAll(".collapsible button").forEach(btn=>{
   btn.addEventListener("click", ()=>{
     btn.classList.toggle("active");
@@ -614,12 +607,11 @@ document.querySelectorAll(".collapsible button").forEach(btn=>{
   });
 });
 
-/* Theme accordions */
+/* Theme accordions with state memory */
 document.querySelectorAll('.theme').forEach(th=>{
   const head = th.querySelector('.theme-head');
   const body = th.querySelector('.theme-body');
   const key = 'open-'+th.id;
-  // desktop default open, mobile default closed
   const mobile = window.matchMedia('(max-width: 860px)').matches;
   const saved = localStorage.getItem(key);
   const startOpen = saved ? saved==='1' : !mobile;
