@@ -24,7 +24,7 @@ html,body{
   margin:0; color:var(--text); font-family:Outfit, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   background: linear-gradient(180deg,var(--bg0),var(--bg2));
   scroll-behavior:smooth;
-  scroll-padding-top: calc(var(--navH) + 28px); /* titles fully visible after anchor scroll */
+  scroll-padding-top: calc(var(--navH) + 28px);
 }
 a{color:var(--cyan); text-decoration:none}
 .container{width:min(1200px, 92vw); margin-inline:auto}
@@ -52,10 +52,15 @@ a{color:var(--cyan); text-decoration:none}
   background:
     repeating-linear-gradient(to bottom, rgba(86,225,255,.10) 0 1px, transparent 1px 28px),
     repeating-linear-gradient(to right, rgba(86,225,255,.06) 0 1px, transparent 1px 32px);
-  opacity:.65; /* no mask so grid shows on mobile */
+  opacity:.65;
 }
-#lines{opacity:.35; filter: drop-shadow(0 0 18px rgba(86,225,255,.35))}
-@media (prefers-reduced-motion:reduce){#fx::before,#fx::after{animation:none}}
+
+/* STREAM-FLOW LINES */
+#lines{opacity:.42; filter: drop-shadow(0 0 14px rgba(86,225,255,.35))}
+@media (prefers-reduced-motion:reduce){
+  #fx::before,#fx::after{animation:none}
+  #lines path, #lines polyline, #lines circle{animation:none}
+}
 
 /* Ribbon */
 .ribbon{position:relative; z-index:60; text-align:center; font-size:13px; letter-spacing:.3px;
@@ -73,13 +78,9 @@ nav{position:sticky; top:0; z-index:50; backdrop-filter:saturate(140%) blur(10px
               #14243d; box-shadow: 0 0 22px rgba(86,225,255,.35);
   animation: orbBreath 6s ease-in-out infinite}
 @keyframes orbBreath{0%,100%{filter:drop-shadow(0 0 10px rgba(86,225,255,.45))}50%{filter:drop-shadow(0 0 22px rgba(86,225,255,.75))}}
-nav ul{display:flex; gap:18px; margin-left:auto; list-style:none; padding:0}
-nav li{opacity:.9}
-.cta{padding:10px 14px; border-radius:10px; color:#06101a;
-  background:linear-gradient(135deg,#56e1ff,#23b6d9); box-shadow: 0 10px 30px rgba(86,225,255,.25)}
-
-/* Glowing Hamburger ➜ X */
-#hamburger{display:none; margin-left:auto; width:38px; height:32px; position:relative; cursor:pointer; filter:drop-shadow(0 0 10px rgba(86,225,255,.6))}
+/* Force hamburger-only nav on all widths */
+nav ul{display:none !important}
+#hamburger{display:block; margin-left:auto; width:38px; height:32px; position:relative; cursor:pointer; filter:drop-shadow(0 0 10px rgba(86,225,255,.6))}
 #hamburger span{position:absolute; left:0; right:0; height:2px; background:#e6f3ff; border-radius:3px;
   transition:transform .35s ease, top .35s ease, opacity .25s ease; box-shadow:0 0 12px rgba(86,225,255,.6)}
 #hamburger span:nth-child(1){top:6px}
@@ -88,7 +89,6 @@ nav li{opacity:.9}
 #hamburger.active span:nth-child(1){top:15px; transform:rotate(45deg)}
 #hamburger.active span:nth-child(2){opacity:0}
 #hamburger.active span:nth-child(3){top:15px; transform:rotate(-45deg)}
-@media (max-width:980px){ nav ul{display:none} #hamburger{display:block} }
 
 /* Full-screen menu */
 #menuOverlay{
@@ -104,7 +104,7 @@ nav li{opacity:.9}
   color:#e6f3ff; border:1px solid rgba(255,255,255,.14); background:rgba(15,25,41,.55)
 }
 
-/* Sticky sub-nav pills (no clipping) */
+/* Sticky sub-nav pills (unchanged) */
 .subnav{
   position:sticky; top:var(--navH); z-index:49; background:rgba(10,16,29,.55);
   border-bottom:1px solid rgba(255,255,255,.06); backdrop-filter: blur(8px) saturate(140%); padding-block:10px;
@@ -130,21 +130,59 @@ nav li{opacity:.9}
 .section p.lead{color:var(--muted); max-width:820px}
 
 /* Grid & Card */
-.grid{display:grid; gap:16px}
+.grid{display:grid; gap:18px}
 .grid.cols-3{grid-template-columns:repeat(3,1fr)}
 .grid.cols-4{grid-template-columns:repeat(4,1fr)}
 @media (max-width:1100px){.grid.cols-4{grid-template-columns:repeat(3,1fr)}}
 @media (max-width:780px){.grid.cols-4,.grid.cols-3{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:520px){.grid.cols-4,.grid.cols-3{grid-template-columns:1fr}}
 
+/* Cards (aesthetic refresh) */
 .card{
-  background: radial-gradient(180px 120px at 15% 0%, rgba(86,225,255,.08), transparent 40%), var(--card);
-  border-radius:var(--radius); padding:18px 16px 16px; border:1px solid rgba(255,255,255,.08);
-  box-shadow: var(--ring); position:relative; overflow:hidden; transition:transform .25s ease, box-shadow .25s ease;
+  background:
+    radial-gradient(180px 120px at 15% 0%, rgba(86,225,255,.10), transparent 40%),
+    linear-gradient(180deg, rgba(17,30,54,.60), rgba(17,30,54,.45));
+  border-radius:calc(var(--radius) + 2px);
+  padding:16px;
+  border:1px solid rgba(255,255,255,.09);
+  box-shadow: var(--ring);
+  position:relative; overflow:visible;
+  transition:transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+  min-height:128px;
 }
 .card:hover{transform: translateY(-2px); box-shadow: 0 0 0 1px rgba(86,225,255,.35), 0 0 36px rgba(86,225,255,.25)}
-.card h3{margin:10px 0 4px; font-size:18px}
+.card h3{margin:8px 0 2px; font-size:17px}
 .card p{margin:0; color:rgba(230,243,255,.92); font-size:14.5px}
+.card .row{display:flex; align-items:center; gap:10px}
+.card .footer{display:flex; justify-content:flex-end; margin-top:10px}
+
+/* App icon badge */
+.app-ico{
+  width:28px; height:28px; color:var(--cyan);
+  padding:6px; border-radius:12px;
+  background:linear-gradient(180deg, rgba(86,225,255,.16), rgba(35,182,217,.10));
+  box-shadow: inset 0 0 8px rgba(86,225,255,.18);
+  flex:0 0 auto;
+}
+.app-ico.spin{animation:spin 12s linear infinite}
+.app-ico.float{animation:float 4s ease-in-out infinite}
+.app-ico.pulse{animation:pulse 3s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.85; transform:scale(1)}50%{opacity:1; transform:scale(1.08)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Go buttons (also used for .button-ghost) */
+.app-go, .button-ghost{
+  display:inline-flex; align-items:center; justify-content:center;
+  gap:8px; padding:8px 14px; border-radius:999px;
+  color:#dff6ff; border:1px solid rgba(86,225,255,.45);
+  background:rgba(15,25,41,.35);
+  box-shadow: 0 0 0 1px rgba(86,225,255,.12), 0 10px 26px rgba(86,225,255,.18);
+  transition:transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;
+}
+.app-go:hover, .button-ghost:hover{transform:translateY(-1px); box-shadow:0 0 0 1px rgba(86,225,255,.35), 0 14px 34px rgba(86,225,255,.22)}
+.app-go:focus-visible, .button-ghost:focus-visible{outline:2px solid transparent; box-shadow:0 0 0 2px #0b1220, 0 0 0 4px rgba(86,225,255,.75)}
+.app-go[aria-disabled="true"]{opacity:.55; pointer-events:none}
 
 /* Feature / KPIs */
 .feature{display:grid; grid-template-columns:1.1fr .9fr; gap:36px; align-items:center;
@@ -156,28 +194,16 @@ nav li{opacity:.9}
 .kpi .n{font-size:28px; font-weight:700}
 
 /* Theme accordions */
-.theme{margin-top:18px; border:1px solid rgba(255,255,255,.10); border-radius:18px; background:rgba(15,25,41,.45); box-shadow:var(--ring)}
+.theme{margin-top:18px; border:1px solid rgba(255,255,255,.10); border-radius:18px; background:rgba(15,25,41,.45); box-shadow:var(--ring); overflow:visible}
 .theme-head{display:flex; align-items:center; gap:12px; padding:14px 16px; cursor:pointer}
 .theme-head h3{margin:0; font-size:18px}
 .theme-head small{color:#9fc9dd}
 .theme-head .count{margin-left:auto; padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.12); color:#cfefff; font-size:12px}
 .theme-head .chev{transition:transform .25s ease}
 .theme[aria-expanded="true"] .chev{transform:rotate(180deg)}
-.placeholder{display:flex; align-items:center; gap:12px; margin:0 16px 14px; padding:14px; border-radius:14px;
-  background: radial-gradient(180px 120px at 15% 0%, rgba(86,225,255,.08), transparent 40%), rgba(15,25,41,.45); border:1px dashed rgba(255,255,255,.2)}
-.theme-body{max-height:0; overflow:hidden; transition:max-height .4s ease}
-.theme[aria-expanded="true"] .theme-body{max-height:2000px}
-
-/* Icon animations */
-.icon-ani{width:28px; height:28px; flex-shrink:0; color:var(--cyan)}
-.icon-shield{animation:pulse 3s infinite}
-.icon-bot{animation:float 4s ease-in-out infinite}
-.icon-chart{animation:flicker 2s infinite}
-.icon-globe{animation:spin 12s linear infinite}
-@keyframes pulse{0%,100%{opacity:.85; transform:scale(1)}50%{opacity:1; transform:scale(1.15)}}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-@keyframes flicker{0%,19%,21%,23%,25%,54%,56%,100%{opacity:1}20%,24%,55%{opacity:.4}}
-@keyframes spin{to{transform:rotate(360deg)}}
+.theme-body{max-height:0; overflow:visible; transition:max-height .4s ease; padding:0 0 0}
+.theme[aria-expanded="true"] .theme-body{max-height:2000px; padding:0 0 16px}
+.theme-body .grid{padding:0 16px 0}
 
 /* Partners */
 .partnerbar{display:grid; grid-template-columns:repeat(6,1fr); gap:12px}
@@ -237,13 +263,20 @@ nav li{opacity:.9}
 
 <!-- Animated backgrounds -->
 <div id="fx"></div>
+<!-- ===== Stream-flow animated SVG ===== -->
 <svg id="lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
   <defs>
-    <linearGradient id="pulse" x1="0" x2="1" y1="0" y2="0">
+    <linearGradient id="pulseA" x1="0" x2="1" y1="0" y2="0">
       <stop offset="0%"  stop-color="#56e1ff" stop-opacity=".0"/>
-      <stop offset="50%" stop-color="#56e1ff" stop-opacity=".8"/>
+      <stop offset="50%" stop-color="#56e1ff" stop-opacity=".85"/>
       <stop offset="100%" stop-color="#56e1ff" stop-opacity=".0"/>
     </linearGradient>
+    <linearGradient id="pulseB" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%"  stop-color="#23b6d9" stop-opacity=".0"/>
+      <stop offset="50%" stop-color="#23b6d9" stop-opacity=".75"/>
+      <stop offset="100%" stop-color="#23b6d9" stop-opacity=".0"/>
+    </linearGradient>
+
     <!-- Icon sprite -->
     <symbol id="ico-shield" viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.4 7.6-8 10-4.6-2.4-8-5-8-10V6l8-4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
     <symbol id="ico-bot" viewBox="0 0 24 24"><circle cx="12" cy="7" r="2.5" fill="currentColor"/><rect x="5" y="10" width="14" height="9" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="9" cy="14.5" r="1" fill="currentColor"/><circle cx="15" cy="14.5" r="1" fill="currentColor"/></symbol>
@@ -252,15 +285,56 @@ nav li{opacity:.9}
     <symbol id="ico-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
     <symbol id="ico-up" viewBox="0 0 64 64"><path d="M32 18 L20 30 M32 18 L44 30" stroke="currentColor" stroke-width="4" stroke-linecap="round" fill="none"/><line x1="32" y1="18" x2="32" y2="46" stroke="currentColor" stroke-width="4" stroke-linecap="round" opacity=".3"/></symbol>
   </defs>
-  <!-- animated strokes -->
-  <polyline points="0,15 35,25 60,18 100,28" fill="none" stroke="url(#pulse)" stroke-width="0.6">
-    <animate attributeName="stroke-dasharray" values="0,200;50,200;0,200" dur="6s" repeatCount="indefinite"/>
-    <animate attributeName="stroke-dashoffset" values="0;-60;0" dur="6s" repeatCount="indefinite"/>
-  </polyline>
-  <polyline points="0,55 20,50 48,60 70,52 100,64" fill="none" stroke="url(#pulse)" stroke-width="0.6">
-    <animate attributeName="stroke-dasharray" values="0,200;40,200;0,200" dur="5.5s" repeatCount="indefinite"/>
-    <animate attributeName="stroke-dashoffset" values="0;-50;0" dur="5.5s" repeatCount="indefinite"/>
-  </polyline>
+
+  <!-- Braided stream paths (top band) -->
+  <g stroke-linecap="round" fill="none" stroke-width="0.6">
+    <path d="M -5 20 C 10 12, 22 18, 35 16 S 60 22, 105 18" stroke="url(#pulseA)">
+      <animate attributeName="stroke-dasharray" values="0,200;40,200;0,200" dur="7s" repeatCount="indefinite"/>
+      <animate attributeName="stroke-dashoffset" values="0;-70;0" dur="7s" repeatCount="indefinite"/>
+    </path>
+    <path d="M -5 24 C 8 22, 24 26, 42 20 S 70 26, 105 24" stroke="url(#pulseB)">
+      <animate attributeName="stroke-dasharray" values="0,200;36,200;0,200" dur="6.2s" repeatCount="indefinite"/>
+      <animate attributeName="stroke-dashoffset" values="0;-60;0" dur="6.2s" repeatCount="indefinite"/>
+    </path>
+  </g>
+
+  <!-- Mid band -->
+  <g stroke-linecap="round" fill="none" stroke-width="0.7">
+    <path d="M -5 48 C 18 40, 36 56, 52 46 S 78 56, 105 52" stroke="url(#pulseA)">
+      <animate attributeName="stroke-dasharray" values="0,220;48,220;0,220" dur="8s" repeatCount="indefinite"/>
+      <animate attributeName="stroke-dashoffset" values="0;-80;0" dur="8s" repeatCount="indefinite"/>
+    </path>
+    <path d="M -5 52 C 10 54, 30 44, 50 58 S 86 46, 105 60" stroke="url(#pulseB)">
+      <animate attributeName="stroke-dasharray" values="0,220;42,220;0,220" dur="7.2s" repeatCount="indefinite"/>
+      <animate attributeName="stroke-dashoffset" values="0;-72;0" dur="7.2s" repeatCount="indefinite"/>
+    </path>
+    <path d="M -5 56 C 6 50, 26 64, 44 54 S 70 66, 105 58" stroke="url(#pulseA)">
+      <animate attributeName="stroke-dasharray" values="0,220;44,220;0,220" dur="6.8s" repeatCount="indefinite"/>
+      <animate attributeName="stroke-dashoffset" values="0;-68;0" dur="6.8s" repeatCount="indefinite"/>
+    </path>
+  </g>
+
+  <!-- Bottom band -->
+  <g stroke-linecap="round" fill="none" stroke-width="0.65">
+    <path d="M -5 78 C 12 70, 28 86, 46 74 S 76 84, 105 80" stroke="url(#pulseA)">
+      <animate attributeName="stroke-dasharray" values="0,240;50,240;0,240" dur="9s" repeatCount="indefinite"/>
+      <animate attributeName="stroke-dashoffset" values="0;-90;0" dur="9s" repeatCount="indefinite"/>
+    </path>
+    <path d="M -5 82 C 8 88, 24 72, 40 90 S 72 76, 105 86" stroke="url(#pulseB)">
+      <animate attributeName="stroke-dasharray" values="0,240;44,240;0,240" dur="8.4s" repeatCount="indefinite"/>
+      <animate attributeName="stroke-dashoffset" values="0;-84;0" dur="8.4s" repeatCount="indefinite"/>
+    </path>
+  </g>
+
+  <!-- occasional glow nodes -->
+  <g opacity=".35">
+    <circle cx="35" cy="16" r="0.9" fill="#56e1ff">
+      <animate attributeName="opacity" values="0.15;0.9;0.15" dur="4.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="52" cy="46" r="0.9" fill="#23b6d9">
+      <animate attributeName="opacity" values="0.15;1;0.15" dur="5.5s" repeatCount="indefinite"/>
+    </circle>
+  </g>
 </svg>
 
 <div class="site">
@@ -270,15 +344,7 @@ nav li{opacity:.9}
   <nav>
     <div class="container nav-inner">
       <div class="brand"><span class="orb"></span> RMO Chronos (pilot)</div>
-      <ul>
-        <li><a href="#why">Why</a></li>
-        <li><a href="#workstreams">Workstreams</a></li>
-        <li><a href="#roadmap">Roadmap</a></li>
-        <li><a href="#impact">Impact</a></li>
-        <li><a href="#partners">Partners</a></li>
-        <li><a href="#team">Team</a></li>
-        <li><a href="#live" class="cta">Live</a></li>
-      </ul>
+      <!-- desktop UL intentionally hidden at all widths -->
       <div id="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="menuOverlay" role="button" tabindex="0">
         <span></span><span></span><span></span>
       </div>
@@ -342,14 +408,24 @@ nav li{opacity:.9}
       </div>
       <div>
         <div class="grid cols-3">
-          <div class="card"><div class="icon shield"></div><h3>GeaGuard</h3><p>Seismic-time context.</p></div>
-          <div class="card"><div class="icon shield"></div><h3>SweepGuard</h3><p>Voidage & sweep signals.</p></div>
-          <div class="card"><div class="icon rounded"></div><h3>Prodcast</h3><p>Rapid scenario forecasting.</p></div>
+          <div class="card">
+            <div class="row"><svg class="app-ico pulse" aria-hidden="true"><use href="#ico-shield"/></svg><div><h3>GeaGuard</h3><p>Seismic-time context.</p></div></div>
+            <div class="footer"><a class="app-go" href="#" aria-label="Open GeaGuard">Go</a></div>
+          </div>
+          <div class="card">
+            <div class="row"><svg class="app-ico pulse" aria-hidden="true"><use href="#ico-shield"/></svg><div><h3>SweepGuard</h3><p>Voidage & sweep signals.</p></div></div>
+            <div class="footer"><a class="app-go" href="#" aria-label="Open SweepGuard">Go</a></div>
+          </div>
+          <div class="card">
+            <div class="row"><svg class="app-ico float" aria-hidden="true"><use href="#ico-chart"/></svg><div><h3>Prodcast</h3><p>Rapid scenario forecasting.</p></div></div>
+            <div class="footer"><a class="app-go" href="#" aria-label="Open Prodcast">Go</a></div>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
+  <!-- ================= WORKSTREAMS ================= -->
   <section id="workstreams" class="section container reveal" role="region" aria-labelledby="wsTitle">
     <h2 id="wsTitle">Digital Workstreams (15)</h2>
     <p class="lead">Grouped by families for clarity. Shields = “Guard”. Rounded squares = applications.</p>
@@ -357,20 +433,37 @@ nav li{opacity:.9}
     <!-- THEME 1 -->
     <div class="theme" id="th-guard" aria-expanded="true">
       <div class="theme-head" role="button" tabindex="0" aria-controls="tb-guard">
-        <svg class="icon-ani icon-shield" width="28" height="28" aria-hidden="true"><use href="#ico-shield"/></svg>
+        <svg class="app-ico pulse" width="28" height="28" aria-hidden="true"><use href="#ico-shield"/></svg>
         <div><h3>Guard Family — Protection & Assurance</h3><small>Risk detection, surveillance, integrity</small></div>
         <span class="count">6 apps</span>
         <svg class="chev" width="18" height="18" aria-hidden="true"><use href="#ico-chevron"/></svg>
       </div>
-      <div class="placeholder"><svg class="icon-ani icon-shield" width="22" height="22" aria-hidden="true"><use href="#ico-shield"/></svg><span>Tap to expand and explore solutions.</span></div>
       <div class="theme-body" id="tb-guard">
-        <div class="grid cols-4" style="margin:0 16px 16px">
-          <div class="card"><div class="icon shield"></div><h3>GeaGuard</h3><p>4D seismic-time context.</p></div>
-          <div class="card"><div class="icon shield"></div><h3>TerraGuard</h3><p>Fault & fracture risk.</p></div>
-          <div class="card"><div class="icon shield"></div><h3>FlowGuard</h3><p>Flow performance.</p></div>
-          <div class="card"><div class="icon shield"></div><h3>FracGuard</h3><p>Early fracture warning.</p></div>
-          <div class="card"><div class="icon shield"></div><h3>WellGuard</h3><p>Non-conformance alerts.</p></div>
-          <div class="card"><div class="icon shield"></div><h3>SweepGuard</h3><p>Sweep efficiency.</p></div>
+        <div class="grid cols-4">
+          <div class="card">
+            <div class="row"><svg class="app-ico pulse" aria-hidden="true"><use href="#ico-shield"/></svg><div><h3>GeaGuard</h3><p>4D seismic-time context.</p></div></div>
+            <div class="footer"><a class="app-go" href="#" aria-label="Open GeaGuard">Go</a></div>
+          </div>
+          <div class="card">
+            <div class="row"><svg class="app-ico pulse" aria-hidden="true"><use href="#ico-shield"/></svg><div><h3>TerraGuard</h3><p>Fault & fracture risk.</p></div></div>
+            <div class="footer"><a class="app-go" href="#" aria-label="Open TerraGuard">Go</a></div>
+          </div>
+          <div class="card">
+            <div class="row"><svg class="app-ico pulse" aria-hidden="true"><use href="#ico-shield"/></svg><div><h3>FlowGuard</h3><p>Flow performance.</p></div></div>
+            <div class="footer"><a class="app-go" href="#" aria-label="Open FlowGuard">Go</a></div>
+          </div>
+          <div class="card">
+            <div class="row"><svg class="app-ico pulse" aria-hidden="true"><use href="#ico-shield"/></svg><div><h3>FracGuard</h3><p>Early fracture warning.</p></div></div>
+            <div class="footer"><a class="app-go" href="#" aria-label="Open FracGuard">Go</a></div>
+          </div>
+          <div class="card">
+            <div class="row"><svg class="app-ico pulse" aria-hidden="true"><use href="#ico-shield"/></svg><div><h3>WellGuard</h3><p>Non-conformance alerts.</p></div></div>
+            <div class="footer"><a class="app-go" href="#" aria-label="Open WellGuard">Go</a></div>
+          </div>
+          <div class="card">
+            <div class="row"><svg class="app-ico pulse" aria-hidden="true"><use href="#ico-shield"/></svg><div><h3>SweepGuard</h3><p>Sweep efficiency.</p></div></div>
+            <div class="footer"><a class="app-go" href="#" aria-label="Open SweepGuard">Go</a></div>
+          </div>
         </div>
       </div>
     </div>
@@ -378,16 +471,21 @@ nav li{opacity:.9}
     <!-- THEME 2 -->
     <div class="theme" id="th-agentic" aria-expanded="true">
       <div class="theme-head" role="button" tabindex="0" aria-controls="tb-agentic">
-        <svg class="icon-ani icon-bot" width="28" height="28" aria-hidden="true"><use href="#ico-bot"/></svg>
+        <svg class="app-ico float" width="28" height="28" aria-hidden="true"><use href="#ico-bot"/></svg>
         <div><h3>Agentic Solutions — Autonomous Well Intelligence</h3><small>Monitoring & post-drill insights</small></div>
         <span class="count">2 apps</span>
         <svg class="chev" width="18" height="18" aria-hidden="true"><use href="#ico-chevron"/></svg>
       </div>
-      <div class="placeholder"><svg class="icon-ani icon-bot" width="22" height="22" aria-hidden="true"><use href="#ico-bot"/></svg><span>Tap to expand and explore solutions.</span></div>
       <div class="theme-body" id="tb-agentic">
-        <div class="grid cols-4" style="margin:0 16px 16px">
-          <div class="card"><div class="icon rounded"></div><h3>WellWatch</h3><p>Continuous monitoring.</p></div>
-          <div class="card"><div class="icon rounded"></div><h3>WellNova</h3><p>Post-drill insights.</p></div>
+        <div class="grid cols-4">
+          <div class="card">
+            <div class="row"><svg class="app-ico float" aria-hidden="true"><use href="#ico-bot"/></svg><div><h3>WellWatch</h3><p>Continuous monitoring.</p></div></div>
+            <div class="footer"><a class="app-go" href="#" aria-label="Open WellWatch">Go</a></div>
+          </div>
+          <div class="card">
+            <div class="row"><svg class="app-ico float" aria-hidden="true"><use href="#ico-bot"/></svg><div><h3>WellNova</h3><p>Post-drill insights.</p></div></div>
+            <div class="footer"><a class="app-go" href="#" aria-label="Open WellNova">Go</a></div>
+          </div>
         </div>
       </div>
     </div>
@@ -395,19 +493,33 @@ nav li{opacity:.9}
     <!-- THEME 3 -->
     <div class="theme" id="th-analytics" aria-expanded="true">
       <div class="theme-head" role="button" tabindex="0" aria-controls="tb-analytics">
-        <svg class="icon-ani icon-chart" width="28" height="28" aria-hidden="true"><use href="#ico-chart"/></svg>
+        <svg class="app-ico" width="28" height="28" aria-hidden="true"><use href="#ico-chart"/></svg>
         <div><h3>Analytics & Intelligence</h3><small>Forecasting, stimulation, screening</small></div>
         <span class="count">5 apps</span>
         <svg class="chev" width="18" height="18" aria-hidden="true"><use href="#ico-chevron"/></svg>
       </div>
-      <div class="placeholder"><svg class="icon-ani icon-chart" width="22" height="22" aria-hidden="true"><use href="#ico-chart"/></svg><span>Tap to expand and explore solutions.</span></div>
       <div class="theme-body" id="tb-analytics">
-        <div class="grid cols-4" style="margin:0 16px 16px">
-          <div class="card"><div class="icon rounded"></div><h3>Stimatlas</h3><p>Stimulation screening.</p></div>
-          <div class="card"><div class="icon rounded"></div><h3>AquaMan</h3><p>Intelligent water injection.</p></div>
-          <div class="card"><div class="icon rounded"></div><h3>Prodcast</h3><p>Scenario forecasting.</p></div>
-          <div class="card"><div class="icon rounded"></div><h3>Sypher</h3><p>Balance prod & injectivity.</p></div>
-          <div class="card"><div class="icon rounded"></div><h3>Aura</h3><p>Wave inversion & rings.</p></div>
+        <div class="grid cols-4">
+          <div class="card">
+            <div class="row"><svg class="app-ico" aria-hidden="true"><use href="#ico-chart"/></svg><div><h3>Stimatlas</h3><p>Stimulation screening.</p></div></div>
+            <div class="footer"><a class="app-go" href="#" aria-label="Open Stimatlas">Go</a></div>
+          </div>
+          <div class="card">
+            <div class="row"><svg class="app-ico" aria-hidden="true"><use href="#ico-chart"/></svg><div><h3>AquaMan</h3><p>Intelligent water injection.</p></div></div>
+            <div class="footer"><a class="app-go" href="#" aria-label="Open AquaMan">Go</a></div>
+          </div>
+          <div class="card">
+            <div class="row"><svg class="app-ico" aria-hidden="true"><use href="#ico-chart"/></svg><div><h3>Prodcast</h3><p>Scenario forecasting.</p></div></div>
+            <div class="footer"><a class="app-go" href="#" aria-label="Open Prodcast">Go</a></div>
+          </div>
+          <div class="card">
+            <div class="row"><svg class="app-ico" aria-hidden="true"><use href="#ico-chart"/></svg><div><h3>Sypher</h3><p>Balance prod & injectivity.</p></div></div>
+            <div class="footer"><a class="app-go" href="#" aria-label="Open Sypher">Go</a></div>
+          </div>
+          <div class="card">
+            <div class="row"><svg class="app-ico" aria-hidden="true"><use href="#ico-chart"/></svg><div><h3>Aura</h3><p>Wave inversion & rings.</p></div></div>
+            <div class="footer"><a class="app-go" href="#" aria-label="Open Aura">Go</a></div>
+          </div>
         </div>
       </div>
     </div>
@@ -415,20 +527,26 @@ nav li{opacity:.9}
     <!-- THEME 4 -->
     <div class="theme" id="th-eco" aria-expanded="true">
       <div class="theme-head" role="button" tabindex="0" aria-controls="tb-eco">
-        <svg class="icon-ani icon-globe" width="28" height="28" aria-hidden="true"><use href="#ico-globe"/></svg>
+        <svg class="app-ico spin" width="28" height="28" aria-hidden="true"><use href="#ico-globe"/></svg>
         <div><h3>Ecosystem & Integration</h3><small>Orchestration & visualization</small></div>
         <span class="count">2 apps</span>
         <svg class="chev" width="18" height="18" aria-hidden="true"><use href="#ico-chevron"/></svg>
       </div>
-      <div class="placeholder"><svg class="icon-ani icon-globe" width="22" height="22" aria-hidden="true"><use href="#ico-globe"/></svg><span>Tap to expand and explore solutions.</span></div>
       <div class="theme-body" id="tb-eco">
-        <div class="grid cols-4" style="margin:0 16px 16px">
-          <div class="card"><div class="icon rounded"></div><h3>RMO Dashboard</h3><p>Unified BI & panels.</p></div>
-          <div class="card"><div class="icon rounded"></div><h3>RMO360</h3><p>Integrated ecosystem.</p></div>
+        <div class="grid cols-4">
+          <div class="card">
+            <div class="row"><svg class="app-ico spin" aria-hidden="true"><use href="#ico-globe"/></svg><div><h3>RMO Dashboard</h3><p>Unified BI & panels.</p></div></div>
+            <div class="footer"><a class="app-go" href="#" aria-label="Open RMO Dashboard">Go</a></div>
+          </div>
+          <div class="card">
+            <div class="row"><svg class="app-ico spin" aria-hidden="true"><use href="#ico-globe"/></svg><div><h3>RMO360</h3><p>Integrated ecosystem.</p></div></div>
+            <div class="footer"><a class="app-go" href="#" aria-label="Open RMO360">Go</a></div>
+          </div>
         </div>
       </div>
     </div>
   </section>
+  <!-- ================= /WORKSTREAMS ================= -->
 
   <section id="roadmap" class="section container reveal" role="region" aria-labelledby="rdTitle">
     <h2 id="rdTitle">Roadmap</h2>
@@ -452,9 +570,9 @@ nav li{opacity:.9}
       </div>
       <div>
         <div class="grid cols-3">
-          <div class="card"><h3>WellWatch → Action</h3><p>Auto-detects anomalies and drafts work orders.</p></div>
-          <div class="card"><h3>SweepGuard Loop</h3><p>Optimizes injector/producer pairs for voidage.</p></div>
-          <div class="card"><h3>Prodcast Scenarios</h3><p>Rapid what-if forecasts for pacing.</p></div>
+          <div class="card"><div class="row"><div><h3>WellWatch → Action</h3><p>Auto-detects anomalies and drafts work orders.</p></div></div><div class="footer"><a class="app-go" href="#" aria-label="Open WellWatch Action">Go</a></div></div>
+          <div class="card"><div class="row"><div><h3>SweepGuard Loop</h3><p>Optimizes injector/producer pairs for voidage.</p></div></div><div class="footer"><a class="app-go" href="#" aria-label="Open SweepGuard Loop">Go</a></div></div>
+          <div class="card"><div class="row"><div><h3>Prodcast Scenarios</h3><p>Rapid what-if forecasts for pacing.</p></div></div><div class="footer"><a class="app-go" href="#" aria-label="Open Prodcast Scenarios">Go</a></div></div>
         </div>
       </div>
     </div>
@@ -530,7 +648,7 @@ nav li{opacity:.9}
   <section id="live" class="section container reveal" role="region" aria-labelledby="lvTitle">
     <h2 id="lvTitle">See it in action</h2>
     <p class="lead">Open the live modules with your company SSO. Replace the links below with your internal URLs.</p>
-    <div class="cta-row">
+    <div class="cta-row" style="display:flex; gap:10px; flex-wrap:wrap">
       <a class="button-ghost" href="#" target="_blank" rel="noopener">Launch RMO Dashboard</a>
       <a class="button-ghost" href="#" target="_blank" rel="noopener">Open WellWatch</a>
       <a class="button-ghost" href="#" target="_blank" rel="noopener">Start Prodcast Scenarios</a>
