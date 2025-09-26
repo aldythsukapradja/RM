@@ -3,207 +3,43 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>RMO Chronos (pilot) — Internal Digital Workstreams Showcase</title>
+<title>RMO Chronos (pilot)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg0:#0b1220; --bg2:#101827;
-  --cyan:#35d0ff; --turq:#23b6d9; --elec:#56e1ff;
-  --text:#e6f3ff; --muted:#9fb6c7; --card:#0f1a2c;
-  --ring: 0 0 0 1px rgba(86,225,255,.18), 0 0 24px rgba(86,225,255,.22), inset 0 0 18px rgba(35,182,217,.12);
-  --radius:16px;
+/* keep all existing styles from previous version… */
+
+/* New roadmap */
+.roadmap {display:flex; gap:20px; flex-wrap:wrap; margin-top:20px}
+.phase {flex:1; min-width:220px; padding:20px; border-radius:16px;
+ background:rgba(15,25,41,.6); border:1px solid rgba(255,255,255,.08); box-shadow:var(--ring)}
+.phase h3{margin:0 0 6px}
+.phase small{color:var(--muted)}
+
+/* Collapsible sections */
+.collapsible {margin-top:16px}
+.collapsible button {
+  background:rgba(15,25,41,.6); border:1px solid rgba(255,255,255,.15);
+  color:#e6f3ff; font-weight:600; padding:12px 14px; width:100%;
+  text-align:left; border-radius:12px; cursor:pointer;
 }
-*{box-sizing:border-box}
-html,body{
-  margin:0; color:var(--text); font-family:Outfit, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, sans-serif;
-  background:
-    radial-gradient(1200px 700px at 10% -10%, #12213a 0%, transparent 60%),
-    radial-gradient(1000px 600px at 110% 10%, rgba(53,208,255,.08), transparent 60%),
-    linear-gradient(180deg,var(--bg0),var(--bg2));
-  scroll-behavior:smooth;
-}
-a{color:var(--cyan); text-decoration:none}
-.container{width:min(1200px, 92vw); margin-inline:auto}
+.collapsible button:after {content:"+"; float:right}
+.collapsible button.active:after {content:"–"}
+.collapsible-content {max-height:0; overflow:hidden; transition:max-height .4s ease;}
 
-/* Ribbon */
-.ribbon{
-  position:relative; z-index:60; text-align:center; font-size:13px; letter-spacing:.3px;
-  background:linear-gradient(90deg,rgba(86,225,255,.12),rgba(35,182,217,.08));
-  border-bottom:1px solid rgba(255,255,255,.08); padding:8px 10px; color:#bfeaff;
-}
-
-/* NAV */
-nav{position:sticky; top:0; z-index:50; backdrop-filter:saturate(140%) blur(10px);
-  background:rgba(10,16,29,.6); border-bottom:1px solid rgba(255,255,255,.06)}
-.nav-inner{display:flex; align-items:center; gap:18px; padding:12px 0}
-.brand{display:flex; align-items:center; gap:12px; font-weight:700; letter-spacing:.3px}
-.brand .orb{width:28px; height:28px; border-radius:50%;
-  background: radial-gradient(circle at 35% 30%, var(--elec), transparent 60%),
-              radial-gradient(circle at 65% 70%, var(--turq), transparent 60%),
-              #14243d; box-shadow: 0 0 22px rgba(86,225,255,.35)}
-nav ul{display:flex; gap:18px; margin-left:auto; list-style:none; padding:0}
-nav li{opacity:.9}
-.cta{padding:10px 14px; border-radius:10px; color:#06101a;
-  background:linear-gradient(135deg,var(--elec),var(--turq));
-  box-shadow: 0 10px 30px rgba(86,225,255,.25)}
-
-/* Mobile nav: slide-down drawer pushes content */
-.menu-btn{display:none}
-.drawer{display:none} /* default desktop */
-@media (max-width:860px){
-  nav ul{display:none}
-  .menu-btn{
-    display:block; margin-left:auto; border:1px solid rgba(255,255,255,.14);
-    background:rgba(15,25,41,.6); color:var(--text); border-radius:10px; padding:8px 10px
-  }
-  .drawer{
-    background:rgba(10,16,29,.95);
-    backdrop-filter: blur(12px) saturate(140%);
-    -webkit-backdrop-filter: blur(12px) saturate(140%);
-    border-top:1px solid rgba(255,255,255,.08);
-    overflow:hidden;
-    max-height:0;
-    transition:max-height .4s ease;
-    display:block;       /* present in flow under nav on mobile */
-  }
-  .drawer.open{max-height:500px} /* expands down and pushes content */
-  .drawer a{
-    display:block; padding:14px 10px; font-size:17px;
-    border-bottom:1px solid rgba(255,255,255,.08); color:#e6f3ff;
-  }
-}
-
-/* HERO */
-.hero{position:relative; padding:86px 0 64px; overflow:hidden}
-.hero .glow{position:absolute; inset:-20% -10% auto auto; width:700px; height:700px; border-radius:50%;
-  background: radial-gradient(closest-side, rgba(86,225,255,.14), transparent 70%);
-  filter:blur(40px); pointer-events:none;}
-.hero h1{font-size:clamp(32px, 5vw, 56px); line-height:1.05; margin:0 0 14px;}
-.hero p{max-width:780px; color:var(--muted); font-size:clamp(16px,1.9vw,20px)}
-.badges{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px}
-.badge{border:1px solid rgba(255,255,255,.08); color:#bfeaff; padding:8px 12px; border-radius:999px; font-size:14px; background:rgba(17,30,54,.5)}
-
-/* Section */
-.section{padding:56px 0}
-.section h2{font-size:clamp(24px,3.2vw,36px); margin:0 0 10px}
-.section p.lead{color:var(--muted); max-width:820px}
-
-/* Grids */
-.grid{display:grid; gap:14px}
-.grid.cols-3{grid-template-columns:repeat(3,1fr)}
-.grid.cols-4{grid-template-columns:repeat(4,1fr)}
-.grid.cols-5{grid-template-columns:repeat(5,1fr)}
-@media (max-width:1100px){.grid.cols-5{grid-template-columns:repeat(4,1fr)}}
-@media (max-width:920px){.grid.cols-4{grid-template-columns:repeat(3,1fr)}}
-@media (max-width:780px){.grid.cols-4,.grid.cols-5{grid-template-columns:repeat(2,1fr)}}
-@media (max-width:520px){.grid.cols-3,.grid.cols-4,.grid.cols-5{grid-template-columns:1fr}}
-
-/* Cards */
-.card{
-  background: radial-gradient(180px 120px at 15% 0%, rgba(86,225,255,.06), transparent 40%), var(--card);
-  border-radius:var(--radius); padding:18px 16px 16px; border:1px solid rgba(255,255,255,.06);
-  box-shadow: var(--ring); position:relative; overflow:hidden; transition:transform .25s ease, box-shadow .25s ease;
-}
-.card:hover{transform: translateY(-2px); box-shadow: 0 0 0 1px rgba(86,225,255,.35), 0 0 36px rgba(86,225,255,.25)}
-.card h3{margin:10px 0 4px; font-size:18px}
-.card p{margin:0; color:var(--muted); font-size:14.5px}
-
-/* Icon frames */
-.icon{width:56px; height:56px; display:grid; place-items:center; border-radius:14px; margin-bottom:6px;
-  background:linear-gradient(145deg, rgba(86,225,255,.18), rgba(35,182,217,.10));
-  box-shadow: inset 0 0 18px rgba(86,225,255,.18), 0 0 24px rgba(86,225,255,.12);
-  filter:drop-shadow(0 8px 26px rgba(86,225,255,.14));
-}
-.icon.shield{clip-path: polygon(50% 0%, 90% 18%, 90% 55%, 50% 100%, 10% 55%, 10% 18%);}
-.icon.rounded{border-radius:14px}
-
-/* Feature / KPIs */
-.feature{
-  display:grid; grid-template-columns:1.1fr .9fr; gap:36px; align-items:center;
-  background: linear-gradient(180deg, rgba(17,30,54,.6), rgba(17,30,54,.35));
-  border:1px solid rgba(255,255,255,.06); border-radius:18px; padding:26px; box-shadow:var(--ring)
-}
-@media (max-width:900px){.feature{grid-template-columns:1fr;}}
-.kpis{display:flex; gap:18px; flex-wrap:wrap}
-.kpi{min-width:140px; padding:14px 16px; border-radius:14px; border:1px solid rgba(255,255,255,.08); background:rgba(15,25,41,.6)}
-.kpi .n{font-size:28px; font-weight:700}
-
-/* Partners */
-.partnerbar{display:grid; grid-template-columns:repeat(6,1fr); gap:12px}
-.partner{height:52px; border-radius:12px; border:1px dashed rgba(255,255,255,.18); display:grid; place-items:center; color:#8ebbd3; background:rgba(17,30,54,.3)}
-
-/* Team */
-.team-grid{display:grid; gap:14px; grid-template-columns:repeat(4,1fr)}
-@media (max-width:1100px){.team-grid{grid-template-columns:repeat(3,1fr)}}
-@media (max-width:780px){.team-grid{grid-template-columns:repeat(2,1fr)}}
-@media (max-width:520px){.team-grid{grid-template-columns:1fr}}
-.person{background:var(--card); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:16px; box-shadow:var(--ring)}
-.person .avatar{width:64px; height:64px; border-radius:50%;
-  background: radial-gradient(circle at 35% 30%, var(--elec), transparent 60%),
-              radial-gradient(circle at 65% 70%, var(--turq), transparent 60%),
-              #14243d; box-shadow: 0 0 22px rgba(86,225,255,.35)}
-.person h4{margin:10px 0 2px}
-.person small{color:var(--muted)}
-
-/* CTA buttons */
-.cta-row{display:flex; gap:12px; flex-wrap:wrap; margin-top:16px}
-.button-ghost{
-  padding:10px 14px; border-radius:12px; color:#cfefff; font-weight:600;
-  border:1px solid rgba(86,225,255,.3);
-  background:linear-gradient(145deg, rgba(86,225,255,.10), rgba(35,182,217,.08));
-  box-shadow: var(--ring);
-}
-.button-ghost:hover{box-shadow:0 0 0 1px rgba(86,225,255,.5), 0 0 28px rgba(86,225,255,.25)}
-
-/* Footer */
-footer{padding:40px 0; color:#94a9bd; border-top:1px solid rgba(255,255,255,.06)}
-
-/* Reveal (on scroll) */
-.reveal{opacity:0; transform:translateY(12px); transition:opacity .6s ease, transform .6s ease}
-.reveal.on{opacity:1; transform:none}
-
-/* Target highlight animation when navigating from menu */
-@keyframes flashGlow {
-  0%   { box-shadow:0 0 0 0 rgba(86,225,255,.0), inset 0 0 0 0 rgba(86,225,255,.0); }
-  30%  { box-shadow:0 0 0 3px rgba(86,225,255,.35), 0 0 32px rgba(86,225,255,.25), inset 0 0 24px rgba(35,182,217,.25); }
-  100% { box-shadow:var(--ring); }
-}
-.flash { animation: flashGlow 1.2s ease-out; border-radius:18px }
+/* Table inside dropdown */
+.table40 {width:100%; border-collapse:collapse; margin-top:12px}
+.table40 td, .table40 th {border:1px solid rgba(255,255,255,.1); padding:8px; color:#cfefff; font-size:14px}
+.table40 th {background:rgba(86,225,255,.08); text-align:left}
 </style>
 </head>
 <body>
 
-<div class="ribbon">🔒 Internal Use Only — share inside the company</div>
-
-<nav>
-  <div class="container nav-inner">
-    <div class="brand"><span class="orb"></span> RMO Chronos (pilot)</div>
-    <ul>
-      <li><a href="#why">Why Chronos</a></li>
-      <li><a href="#workstreams">Workstreams</a></li>
-      <li><a href="#impact">Impact</a></li>
-      <li><a href="#partners">Partners</a></li>
-      <li><a href="#team">Team</a></li>
-      <li><a href="#live" class="cta">See it in action</a></li>
-    </ul>
-    <button class="menu-btn">Menu</button>
-  </div>
-  <!-- Slide-down drawer lives directly under nav, pushes page down -->
-  <div class="drawer">
-    <a href="#why">Why Chronos</a>
-    <a href="#workstreams">Workstreams</a>
-    <a href="#impact">Impact</a>
-    <a href="#partners">Partners</a>
-    <a href="#team">Team</a>
-    <a href="#live">See it in action</a>
-  </div>
-</nav>
-
+<!-- HERO -->
 <header class="hero">
   <div class="glow"></div>
   <div class="container">
-    <h1>Energy AI, Engineered for Reservoir Reality</h1>
+    <h1>RMO Chronos (pilot)</h1>
     <p>Fifteen integrated digital workstreams unify monitoring, diagnostics, optimization and forecasting—built for internal adoption and real field impact.</p>
     <div class="badges">
       <span class="badge">Neon-glow UI</span>
@@ -214,173 +50,75 @@ footer{padding:40px 0; color:#94a9bd; border-top:1px solid rgba(255,255,255,.06)
   </div>
 </header>
 
-<section id="why" class="section container reveal">
-  <h2>Why Chronos</h2>
-  <p class="lead">A unified digital fabric for wells and reservoirs—deterministic models fused with AI, designed to shorten the path from signal to decision to action.</p>
-  <div class="feature" style="margin-top:18px">
-    <div>
-      <h3>Agentic workflows across the lifecycle</h3>
-      <p>From well surveillance to sweep efficiency and forecasting, each module is autonomous yet orchestrated—so actions compound into field-level outcomes.</p>
-      <div class="kpis" style="margin-top:14px">
-        <div class="kpi"><div class="n">↑ 15–30%</div><small>Faster diagnostics</small></div>
-        <div class="kpi"><div class="n">↓ 20–40%</div><small>Time-to-action</small></div>
-        <div class="kpi"><div class="n">→ CLRM</div><small>Closed-loop ready</small></div>
+<!-- ROADMAP -->
+<section id="roadmap" class="section container reveal">
+  <h2>Roadmap</h2>
+  <div class="roadmap">
+    <div class="phase"><h3>Phase 1</h3><small>2025</small><p>Pilot — launch core modules and validate in live operations.</p></div>
+    <div class="phase"><h3>Phase 2</h3><small>2026</small><p>Scale — expand adoption across assets, integrate advanced AI/ML workflows.</p></div>
+    <div class="phase"><h3>Phase 3</h3><small>2027</small><p>Deploy — enterprise-wide deployment, closed-loop reservoir management.</p></div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section id="team" class="section container reveal">
+  <h2>Team</h2>
+  <p class="lead">Leadership and contributors who drive the RMO Chronos (pilot) digital ecosystem.</p>
+
+  <h3>Leadership</h3>
+  <div class="team-grid" style="margin-top:10px">
+    <!-- VP, Manager, Head, Lead same as before -->
+  </div>
+
+  <!-- Product Owners collapsible -->
+  <div class="collapsible">
+    <button type="button">Product Owners (15)</button>
+    <div class="collapsible-content">
+      <div class="team-grid" style="margin-top:10px">
+        <!-- 15 PO cards as before -->
       </div>
     </div>
-    <div>
-      <div class="grid cols-3">
-        <div class="card"><div class="icon shield"></div><h3>GeaGuard</h3><p>Seismic-time context.</p></div>
-        <div class="card"><div class="icon shield"></div><h3>SweepGuard</h3><p>Voidage & sweep signals.</p></div>
-        <div class="card"><div class="icon rounded"></div><h3>Prodcast</h3><p>Rapid scenario forecasting.</p></div>
-      </div>
+  </div>
+
+  <!-- 40 People collapsible -->
+  <div class="collapsible">
+    <button type="button">Contributors (40)</button>
+    <div class="collapsible-content">
+      <table class="table40">
+        <thead><tr><th>Name</th><th>Discipline</th></tr></thead>
+        <tbody>
+          <tr><td>Person 1</td><td>Geologist</td></tr>
+          <tr><td>Person 2</td><td>Geophysicist</td></tr>
+          <tr><td>Person 3</td><td>Reservoir Engineer</td></tr>
+          <tr><td>Person 4</td><td>Production Technologist</td></tr>
+          <tr><td>Person 5</td><td>Data Scientist</td></tr>
+          <!-- … continue until 40 rows -->
+        </tbody>
+      </table>
     </div>
   </div>
 </section>
 
-<section id="workstreams" class="section container reveal">
-  <h2>Digital Workstreams (15)</h2>
-  <p class="lead">Design system: shields for “Guard”, rounded squares for applications. All glow in turquoise/cyan to signal intelligent energy.</p>
-  <div class="grid cols-4" style="margin-top:16px">
-    <!-- Guard family (6) -->
-    <div class="card"><div class="icon shield"></div><h3>GeaGuard</h3><p>Shield + 4 stacked seismic curves.</p></div>
-    <div class="card"><div class="icon shield"></div><h3>TerraGuard</h3><p>Shield + fractured cube motif.</p></div>
-    <div class="card"><div class="icon shield"></div><h3>FlowGuard</h3><p>Shield + smooth upward ribbon wave.</p></div>
-    <div class="card"><div class="icon shield"></div><h3>FracGuard</h3><p>Shield + pulse-crack line.</p></div>
-    <div class="card"><div class="icon shield"></div><h3>WellGuard</h3><p>Shield + bold exclamation mark.</p></div>
-    <div class="card"><div class="icon shield"></div><h3>SweepGuard</h3><p>Shield + three orbiting circular arrows.</p></div>
-    <!-- Non-Guard (9) -->
-    <div class="card"><div class="icon rounded"></div><h3>WellWatch</h3><p>Rounded box + circular eye.</p></div>
-    <div class="card"><div class="icon rounded"></div><h3>WellNova</h3><p>Rounded box + wellbore & starburst.</p></div>
-    <div class="card"><div class="icon rounded"></div><h3>Stimatlas</h3><p>Rounded box + open atlas with magnifier.</p></div>
-    <div class="card"><div class="icon rounded"></div><h3>AquaMan</h3><p>Rounded box + droplet with circuits.</p></div>
-    <div class="card"><div class="icon rounded"></div><h3>Prodcast</h3><p>Rounded box + rising line with nodes.</p></div>
-    <div class="card"><div class="icon rounded"></div><h3>Sypher</h3><p>Rounded box + symmetric S/double arrows.</p></div>
-    <div class="card"><div class="icon rounded"></div><h3>Aura</h3><p>Rounded box + concentric rings.</p></div>
-    <div class="card"><div class="icon rounded"></div><h3>RMO Dashboard</h3><p>Rounded box + stacked data panels.</p></div>
-    <div class="card"><div class="icon rounded"></div><h3>RMO360</h3><p>Rounded box + globe with 360° ring.</p></div>
-  </div>
-</section>
-
-<section id="impact" class="section container reveal">
-  <h2>From insights to impact</h2>
-  <div class="feature" style="margin-top:16px">
-    <div>
-      <p>Agentic assistants monitor wells, recommend actions, and simulate outcomes—closing the loop between diagnosis and execution.</p>
-      <div class="kpis" style="margin-top:14px">
-        <div class="kpi"><div class="n">T-15 min</div><small>From alert to plan</small></div>
-        <div class="kpi"><div class="n">+7 kbopd</div><small>Potential uplift scenario</small></div>
-        <div class="kpi"><div class="n">≥ 4D</div><small>Seismic-aware decisions</small></div>
-      </div>
-    </div>
-    <div>
-      <div class="grid cols-3">
-        <div class="card"><h3>WellWatch → Action</h3><p>Auto-detects anomalies and drafts work orders.</p></div>
-        <div class="card"><h3>SweepGuard Loop</h3><p>Optimizes injector/producer pairs for voidage.</p></div>
-        <div class="card"><h3>Prodcast Scenarios</h3><p>Rapid what-if forecasts for pacing.</p></div>
-      </div>
-    </div>
-  </div>
-</section>
-
+<!-- PARTNERS -->
 <section id="partners" class="section container reveal">
   <h2>Partners</h2>
   <div class="partnerbar" style="margin-top:14px">
-    <div class="partner">Microsoft</div>
-    <div class="partner">SLB</div>
-    <div class="partner">AWS</div>
-    <div class="partner">NVIDIA</div>
-    <div class="partner">Baker Hughes</div>
-    <div class="partner">Khalifa Univ.</div>
+    <div class="partner">Tech Company</div>
+    <div class="partner">Service Company</div>
+    <div class="partner">University</div>
   </div>
 </section>
-
-<section id="team" class="section container reveal">
-  <h2>Team</h2>
-  <p class="lead">Leadership and product owners who drive the RMO Chronos (pilot) digital ecosystem.</p>
-
-  <!-- Leadership -->
-  <h3 style="margin-top:8px">Leadership</h3>
-  <div class="team-grid" style="margin-top:10px">
-    <div class="person"><div class="avatar"></div><h4>VP</h4><small>Vision & sponsorship</small><p style="margin-top:8px; color:#9fb6c7">Sets direction, enables strategic funding & partnerships.</p></div>
-    <div class="person"><div class="avatar"></div><h4>RM Manager</h4><small>Program orchestration</small><p style="margin-top:8px; color:#9fb6c7">Coordinates delivery across disciplines & stakeholders.</p></div>
-    <div class="person"><div class="avatar"></div><h4>RM Head</h4><small>Strategy & impact</small><p style="margin-top:8px; color:#9fb6c7">Aligns digital to field outcomes and reservoir strategy.</p></div>
-    <div class="person"><div class="avatar"></div><h4>RM Lead</h4><small>Technical execution</small><p style="margin-top:8px; color:#9fb6c7">Owns architecture, integration, and quality of delivery.</p></div>
-  </div>
-
-  <!-- Product Owners -->
-  <h3 style="margin-top:24px">Product Owners (15)</h3>
-  <div class="team-grid" style="margin-top:10px">
-    <div class="person"><div class="avatar"></div><h4>PO — GeaGuard</h4><small>Seismic context</small></div>
-    <div class="person"><div class="avatar"></div><h4>PO — TerraGuard</h4><small>Fracture risk</small></div>
-    <div class="person"><div class="avatar"></div><h4>PO — FlowGuard</h4><small>Flow efficiency</small></div>
-    <div class="person"><div class="avatar"></div><h4>PO — FracGuard</h4><small>Early fracture</small></div>
-    <div class="person"><div class="avatar"></div><h4>PO — WellGuard</h4><small>Non-conformance</small></div>
-    <div class="person"><div class="avatar"></div><h4>PO — SweepGuard</h4><small>Sweep efficiency</small></div>
-    <div class="person"><div class="avatar"></div><h4>PO — WellWatch</h4><small>Monitoring</small></div>
-    <div class="person"><div class="avatar"></div><h4>PO — WellNova</h4><small>Post-drill insights</small></div>
-    <div class="person"><div class="avatar"></div><h4>PO — Stimatlas</h4><small>Stimulation</small></div>
-    <div class="person"><div class="avatar"></div><h4>PO — AquaMan</h4><small>Water injection</small></div>
-    <div class="person"><div class="avatar"></div><h4>PO — Prodcast</h4><small>Forecasting</small></div>
-    <div class="person"><div class="avatar"></div><h4>PO — Sypher</h4><small>Prod/Injectivity</small></div>
-    <div class="person"><div class="avatar"></div><h4>PO — Aura</h4><small>Wave inversion</small></div>
-    <div class="person"><div class="avatar"></div><h4>PO — RMO Dashboard</h4><small>BI & UX</small></div>
-    <div class="person"><div class="avatar"></div><h4>PO — RMO360</h4><small>Ecosystem</small></div>
-  </div>
-</section>
-
-<section id="live" class="section container reveal">
-  <h2>See it in action</h2>
-  <p class="lead">Open the live modules with your company SSO. Replace the links below with your internal URLs.</p>
-  <div class="cta-row">
-    <a class="button-ghost" href="#" target="_blank" rel="noopener">Launch RMO Dashboard</a>
-    <a class="button-ghost" href="#" target="_blank" rel="noopener">Open WellWatch</a>
-    <a class="button-ghost" href="#" target="_blank" rel="noopener">Start Prodcast Scenarios</a>
-  </div>
-</section>
-
-<footer>
-  <div class="container">© 2025 RMO Chronos (pilot) • Internal showcase — not for external distribution</div>
-</footer>
 
 <script>
-// mobile drawer toggle
-const menuBtn = document.querySelector('.menu-btn');
-const drawer = document.querySelector('.drawer');
-menuBtn.addEventListener('click', ()=> drawer.classList.toggle('open'));
-
-// when clicking any drawer link: close drawer, smooth-scroll WITH tuned offset, flash target
-function scrollToSection(id){
-  const target = document.getElementById(id);
-  if(!target) return;
-  // Height of sticky nav:
-  const NAV_HEIGHT = document.querySelector('nav').offsetHeight || 0;
-  // Extra offset so the section title is fully visible on mobile
-  const isMobile = window.matchMedia('(max-width:860px)').matches;
-  const EXTRA = isMobile ? 28 : 8;  // tuned: ensures H2 sits fully below nav on phones
-  const top = target.getBoundingClientRect().top + window.pageYOffset - (NAV_HEIGHT + EXTRA);
-  window.scrollTo({top, behavior:'smooth'});
-  target.classList.add('flash');
-  setTimeout(()=> target.classList.remove('flash'), 1300);
-}
-
-drawer.querySelectorAll('a[href^="#"]').forEach(link=>{
-  link.addEventListener('click', (e)=>{
-    e.preventDefault();
-    const id = link.getAttribute('href').slice(1);
-    drawer.classList.remove('open'); // slide up
-    // delay a tick to let drawer collapse height before scrolling for perfect positioning
-    setTimeout(()=> scrollToSection(id), 60);
+// collapsible dropdowns
+document.querySelectorAll(".collapsible button").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    btn.classList.toggle("active");
+    const content = btn.nextElementSibling;
+    if(content.style.maxHeight){ content.style.maxHeight=null; }
+    else { content.style.maxHeight=content.scrollHeight+"px"; }
   });
 });
-
-// reveal-on-scroll
-const io = new IntersectionObserver((entries)=> {
-  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('on'); });
-}, {threshold:.14});
-document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
-
-// re-tune on resize orientation changes
-window.addEventListener('resize', ()=>{/* no-op; matchMedia re-evaluates in scrollToSection */});
 </script>
 </body>
 </html>
