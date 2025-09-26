@@ -29,7 +29,7 @@ html,body{
 a{color:var(--cyan); text-decoration:none}
 .container{width:min(1200px, 92vw); margin-inline:auto}
 
-/* ===== Animated background layers (Safari-safe) ===== */
+/* ===== Background layers ===== */
 #fx, #lines{position:fixed; inset:0; z-index:0; pointer-events:none}
 .site{position:relative; z-index:1}
 
@@ -50,9 +50,9 @@ a{color:var(--cyan); text-decoration:none}
 @keyframes driftA{0%{transform:translate3d(-2vw,-1vh,0)}100%{transform:translate3d(3vw,2vh,0)}}
 #fx::after{
   background:
-    repeating-linear-gradient(to bottom, rgba(86,225,255,.10) 0 1px, transparent 1px 28px),
-    repeating-linear-gradient(to right, rgba(86,225,255,.06) 0 1px, transparent 1px 32px);
-  opacity:.65;
+    repeating-linear-gradient(to bottom, rgba(86,225,255,.08) 0 1px, transparent 1px 28px),
+    repeating-linear-gradient(to right, rgba(86,225,255,.04) 0 1px, transparent 1px 32px);
+  opacity:.5;
 }
 
 /* STREAM-FLOW LINES */
@@ -78,6 +78,7 @@ nav{position:sticky; top:0; z-index:50; backdrop-filter:saturate(140%) blur(10px
               #14243d; box-shadow: 0 0 22px rgba(86,225,255,.35);
   animation: orbBreath 6s ease-in-out infinite}
 @keyframes orbBreath{0%,100%{filter:drop-shadow(0 0 10px rgba(86,225,255,.45))}50%{filter:drop-shadow(0 0 22px rgba(86,225,255,.75))}}
+
 /* Force hamburger-only nav on all widths */
 nav ul{display:none !important}
 #hamburger{display:block; margin-left:auto; width:38px; height:32px; position:relative; cursor:pointer; filter:drop-shadow(0 0 10px rgba(86,225,255,.6))}
@@ -104,7 +105,7 @@ nav ul{display:none !important}
   color:#e6f3ff; border:1px solid rgba(255,255,255,.14); background:rgba(15,25,41,.55)
 }
 
-/* Sticky sub-nav pills (unchanged) */
+/* Sticky sub-nav pills */
 .subnav{
   position:sticky; top:var(--navH); z-index:49; background:rgba(10,16,29,.55);
   border-bottom:1px solid rgba(255,255,255,.06); backdrop-filter: blur(8px) saturate(140%); padding-block:10px;
@@ -148,7 +149,7 @@ nav ul{display:none !important}
   box-shadow: var(--ring);
   position:relative; overflow:visible;
   transition:transform .22s ease, box-shadow .22s ease, border-color .22s ease;
-  min-height:128px;
+  min-height:128px; display:flex; flex-direction:column; justify-content:space-between
 }
 .card:hover{transform: translateY(-2px); box-shadow: 0 0 0 1px rgba(86,225,255,.35), 0 0 36px rgba(86,225,255,.25)}
 .card h3{margin:8px 0 2px; font-size:17px}
@@ -193,17 +194,27 @@ nav ul{display:none !important}
 .kpi{min-width:140px; padding:14px 16px; border-radius:14px; border:1px solid rgba(255,255,255,.10); background:rgba(15,25,41,.55)}
 .kpi .n{font-size:28px; font-weight:700}
 
-/* Theme accordions */
-.theme{margin-top:18px; border:1px solid rgba(255,255,255,.10); border-radius:18px; background:rgba(15,25,41,.45); box-shadow:var(--ring); overflow:visible}
+/* Theme accordions (fixed) */
+.theme{
+  margin-top:18px; border:1px solid rgba(255,255,255,.10);
+  border-radius:18px; background:rgba(15,25,41,.45); box-shadow:var(--ring);
+  overflow:visible;
+}
 .theme-head{display:flex; align-items:center; gap:12px; padding:14px 16px; cursor:pointer}
 .theme-head h3{margin:0; font-size:18px}
 .theme-head small{color:#9fc9dd}
 .theme-head .count{margin-left:auto; padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.12); color:#cfefff; font-size:12px}
 .theme-head .chev{transition:transform .25s ease}
 .theme[aria-expanded="true"] .chev{transform:rotate(180deg)}
-.theme-body{max-height:0; overflow:visible; transition:max-height .4s ease; padding:0 0 0}
-.theme[aria-expanded="true"] .theme-body{max-height:2000px; padding:0 0 16px}
-.theme-body .grid{padding:0 16px 0}
+.theme-body{
+  max-height:0;
+  overflow:hidden;
+  transition:max-height .4s ease, padding .3s ease;
+  padding:0;
+}
+.theme[aria-expanded="true"] .theme-body{max-height:2000px; padding:0 0 18px}
+.theme-body .inner{padding:0 16px; overflow:visible}
+.theme-body .grid{gap:18px}
 
 /* Partners */
 .partnerbar{display:grid; grid-template-columns:repeat(6,1fr); gap:12px}
@@ -250,7 +261,7 @@ nav ul{display:none !important}
 100%{box-shadow:var(--ring)}}
 .flash{animation:flashGlow 1.2s ease-out; border-radius:18px}
 
-/* Centered Futuristic Up Button */
+/* Centered Up Button */
 #totop{
   position:fixed; left:50%; transform:translateX(-50%); bottom: max(18px, env(safe-area-inset-bottom));
   opacity:0; pointer-events:none; transition:.2s; z-index:60; background:transparent; border:none; padding:0;
@@ -263,7 +274,6 @@ nav ul{display:none !important}
 
 <!-- Animated backgrounds -->
 <div id="fx"></div>
-<!-- ===== Stream-flow animated SVG ===== -->
 <svg id="lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
   <defs>
     <linearGradient id="pulseA" x1="0" x2="1" y1="0" y2="0">
@@ -344,7 +354,6 @@ nav ul{display:none !important}
   <nav>
     <div class="container nav-inner">
       <div class="brand"><span class="orb"></span> RMO Chronos (pilot)</div>
-      <!-- desktop UL intentionally hidden at all widths -->
       <div id="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="menuOverlay" role="button" tabindex="0">
         <span></span><span></span><span></span>
       </div>
@@ -425,7 +434,7 @@ nav ul{display:none !important}
     </div>
   </section>
 
-  <!-- ================= WORKSTREAMS ================= -->
+  <!-- ============== WORKSTREAMS (ALL) ============== -->
   <section id="workstreams" class="section container reveal" role="region" aria-labelledby="wsTitle">
     <h2 id="wsTitle">Digital Workstreams (15)</h2>
     <p class="lead">Grouped by families for clarity. Shields = “Guard”. Rounded squares = applications.</p>
@@ -439,30 +448,14 @@ nav ul{display:none !important}
         <svg class="chev" width="18" height="18" aria-hidden="true"><use href="#ico-chevron"/></svg>
       </div>
       <div class="theme-body" id="tb-guard">
-        <div class="grid cols-4">
-          <div class="card">
-            <div class="row"><svg class="app-ico pulse" aria-hidden="true"><use href="#ico-shield"/></svg><div><h3>GeaGuard</h3><p>4D seismic-time context.</p></div></div>
-            <div class="footer"><a class="app-go" href="#" aria-label="Open GeaGuard">Go</a></div>
-          </div>
-          <div class="card">
-            <div class="row"><svg class="app-ico pulse" aria-hidden="true"><use href="#ico-shield"/></svg><div><h3>TerraGuard</h3><p>Fault & fracture risk.</p></div></div>
-            <div class="footer"><a class="app-go" href="#" aria-label="Open TerraGuard">Go</a></div>
-          </div>
-          <div class="card">
-            <div class="row"><svg class="app-ico pulse" aria-hidden="true"><use href="#ico-shield"/></svg><div><h3>FlowGuard</h3><p>Flow performance.</p></div></div>
-            <div class="footer"><a class="app-go" href="#" aria-label="Open FlowGuard">Go</a></div>
-          </div>
-          <div class="card">
-            <div class="row"><svg class="app-ico pulse" aria-hidden="true"><use href="#ico-shield"/></svg><div><h3>FracGuard</h3><p>Early fracture warning.</p></div></div>
-            <div class="footer"><a class="app-go" href="#" aria-label="Open FracGuard">Go</a></div>
-          </div>
-          <div class="card">
-            <div class="row"><svg class="app-ico pulse" aria-hidden="true"><use href="#ico-shield"/></svg><div><h3>WellGuard</h3><p>Non-conformance alerts.</p></div></div>
-            <div class="footer"><a class="app-go" href="#" aria-label="Open WellGuard">Go</a></div>
-          </div>
-          <div class="card">
-            <div class="row"><svg class="app-ico pulse" aria-hidden="true"><use href="#ico-shield"/></svg><div><h3>SweepGuard</h3><p>Sweep efficiency.</p></div></div>
-            <div class="footer"><a class="app-go" href="#" aria-label="Open SweepGuard">Go</a></div>
+        <div class="inner">
+          <div class="grid cols-4">
+            <div class="card"><div class="row"><svg class="app-ico pulse"><use href="#ico-shield"/></svg><div><h3>GeaGuard</h3><p>4D seismic-time context.</p></div></div><div class="footer"><a class="app-go" href="#">Go</a></div></div>
+            <div class="card"><div class="row"><svg class="app-ico pulse"><use href="#ico-shield"/></svg><div><h3>TerraGuard</h3><p>Fault & fracture risk.</p></div></div><div class="footer"><a class="app-go" href="#">Go</a></div></div>
+            <div class="card"><div class="row"><svg class="app-ico pulse"><use href="#ico-shield"/></svg><div><h3>FlowGuard</h3><p>Flow performance.</p></div></div><div class="footer"><a class="app-go" href="#">Go</a></div></div>
+            <div class="card"><div class="row"><svg class="app-ico pulse"><use href="#ico-shield"/></svg><div><h3>FracGuard</h3><p>Early fracture warning.</p></div></div><div class="footer"><a class="app-go" href="#">Go</a></div></div>
+            <div class="card"><div class="row"><svg class="app-ico pulse"><use href="#ico-shield"/></svg><div><h3>WellGuard</h3><p>Non-conformance alerts.</p></div></div><div class="footer"><a class="app-go" href="#">Go</a></div></div>
+            <div class="card"><div class="row"><svg class="app-ico pulse"><use href="#ico-shield"/></svg><div><h3>SweepGuard</h3><p>Sweep efficiency.</p></div></div><div class="footer"><a class="app-go" href="#">Go</a></div></div>
           </div>
         </div>
       </div>
@@ -477,14 +470,10 @@ nav ul{display:none !important}
         <svg class="chev" width="18" height="18" aria-hidden="true"><use href="#ico-chevron"/></svg>
       </div>
       <div class="theme-body" id="tb-agentic">
-        <div class="grid cols-4">
-          <div class="card">
-            <div class="row"><svg class="app-ico float" aria-hidden="true"><use href="#ico-bot"/></svg><div><h3>WellWatch</h3><p>Continuous monitoring.</p></div></div>
-            <div class="footer"><a class="app-go" href="#" aria-label="Open WellWatch">Go</a></div>
-          </div>
-          <div class="card">
-            <div class="row"><svg class="app-ico float" aria-hidden="true"><use href="#ico-bot"/></svg><div><h3>WellNova</h3><p>Post-drill insights.</p></div></div>
-            <div class="footer"><a class="app-go" href="#" aria-label="Open WellNova">Go</a></div>
+        <div class="inner">
+          <div class="grid cols-4">
+            <div class="card"><div class="row"><svg class="app-ico float"><use href="#ico-bot"/></svg><div><h3>WellWatch</h3><p>Continuous monitoring.</p></div></div><div class="footer"><a class="app-go" href="#">Go</a></div></div>
+            <div class="card"><div class="row"><svg class="app-ico float"><use href="#ico-bot"/></svg><div><h3>WellNova</h3><p>Post-drill insights.</p></div></div><div class="footer"><a class="app-go" href="#">Go</a></div></div>
           </div>
         </div>
       </div>
@@ -499,26 +488,13 @@ nav ul{display:none !important}
         <svg class="chev" width="18" height="18" aria-hidden="true"><use href="#ico-chevron"/></svg>
       </div>
       <div class="theme-body" id="tb-analytics">
-        <div class="grid cols-4">
-          <div class="card">
-            <div class="row"><svg class="app-ico" aria-hidden="true"><use href="#ico-chart"/></svg><div><h3>Stimatlas</h3><p>Stimulation screening.</p></div></div>
-            <div class="footer"><a class="app-go" href="#" aria-label="Open Stimatlas">Go</a></div>
-          </div>
-          <div class="card">
-            <div class="row"><svg class="app-ico" aria-hidden="true"><use href="#ico-chart"/></svg><div><h3>AquaMan</h3><p>Intelligent water injection.</p></div></div>
-            <div class="footer"><a class="app-go" href="#" aria-label="Open AquaMan">Go</a></div>
-          </div>
-          <div class="card">
-            <div class="row"><svg class="app-ico" aria-hidden="true"><use href="#ico-chart"/></svg><div><h3>Prodcast</h3><p>Scenario forecasting.</p></div></div>
-            <div class="footer"><a class="app-go" href="#" aria-label="Open Prodcast">Go</a></div>
-          </div>
-          <div class="card">
-            <div class="row"><svg class="app-ico" aria-hidden="true"><use href="#ico-chart"/></svg><div><h3>Sypher</h3><p>Balance prod & injectivity.</p></div></div>
-            <div class="footer"><a class="app-go" href="#" aria-label="Open Sypher">Go</a></div>
-          </div>
-          <div class="card">
-            <div class="row"><svg class="app-ico" aria-hidden="true"><use href="#ico-chart"/></svg><div><h3>Aura</h3><p>Wave inversion & rings.</p></div></div>
-            <div class="footer"><a class="app-go" href="#" aria-label="Open Aura">Go</a></div>
+        <div class="inner">
+          <div class="grid cols-4">
+            <div class="card"><div class="row"><svg class="app-ico"><use href="#ico-chart"/></svg><div><h3>Stimatlas</h3><p>Stimulation screening.</p></div></div><div class="footer"><a class="app-go" href="#">Go</a></div></div>
+            <div class="card"><div class="row"><svg class="app-ico"><use href="#ico-chart"/></svg><div><h3>AquaMan</h3><p>Intelligent water injection.</p></div></div><div class="footer"><a class="app-go" href="#">Go</a></div></div>
+            <div class="card"><div class="row"><svg class="app-ico"><use href="#ico-chart"/></svg><div><h3>Prodcast</h3><p>Scenario forecasting.</p></div></div><div class="footer"><a class="app-go" href="#">Go</a></div></div>
+            <div class="card"><div class="row"><svg class="app-ico"><use href="#ico-chart"/></svg><div><h3>Sypher</h3><p>Balance prod & injectivity.</p></div></div><div class="footer"><a class="app-go" href="#">Go</a></div></div>
+            <div class="card"><div class="row"><svg class="app-ico"><use href="#ico-chart"/></svg><div><h3>Aura</h3><p>Wave inversion & rings.</p></div></div><div class="footer"><a class="app-go" href="#">Go</a></div></div>
           </div>
         </div>
       </div>
@@ -533,20 +509,16 @@ nav ul{display:none !important}
         <svg class="chev" width="18" height="18" aria-hidden="true"><use href="#ico-chevron"/></svg>
       </div>
       <div class="theme-body" id="tb-eco">
-        <div class="grid cols-4">
-          <div class="card">
-            <div class="row"><svg class="app-ico spin" aria-hidden="true"><use href="#ico-globe"/></svg><div><h3>RMO Dashboard</h3><p>Unified BI & panels.</p></div></div>
-            <div class="footer"><a class="app-go" href="#" aria-label="Open RMO Dashboard">Go</a></div>
-          </div>
-          <div class="card">
-            <div class="row"><svg class="app-ico spin" aria-hidden="true"><use href="#ico-globe"/></svg><div><h3>RMO360</h3><p>Integrated ecosystem.</p></div></div>
-            <div class="footer"><a class="app-go" href="#" aria-label="Open RMO360">Go</a></div>
+        <div class="inner">
+          <div class="grid cols-4">
+            <div class="card"><div class="row"><svg class="app-ico spin"><use href="#ico-globe"/></svg><div><h3>RMO Dashboard</h3><p>Unified BI & panels.</p></div></div><div class="footer"><a class="app-go" href="#">Go</a></div></div>
+            <div class="card"><div class="row"><svg class="app-ico spin"><use href="#ico-globe"/></svg><div><h3>RMO360</h3><p>Integrated ecosystem.</p></div></div><div class="footer"><a class="app-go" href="#">Go</a></div></div>
           </div>
         </div>
       </div>
     </div>
   </section>
-  <!-- ================= /WORKSTREAMS ================= -->
+  <!-- ============== /WORKSTREAMS ============== -->
 
   <section id="roadmap" class="section container reveal" role="region" aria-labelledby="rdTitle">
     <h2 id="rdTitle">Roadmap</h2>
@@ -570,9 +542,9 @@ nav ul{display:none !important}
       </div>
       <div>
         <div class="grid cols-3">
-          <div class="card"><div class="row"><div><h3>WellWatch → Action</h3><p>Auto-detects anomalies and drafts work orders.</p></div></div><div class="footer"><a class="app-go" href="#" aria-label="Open WellWatch Action">Go</a></div></div>
-          <div class="card"><div class="row"><div><h3>SweepGuard Loop</h3><p>Optimizes injector/producer pairs for voidage.</p></div></div><div class="footer"><a class="app-go" href="#" aria-label="Open SweepGuard Loop">Go</a></div></div>
-          <div class="card"><div class="row"><div><h3>Prodcast Scenarios</h3><p>Rapid what-if forecasts for pacing.</p></div></div><div class="footer"><a class="app-go" href="#" aria-label="Open Prodcast Scenarios">Go</a></div></div>
+          <div class="card"><div class="row"><div><h3>WellWatch → Action</h3><p>Auto-detects anomalies and drafts work orders.</p></div></div><div class="footer"><a class="app-go" href="#">Go</a></div></div>
+          <div class="card"><div class="row"><div><h3>SweepGuard Loop</h3><p>Optimizes injector/producer pairs for voidage.</p></div></div><div class="footer"><a class="app-go" href="#">Go</a></div></div>
+          <div class="card"><div class="row"><div><h3>Prodcast Scenarios</h3><p>Rapid what-if forecasts for pacing.</p></div></div><div class="footer"><a class="app-go" href="#">Go</a></div></div>
         </div>
       </div>
     </div>
