@@ -32,51 +32,34 @@ a{color:var(--cyan); text-decoration:none}
     radial-gradient(900px 600px at 110% 10%, rgba(35,182,217,.10), transparent 60%);
   filter:saturate(120%);
 }
-#fx::before, #fx::after{
-  content:""; position:absolute; inset:0; pointer-events:none; mix-blend-mode:screen;
-}
-/* drifting glow orbs */
+#fx::before, #fx::after{content:""; position:absolute; inset:0; pointer-events:none; mix-blend-mode:screen}
+/* drifting glows */
 #fx::before{
   background:
     radial-gradient(closest-side, rgba(86,225,255,.28), transparent 70%) 10% -10% / 60vmin 60vmin no-repeat,
     radial-gradient(closest-side, rgba(35,182,217,.22), transparent 70%) 85% 0% / 50vmin 50vmin no-repeat,
     radial-gradient(closest-side, rgba(86,225,255,.18), transparent 70%) 50% 90% / 70vmin 70vmin no-repeat;
-  animation: driftA 18s ease-in-out infinite alternate;
-  filter: blur(40px);
+  animation: driftA 18s ease-in-out infinite alternate; filter: blur(40px);
 }
-@keyframes driftA{
-  0%{transform:translate3d(-2vw,-1vh,0)}
-  100%{transform:translate3d(3vw,2vh,0)}
-}
-/* neon digital lines (moving lattice + pulse strokes) */
+@keyframes driftA{0%{transform:translate3d(-2vw,-1vh,0)}100%{transform:translate3d(3vw,2vh,0)}}
+/* scanline lattice */
 #fx::after{
   background:
-    /* moving horizontal scanlines */
-    repeating-linear-gradient( to bottom,
-      rgba(86,225,255,.10) 0px, rgba(86,225,255,.10) 1px, transparent 1px, transparent 28px),
-    /* moving vertical grid */
-    repeating-linear-gradient( to right,
-      rgba(86,225,255,.06) 0px, rgba(86,225,255,.06) 1px, transparent 1px, transparent 32px);
+    repeating-linear-gradient(to bottom, rgba(86,225,255,.10) 0 1px, transparent 1px 28px),
+    repeating-linear-gradient(to right, rgba(86,225,255,.06) 0 1px, transparent 1px 32px);
   mask: radial-gradient(1000px 600px at 50% 40%, #000 40%, transparent 70%);
-  animation: gridFlow 10s linear infinite;
-  opacity:.45;
+  animation: gridFlow 10s linear infinite; opacity:.45;
 }
-@keyframes gridFlow{
-  0%{background-position:0 0, 0 0}
-  100%{background-position:0 200px, 200px 0}
-}
-/* SVG pulse strokes layer */
-#lines{
-  position:fixed; inset:0; z-index:-1; pointer-events:none;
-  opacity:.35; filter: drop-shadow(0 0 18px rgba(86,225,255,.35));
-}
+@keyframes gridFlow{0%{background-position:0 0,0 0}100%{background-position:0 200px,200px 0}}
+/* pulse strokes */
+#lines{position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.35; filter: drop-shadow(0 0 18px rgba(86,225,255,.35))}
 
 /* Ribbon */
 .ribbon{position:relative; z-index:60; text-align:center; font-size:13px; letter-spacing:.3px;
   background:linear-gradient(90deg,rgba(86,225,255,.12),rgba(35,182,217,.08));
   border-bottom:1px solid rgba(255,255,255,.08); padding:8px 10px; color:#bfeaff}
 
-/* NAV + subnav */
+/* NAV */
 nav{position:sticky; top:0; z-index:50; backdrop-filter:saturate(140%) blur(10px);
   background:rgba(10,16,29,.65); border-bottom:1px solid rgba(255,255,255,.06)}
 .nav-inner{display:flex; align-items:center; gap:18px; padding:12px 0}
@@ -88,11 +71,24 @@ nav{position:sticky; top:0; z-index:50; backdrop-filter:saturate(140%) blur(10px
 nav ul{display:flex; gap:18px; margin-left:auto; list-style:none; padding:0}
 nav li{opacity:.9}
 .cta{padding:10px 14px; border-radius:10px; color:#06101a;
-  background:linear-gradient(135deg,var(--elec),var(--turq));
-  box-shadow: 0 10px 30px rgba(86,225,255,.25)}
-.menu-btn{margin-left:auto; display:none; border:1px solid rgba(255,255,255,.14);
-  background:rgba(15,25,41,.6); color:var(--text); border-radius:10px; padding:8px 10px}
-@media (max-width:980px){ nav ul{display:none} .menu-btn{display:block} }
+  background:linear-gradient(135deg,var(--elec),var(--turq)); box-shadow: 0 10px 30px rgba(86,225,255,.25)}
+
+/* Hamburger (3-line animated) */
+#hamburger{
+  display:none; margin-left:auto; width:34px; height:28px; position:relative; cursor:pointer;
+}
+#hamburger span{
+  position:absolute; left:0; right:0; height:2px; background:#e6f3ff; border-radius:3px;
+  transition:transform .35s ease, top .35s ease, opacity .25s ease;
+  box-shadow:0 0 12px rgba(86,225,255,.55);
+}
+#hamburger span:nth-child(1){top:5px}
+#hamburger span:nth-child(2){top:13px}
+#hamburger span:nth-child(3){top:21px}
+#hamburger.active span:nth-child(1){top:13px; transform:rotate(45deg)}
+#hamburger.active span:nth-child(2){opacity:0}
+#hamburger.active span:nth-child(3){top:13px; transform:rotate(-45deg)}
+@media (max-width:980px){ nav ul{display:none} #hamburger{display:block} }
 
 /* Full-screen menu overlay */
 #menuOverlay{
@@ -107,12 +103,8 @@ nav li{opacity:.9}
   font-size:clamp(22px, 3.6vw, 36px); padding:8px 16px; border-radius:12px;
   color:#e6f3ff; border:1px solid rgba(255,255,255,.14); background:rgba(15,25,41,.55)
 }
-#menuOverlay .close{
-  position:absolute; top:16px; right:16px; border:1px solid rgba(255,255,255,.18);
-  background:rgba(17,30,54,.6); color:#e6f3ff; border-radius:10px; padding:8px 10px; cursor:pointer
-}
 
-/* Sticky micro sub-nav (mobile & desktop) */
+/* Sticky sub-nav pills */
 .subnav{
   position:sticky; top:56px; z-index:40; background:rgba(10,16,29,.6);
   border-bottom:1px solid rgba(255,255,255,.06); backdrop-filter: blur(8px) saturate(140%);
@@ -123,8 +115,7 @@ nav li{opacity:.9}
 /* HERO */
 .hero{position:relative; padding:86px 0 64px; overflow:hidden}
 .hero .glow{position:absolute; inset:-20% -10% auto auto; width:700px; height:700px; border-radius:50%;
-  background: radial-gradient(closest-side, rgba(86,225,255,.14), transparent 70%);
-  filter:blur(40px); pointer-events:none;}
+  background: radial-gradient(closest-side, rgba(86,225,255,.14), transparent 70%); filter:blur(40px)}
 .hero h1{font-size:clamp(32px, 5vw, 56px); line-height:1.05; margin:0 0 14px;}
 .hero p{max-width:780px; color:var(--muted); font-size:clamp(16px,1.9vw,20px)}
 .badges{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px}
@@ -162,11 +153,9 @@ nav li{opacity:.9}
 .icon.rounded{border-radius:14px}
 
 /* Feature / KPIs */
-.feature{
-  display:grid; grid-template-columns:1.1fr .9fr; gap:36px; align-items:center;
+.feature{display:grid; grid-template-columns:1.1fr .9fr; gap:36px; align-items:center;
   background: linear-gradient(180deg, rgba(17,30,54,.6), rgba(17,30,54,.35));
-  border:1px solid rgba(255,255,255,.06); border-radius:18px; padding:26px; box-shadow:var(--ring)
-}
+  border:1px solid rgba(255,255,255,.06); border-radius:18px; padding:26px; box-shadow:var(--ring)}
 @media (max-width:900px){.feature{grid-template-columns:1fr;}}
 .kpis{display:flex; gap:18px; flex-wrap:wrap}
 .kpi{min-width:140px; padding:14px 16px; border-radius:14px; border:1px solid rgba(255,255,255,.08); background:rgba(15,25,41,.6)}
@@ -217,10 +206,13 @@ nav li{opacity:.9}
 100%{box-shadow:var(--ring)}}
 .flash{animation:flashGlow 1.2s ease-out; border-radius:18px}
 
-/* Back-to-top FAB */
-#totop{position:fixed; right:14px; bottom:18px; opacity:0; pointer-events:none; transition:.2s;
-  background:linear-gradient(135deg,var(--elec),var(--turq)); color:#06101a; padding:10px 12px; border-radius:12px;
-  box-shadow:0 10px 30px rgba(86,225,255,.25); z-index:60}
+/* Back-to-top futuristic up arrow */
+#totop{
+  position:fixed; right:14px; bottom:18px; opacity:0; pointer-events:none; transition:.2s;
+  background:transparent; border:none; padding:0; z-index:60;
+}
+#totop svg{width:44px; height:44px; filter:drop-shadow(0 8px 26px rgba(86,225,255,.35))}
+#totop:hover {transform:translateY(-2px)}
 </style>
 </head>
 <body>
@@ -235,7 +227,6 @@ nav li{opacity:.9}
       <stop offset="100%" stop-color="#56e1ff" stop-opacity=".0"/>
     </linearGradient>
   </defs>
-  <!-- a few animated strokes -->
   <polyline points="0,15 35,25 60,18 100,28" fill="none" stroke="url(#pulse)" stroke-width="0.6">
     <animate attributeName="stroke-dasharray" values="0,200;50,200;0,200" dur="6s" repeatCount="indefinite"/>
     <animate attributeName="stroke-dashoffset" values="0;-60;0" dur="6s" repeatCount="indefinite"/>
@@ -256,33 +247,34 @@ nav li{opacity:.9}
   <div class="container nav-inner">
     <div class="brand"><span class="orb"></span> RMO Chronos (pilot)</div>
     <ul>
-      <li><a href="#why">Why Chronos</a></li>
+      <li><a href="#why">Why</a></li>
       <li><a href="#workstreams">Workstreams</a></li>
       <li><a href="#roadmap">Roadmap</a></li>
       <li><a href="#impact">Impact</a></li>
       <li><a href="#partners">Partners</a></li>
       <li><a href="#team">Team</a></li>
-      <li><a href="#live" class="cta">See it in action</a></li>
+      <li><a href="#live" class="cta">Live</a></li>
     </ul>
-    <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="menuOverlay">Menu</button>
+    <div id="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="menuOverlay" role="button" tabindex="0">
+      <span></span><span></span><span></span>
+    </div>
   </div>
 </nav>
 
 <!-- Full-screen menu -->
 <div id="menuOverlay" aria-hidden="true">
-  <button class="close" id="menuClose" aria-label="Close menu">Close</button>
   <div class="links">
-    <a href="#why">Why Chronos</a>
+    <a href="#why">Why</a>
     <a href="#workstreams">Workstreams</a>
     <a href="#roadmap">Roadmap</a>
     <a href="#impact">Impact</a>
     <a href="#partners">Partners</a>
     <a href="#team">Team</a>
-    <a href="#live">See it in action</a>
+    <a href="#live">Live</a>
   </div>
 </div>
 
-<!-- Sticky sub-nav pills (the look from your screenshot) -->
+<!-- Sub-nav pills -->
 <div class="subnav">
   <div class="container">
     <div class="row">
@@ -312,8 +304,8 @@ nav li{opacity:.9}
 </header>
 
 <section id="why" class="section container reveal" role="region" aria-labelledby="whyTitle">
-  <h2 id="whyTitle">Team</h2>
-  <p class="lead">Leadership and contributors who drive the RMO Chronos (pilot) digital ecosystem.</p>
+  <h2 id="whyTitle">Why Chronos</h2>
+  <p class="lead">Deterministic models fused with AI to shorten the path from signal → decision → action.</p>
   <div class="feature" style="margin-top:18px">
     <div>
       <h3>Agentic workflows across the lifecycle</h3>
@@ -336,25 +328,41 @@ nav li{opacity:.9}
 
 <section id="workstreams" class="section container reveal" role="region" aria-labelledby="wsTitle">
   <h2 id="wsTitle">Digital Workstreams (15)</h2>
-  <p class="lead">Shields for “Guard”, rounded squares for applications — glowing turquoise/cyan.</p>
-  <div class="grid cols-4" style="margin-top:16px">
-    <!-- Guard family (6) -->
-    <div class="card"><div class="icon shield"></div><h3>GeaGuard</h3><p>Shield + 4 stacked seismic curves.</p></div>
-    <div class="card"><div class="icon shield"></div><h3>TerraGuard</h3><p>Shield + fractured cube motif.</p></div>
-    <div class="card"><div class="icon shield"></div><h3>FlowGuard</h3><p>Shield + smooth upward ribbon wave.</p></div>
-    <div class="card"><div class="icon shield"></div><h3>FracGuard</h3><p>Shield + pulse-crack line.</p></div>
-    <div class="card"><div class="icon shield"></div><h3>WellGuard</h3><p>Shield + bold exclamation mark.</p></div>
-    <div class="card"><div class="icon shield"></div><h3>SweepGuard</h3><p>Shield + three orbiting circular arrows.</p></div>
-    <!-- Non-Guard (9) -->
-    <div class="card"><div class="icon rounded"></div><h3>WellWatch</h3><p>Rounded box + circular eye.</p></div>
-    <div class="card"><div class="icon rounded"></div><h3>WellNova</h3><p>Rounded box + wellbore & starburst.</p></div>
-    <div class="card"><div class="icon rounded"></div><h3>Stimatlas</h3><p>Rounded box + open atlas with magnifier.</p></div>
-    <div class="card"><div class="icon rounded"></div><h3>AquaMan</h3><p>Rounded box + droplet with circuits.</p></div>
-    <div class="card"><div class="icon rounded"></div><h3>Prodcast</h3><p>Rounded box + rising line with nodes.</p></div>
-    <div class="card"><div class="icon rounded"></div><h3>Sypher</h3><p>Rounded box + symmetric S/double arrows.</p></div>
-    <div class="card"><div class="icon rounded"></div><h3>Aura</h3><p>Rounded box + concentric rings.</p></div>
-    <div class="card"><div class="icon rounded"></div><h3>RMO Dashboard</h3><p>Rounded box + stacked data panels.</p></div>
-    <div class="card"><div class="icon rounded"></div><h3>RMO360</h3><p>Rounded box + globe with 360° ring.</p></div>
+  <p class="lead">Grouped by families for clarity. Shields = “Guard”. Rounded squares = applications.</p>
+
+  <!-- THEME 1: Guard Family -->
+  <h3 style="margin-top:12px">Guard Family — Protection & Assurance</h3>
+  <div class="grid cols-4" style="margin-top:10px">
+    <div class="card"><div class="icon shield"></div><h3>GeaGuard</h3><p>4D seismic-time context.</p></div>
+    <div class="card"><div class="icon shield"></div><h3>TerraGuard</h3><p>Fault & fracture risk.</p></div>
+    <div class="card"><div class="icon shield"></div><h3>FlowGuard</h3><p>Flow performance.</p></div>
+    <div class="card"><div class="icon shield"></div><h3>FracGuard</h3><p>Early fracture warning.</p></div>
+    <div class="card"><div class="icon shield"></div><h3>WellGuard</h3><p>Non-conformance alerts.</p></div>
+    <div class="card"><div class="icon shield"></div><h3>SweepGuard</h3><p>Sweep efficiency.</p></div>
+  </div>
+
+  <!-- THEME 2: Agentic Solutions -->
+  <h3 style="margin-top:20px">Agentic Solutions — Autonomous Well Intelligence</h3>
+  <div class="grid cols-4" style="margin-top:10px">
+    <div class="card"><div class="icon rounded"></div><h3>WellWatch</h3><p>Continuous monitoring.</p></div>
+    <div class="card"><div class="icon rounded"></div><h3>WellNova</h3><p>Post-drill insights.</p></div>
+  </div>
+
+  <!-- THEME 3: Analytics & Intelligence -->
+  <h3 style="margin-top:20px">Analytics & Intelligence</h3>
+  <div class="grid cols-4" style="margin-top:10px">
+    <div class="card"><div class="icon rounded"></div><h3>Stimatlas</h3><p>Stimulation screening.</p></div>
+    <div class="card"><div class="icon rounded"></div><h3>AquaMan</h3><p>Intelligent water injection.</p></div>
+    <div class="card"><div class="icon rounded"></div><h3>Prodcast</h3><p>Scenario forecasting.</p></div>
+    <div class="card"><div class="icon rounded"></div><h3>Sypher</h3><p>Balance prod & injectivity.</p></div>
+    <div class="card"><div class="icon rounded"></div><h3>Aura</h3><p>Wave inversion & rings.</p></div>
+  </div>
+
+  <!-- THEME 4: Ecosystem & Integration -->
+  <h3 style="margin-top:20px">Ecosystem & Integration</h3>
+  <div class="grid cols-4" style="margin-top:10px">
+    <div class="card"><div class="icon rounded"></div><h3>RMO Dashboard</h3><p>Unified BI & panels.</p></div>
+    <div class="card"><div class="icon rounded"></div><h3>RMO360</h3><p>Integrated ecosystem.</p></div>
   </div>
 </section>
 
@@ -401,7 +409,6 @@ nav li{opacity:.9}
   <h2 id="tmTitle">Team</h2>
   <p class="lead">Leadership and contributors who drive the RMO Chronos (pilot) digital ecosystem.</p>
 
-  <!-- Leadership -->
   <h3>Leadership</h3>
   <div class="team-grid" style="margin-top:10px">
     <div class="person"><div class="avatar"></div><h4>VP</h4><small>Vision & sponsorship</small><p style="margin-top:8px; color:#9fb6c7">Sets direction, enables strategic funding & partnerships.</p></div>
@@ -410,7 +417,6 @@ nav li{opacity:.9}
     <div class="person"><div class="avatar"></div><h4>RM Lead</h4><small>Technical execution</small><p style="margin-top:8px; color:#9fb6c7">Owns architecture, integration, and quality of delivery.</p></div>
   </div>
 
-  <!-- Product Owners collapsible -->
   <div class="collapsible">
     <button type="button">Product Owners (15)</button>
     <div class="collapsible-content">
@@ -434,7 +440,6 @@ nav li{opacity:.9}
     </div>
   </div>
 
-  <!-- Contributors collapsible -->
   <div class="collapsible">
     <button type="button">Contributors (40)</button>
     <div class="collapsible-content">
@@ -446,47 +451,13 @@ nav li{opacity:.9}
           <table class="table40">
             <thead><tr><th>Name</th><th>Discipline</th><th>Company</th></tr></thead>
             <tbody>
-              <!-- Example rows (replace with real) -->
+              <!-- Replace with real data -->
               <tr><td>Person 1</td><td>Geologist</td><td>Tech Company</td></tr>
               <tr><td>Person 2</td><td>Geophysicist</td><td>Service Company</td></tr>
               <tr><td>Person 3</td><td>Reservoir Engineer</td><td>Tech Company</td></tr>
               <tr><td>Person 4</td><td>Production Technologist</td><td>Service Company</td></tr>
               <tr><td>Person 5</td><td>Data Scientist</td><td>University</td></tr>
-              <tr><td>Person 6</td><td>Petrophysicist</td><td>Service Company</td></tr>
-              <tr><td>Person 7</td><td>Completions Engineer</td><td>Tech Company</td></tr>
-              <tr><td>Person 8</td><td>Facilities Engineer</td><td>Service Company</td></tr>
-              <tr><td>Person 9</td><td>Production Engineer</td><td>Tech Company</td></tr>
-              <tr><td>Person 10</td><td>Well Integrity</td><td>Service Company</td></tr>
-              <tr><td>Person 11</td><td>Simulation Eng.</td><td>Tech Company</td></tr>
-              <tr><td>Person 12</td><td>Optimization Eng.</td><td>Tech Company</td></tr>
-              <tr><td>Person 13</td><td>ML Engineer</td><td>Tech Company</td></tr>
-              <tr><td>Person 14</td><td>Data Engineer</td><td>Tech Company</td></tr>
-              <tr><td>Person 15</td><td>UX Designer</td><td>Tech Company</td></tr>
-              <tr><td>Person 16</td><td>QA Engineer</td><td>Tech Company</td></tr>
-              <tr><td>Person 17</td><td>Field Ops</td><td>Service Company</td></tr>
-              <tr><td>Person 18</td><td>Metering Specialist</td><td>Service Company</td></tr>
-              <tr><td>Person 19</td><td>SCADA Engineer</td><td>Tech Company</td></tr>
-              <tr><td>Person 20</td><td>Network Engineer</td><td>Tech Company</td></tr>
-              <tr><td>Person 21</td><td>Security Analyst</td><td>Tech Company</td></tr>
-              <tr><td>Person 22</td><td>Cloud Architect</td><td>Tech Company</td></tr>
-              <tr><td>Person 23</td><td>DBA</td><td>Tech Company</td></tr>
-              <tr><td>Person 24</td><td>Business Analyst</td><td>Tech Company</td></tr>
-              <tr><td>Person 25</td><td>Project Controller</td><td>Tech Company</td></tr>
-              <tr><td>Person 26</td><td>Change Manager</td><td>Tech Company</td></tr>
-              <tr><td>Person 27</td><td>Trainer</td><td>University</td></tr>
-              <tr><td>Person 28</td><td>Numerical Analyst</td><td>University</td></tr>
-              <tr><td>Person 29</td><td>Research Fellow</td><td>University</td></tr>
-              <tr><td>Person 30</td><td>Visualization Eng.</td><td>Tech Company</td></tr>
-              <tr><td>Person 31</td><td>Petroleum Economist</td><td>Service Company</td></tr>
-              <tr><td>Person 32</td><td>HSE Specialist</td><td>Service Company</td></tr>
-              <tr><td>Person 33</td><td>Automation Eng.</td><td>Tech Company</td></tr>
-              <tr><td>Person 34</td><td>Controls Eng.</td><td>Tech Company</td></tr>
-              <tr><td>Person 35</td><td>Telemetry Eng.</td><td>Service Company</td></tr>
-              <tr><td>Person 36</td><td>Drilling Eng.</td><td>Service Company</td></tr>
-              <tr><td>Person 37</td><td>Comms Lead</td><td>Tech Company</td></tr>
-              <tr><td>Person 38</td><td>Vendor Manager</td><td>Tech Company</td></tr>
-              <tr><td>Person 39</td><td>Procurement</td><td>Tech Company</td></tr>
-              <tr><td>Person 40</td><td>Support Engineer</td><td>Tech Company</td></tr>
+              <!-- … up to 40 rows -->
             </tbody>
           </table>
         </div>
@@ -509,39 +480,56 @@ nav li{opacity:.9}
   <div class="container">© 2025 RMO Chronos (pilot) • Internal showcase — not for external distribution</div>
 </footer>
 
-<a id="totop" href="#top">Top</a>
+<!-- Futuristic Up Arrow -->
+<button id="totop" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="g" x1="0" x2="1">
+        <stop offset="0" stop-color="#56e1ff"/><stop offset="1" stop-color="#23b6d9"/>
+      </linearGradient>
+      <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <circle cx="32" cy="32" r="22" fill="url(#g)" opacity=".12"/>
+    <path d="M32 18 L20 30 M32 18 L44 30" stroke="url(#g)" stroke-width="4" stroke-linecap="round" fill="none" filter="url(#glow)"/>
+    <line x1="32" y1="18" x2="32" y2="46" stroke="url(#g)" stroke-width="4" stroke-linecap="round" opacity=".3"/>
+  </svg>
+</button>
 
 <script>
-// ===== Full-screen menu =====
-const menuBtn = document.getElementById('menuBtn');
-const menuOverlay = document.getElementById('menuOverlay');
-const menuClose = document.getElementById('menuClose');
-function toggleMenu(open){
-  menuOverlay.classList.toggle('open', open);
-  menuBtn.setAttribute('aria-expanded', open);
-  menuOverlay.setAttribute('aria-hidden', !open);
+// ===== Hamburger + Menu overlay =====
+const ham = document.getElementById('hamburger');
+const overlay = document.getElementById('menuOverlay');
+function setMenu(open){
+  overlay.classList.toggle('open', open);
+  ham.classList.toggle('active', open);
+  ham.setAttribute('aria-expanded', open);
+  overlay.setAttribute('aria-hidden', !open);
 }
-menuBtn.addEventListener('click', ()=> toggleMenu(true));
-menuClose.addEventListener('click', ()=> toggleMenu(false));
-menuOverlay.addEventListener('click', (e)=>{ if(e.target===menuOverlay) toggleMenu(false); });
+ham.addEventListener('click', ()=> setMenu(!overlay.classList.contains('open')));
+overlay.addEventListener('click', (e)=>{ if(e.target===overlay) setMenu(false); });
 
-// Scroll with offset + flash when clicking overlay links
+// Smooth anchor with offset + flash (for overlay & subnav pills)
 function scrollToSection(id){
   const target = document.getElementById(id);
   if(!target) return;
   const NAV_HEIGHT = document.querySelector('nav').offsetHeight || 0;
-  const EXTRA = 28; // ensures H2 fully visible like your screenshot
+  const EXTRA = 28; // ensures header aligns like the screenshot
   const top = target.getBoundingClientRect().top + window.pageYOffset - (NAV_HEIGHT + EXTRA);
   window.scrollTo({top, behavior:'smooth'});
-  target.classList.add('flash');
-  setTimeout(()=> target.classList.remove('flash'), 1300);
+  target.classList.add('flash'); setTimeout(()=> target.classList.remove('flash'), 1300);
 }
-menuOverlay.querySelectorAll('.links a[href^="#"]').forEach(a=>{
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
   a.addEventListener('click', e=>{
+    // Only intercept for internal anchors
+    const href = a.getAttribute('href');
+    if(!href || href.length<2) return;
     e.preventDefault();
-    const id = a.getAttribute('href').slice(1);
-    toggleMenu(false);
-    setTimeout(()=> scrollToSection(id), 80);
+    const id = href.slice(1);
+    setMenu(false);
+    setTimeout(()=> scrollToSection(id), 60);
   });
 });
 
