@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="top">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -16,13 +16,33 @@
 }
 *{box-sizing:border-box}
 html,body{
-  margin:0; color:var(--text); font-family:Outfit, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, sans-serif;
+  margin:0; color:var(--text); font-family:Outfit, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   background:
     radial-gradient(1200px 700px at 10% -10%, #12213a 0%, transparent 60%),
     radial-gradient(1000px 600px at 110% 10%, rgba(53,208,255,.08), transparent 60%),
     linear-gradient(180deg,var(--bg0),var(--bg2));
   scroll-behavior:smooth;
 }
+
+/* --- Futuristic animated glow background --- */
+body::before, body::after{
+  content:""; position:fixed; inset:-20% -10% auto auto; z-index:-1; pointer-events:none;
+  width:70vmin; height:70vmin; border-radius:50%;
+  filter:blur(48px); opacity:.35; mix-blend-mode:screen;
+  background:
+    radial-gradient(closest-side, rgba(86,225,255,.25), transparent 70%),
+    radial-gradient(closest-side, rgba(35,182,217,.18), transparent 72%);
+  animation: drift 16s ease-in-out infinite alternate;
+}
+body::after{
+  inset:auto auto -10% -10%; width:60vmin; height:60vmin; opacity:.28;
+  animation-duration: 22s;
+}
+@keyframes drift{
+  0%{ transform: translate3d(-4vw, -2vh, 0) scale(1) }
+  100%{ transform: translate3d(6vw, 4vh, 0) scale(1.08) }
+}
+
 a{color:var(--cyan); text-decoration:none}
 .container{width:min(1200px, 92vw); margin-inline:auto}
 
@@ -51,12 +71,13 @@ nav li{opacity:.9}
 .drawer{display:none}
 @media (max-width:860px){
   nav ul{display:none}
-  .menu-btn{display:block; margin-left:auto; border:1px solid rgba(255,255,255,.14);
-    background:rgba(15,25,41,.6); color:var(--text); border-radius:10px; padding:8px 10px}
+  .menu-btn{
+    display:block; margin-left:auto; border:1px solid rgba(255,255,255,.14);
+    background:rgba(15,25,41,.6); color:var(--text); border-radius:10px; padding:8px 10px
+  }
   .drawer{
     background:rgba(10,16,29,.95);
-    backdrop-filter: blur(12px) saturate(140%);
-    -webkit-backdrop-filter: blur(12px) saturate(140%);
+    backdrop-filter: blur(12px) saturate(140%); -webkit-backdrop-filter: blur(12px) saturate(140%);
     border-top:1px solid rgba(255,255,255,.08);
     overflow:hidden; max-height:0; transition:max-height .4s ease; display:block;
   }
@@ -65,8 +86,17 @@ nav li{opacity:.9}
     border-bottom:1px solid rgba(255,255,255,.08); color:#e6f3ff}
 }
 
+/* Sticky micro sub-nav (mobile) */
+.subnav{
+  position:sticky; top:56px; z-index:40; display:none; background:rgba(10,16,29,.6);
+  border-bottom:1px solid rgba(255,255,255,.06); backdrop-filter: blur(8px) saturate(140%);
+}
+.subnav .row{display:flex; gap:10px; padding:8px; overflow:auto}
+.subnav a{white-space:nowrap; padding:8px 12px; border-radius:999px; border:1px solid rgba(255,255,255,.12); color:#cfefff; font-size:13px}
+@media (max-width:860px){ .subnav{display:block} }
+
 /* HERO */
-.hero{position:relative; padding:86px 0 64px; overflow:hidden}
+.hero{position:relative; padding:86px 0 64px; overflow:hidden; cursor:pointer}
 .hero .glow{position:absolute; inset:-20% -10% auto auto; width:700px; height:700px; border-radius:50%;
   background: radial-gradient(closest-side, rgba(86,225,255,.14), transparent 70%);
   filter:blur(40px); pointer-events:none;}
@@ -74,26 +104,43 @@ nav li{opacity:.9}
 .hero p{max-width:780px; color:var(--muted); font-size:clamp(16px,1.9vw,20px)}
 .badges{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px}
 .badge{border:1px solid rgba(255,255,255,.08); color:#bfeaff; padding:8px 12px; border-radius:999px; font-size:14px; background:rgba(17,30,54,.5)}
+.hero .hint{margin-top:10px; font-size:13px; color:#9fc9dd; opacity:.9}
+
+/* HERO EXPAND (fullscreen) */
+#heroExpander{
+  position:fixed; inset:0; z-index:90; display:grid; place-items:center;
+  background: radial-gradient(1200px 800px at 50% -10%, rgba(86,225,255,.10), transparent 65%), rgba(10,16,29,.96);
+  backdrop-filter: blur(16px) saturate(160%);
+  opacity:0; pointer-events:none; transform: scale(1.02);
+  transition: opacity .35s ease, transform .35s ease;
+}
+#heroExpander.open{opacity:1; pointer-events:auto; transform: none}
+.expander-inner{width:min(1100px,92vw); text-align:center}
+.expander-title{font-size:clamp(40px,6vw,68px); margin:0 0 10px}
+.expander-sub{color:#bfeaff; max-width:800px; margin:0 auto 16px}
+.expander-actions{display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:10px}
+.expander-actions a{padding:10px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.14); color:#e6f3ff; background:rgba(15,25,41,.6)}
+#closeExpander{position:absolute; top:14px; right:14px; border:1px solid rgba(255,255,255,.18);
+  background:rgba(17,30,54,.6); color:#e6f3ff; border-radius:10px; padding:8px 10px; cursor:pointer}
 
 /* Section */
 .section{padding:56px 0}
 .section h2{font-size:clamp(24px,3.2vw,36px); margin:0 0 10px}
 .section p.lead{color:var(--muted); max-width:820px}
 
-/* Grids */
-.grid{display:grid; gap:14px}
+/* Grids & Cards */
+.grid{display:grid; gap:16px}
 .grid.cols-3{grid-template-columns:repeat(3,1fr)}
 .grid.cols-4{grid-template-columns:repeat(4,1fr)}
-.grid.cols-5{grid-template-columns:repeat(5,1fr)}
-@media (max-width:1100px){.grid.cols-5{grid-template-columns:repeat(4,1fr)}}
-@media (max-width:920px){.grid.cols-4{grid-template-columns:repeat(3,1fr)}}
-@media (max-width:780px){.grid.cols-4,.grid.cols-5{grid-template-columns:repeat(2,1fr)}}
-@media (max-width:520px){.grid.cols-3,.grid.cols-4,.grid.cols-5{grid-template-columns:1fr}}
+@media (max-width:1100px){.grid.cols-4{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:780px){.grid.cols-4,.grid.cols-3{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:520px){.grid.cols-4,.grid.cols-3{grid-template-columns:1fr}}
 
-/* Cards */
-.card{background: radial-gradient(180px 120px at 15% 0%, rgba(86,225,255,.06), transparent 40%), var(--card);
+.card{
+  background: radial-gradient(180px 120px at 15% 0%, rgba(86,225,255,.06), transparent 40%), var(--card);
   border-radius:var(--radius); padding:18px 16px 16px; border:1px solid rgba(255,255,255,.06);
-  box-shadow: var(--ring); position:relative; overflow:hidden; transition:transform .25s ease, box-shadow .25s ease;}
+  box-shadow: var(--ring); position:relative; overflow:hidden; transition:transform .25s ease, box-shadow .25s ease;
+}
 .card:hover{transform: translateY(-2px); box-shadow: 0 0 0 1px rgba(86,225,255,.35), 0 0 36px rgba(86,225,255,.25)}
 .card h3{margin:10px 0 4px; font-size:18px}
 .card p{margin:0; color:var(--muted); font-size:14.5px}
@@ -108,9 +155,11 @@ nav li{opacity:.9}
 .icon.rounded{border-radius:14px}
 
 /* Feature / KPIs */
-.feature{display:grid; grid-template-columns:1.1fr .9fr; gap:36px; align-items:center;
+.feature{
+  display:grid; grid-template-columns:1.1fr .9fr; gap:36px; align-items:center;
   background: linear-gradient(180deg, rgba(17,30,54,.6), rgba(17,30,54,.35));
-  border:1px solid rgba(255,255,255,.06); border-radius:18px; padding:26px; box-shadow:var(--ring)}
+  border:1px solid rgba(255,255,255,.06); border-radius:18px; padding:26px; box-shadow:var(--ring)
+}
 @media (max-width:900px){.feature{grid-template-columns:1fr;}}
 .kpis{display:flex; gap:18px; flex-wrap:wrap}
 .kpi{min-width:140px; padding:14px 16px; border-radius:14px; border:1px solid rgba(255,255,255,.08); background:rgba(15,25,41,.6)}
@@ -120,7 +169,7 @@ nav li{opacity:.9}
 .partnerbar{display:grid; grid-template-columns:repeat(6,1fr); gap:12px}
 .partner{height:52px; border-radius:12px; border:1px dashed rgba(255,255,255,.18); display:grid; place-items:center; color:#8ebbd3; background:rgba(17,30,54,.3)}
 
-/* Team */
+/* Team grids */
 .team-grid{display:grid; gap:14px; grid-template-columns:repeat(4,1fr)}
 @media (max-width:1100px){.team-grid{grid-template-columns:repeat(3,1fr)}}
 @media (max-width:780px){.team-grid{grid-template-columns:repeat(2,1fr)}}
@@ -133,7 +182,7 @@ nav li{opacity:.9}
 .person h4{margin:10px 0 2px}
 .person small{color:var(--muted)}
 
-/* Collapsible sections */
+/* Collapsibles */
 .collapsible{margin-top:16px}
 .collapsible button{
   background:rgba(15,25,41,.6); border:1px solid rgba(255,255,255,.15);
@@ -144,21 +193,27 @@ nav li{opacity:.9}
 .collapsible button.active:after{content:"–"}
 .collapsible-content{max-height:0; overflow:hidden; transition:max-height .4s ease;}
 
-/* Contributors scrollable table */
-.table-wrap{margin-top:12px; border:1px solid rgba(255,255,255,.1); border-radius:12px; overflow:hidden;
-  background:rgba(15,25,41,.5)}
-.table-scroll{max-height:300px; overflow:auto} /* keeps space tight on page */
+/* Contributors table (scrollable) */
+.table-wrap{margin-top:12px; border:1px solid rgba(255,255,255,.1); border-radius:12px; overflow:hidden; background:rgba(15,25,41,.5)}
+.table-controls{display:flex; gap:10px; padding:10px; border-bottom:1px solid rgba(255,255,255,.08)}
+.table-controls input{flex:1; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,.15); background:rgba(10,16,29,.6); color:#e6f3ff}
+.table-scroll{max-height:300px; overflow:auto}
 .table40{width:100%; border-collapse:collapse}
 .table40 th, .table40 td{padding:10px 12px; font-size:14px; border-bottom:1px solid rgba(255,255,255,.08)}
 .table40 th{position:sticky; top:0; background:rgba(86,225,255,.12); text-align:left; color:#e6f6ff; z-index:1}
 
-/* Reveal animation + target flash */
+/* Reveal + target flash */
 .reveal{opacity:0; transform:translateY(12px); transition:opacity .6s ease, transform .6s ease}
 .reveal.on{opacity:1; transform:none}
 @keyframes flashGlow{0%{box-shadow:0 0 0 0 rgba(86,225,255,0)}
 30%{box-shadow:0 0 0 3px rgba(86,225,255,.35),0 0 32px rgba(86,225,255,.25),inset 0 0 24px rgba(35,182,217,.25)}
 100%{box-shadow:var(--ring)}}
 .flash{animation:flashGlow 1.2s ease-out; border-radius:18px}
+
+/* Back-to-top FAB */
+#totop{position:fixed; right:14px; bottom:18px; opacity:0; pointer-events:none; transition:.2s;
+  background:linear-gradient(135deg,var(--elec),var(--turq)); color:#06101a; padding:10px 12px; border-radius:12px;
+  box-shadow:0 10px 30px rgba(86,225,255,.25); z-index:60}
 </style>
 </head>
 <body>
@@ -177,9 +232,9 @@ nav li{opacity:.9}
       <li><a href="#team">Team</a></li>
       <li><a href="#live" class="cta">See it in action</a></li>
     </ul>
-    <button class="menu-btn">Menu</button>
+    <button class="menu-btn" aria-expanded="false" aria-controls="mobile-drawer">Menu</button>
   </div>
-  <div class="drawer">
+  <div class="drawer" id="mobile-drawer" aria-hidden="true">
     <a href="#why">Why Chronos</a>
     <a href="#workstreams">Workstreams</a>
     <a href="#roadmap">Roadmap</a>
@@ -190,27 +245,57 @@ nav li{opacity:.9}
   </div>
 </nav>
 
-<header class="hero">
+<!-- Mobile sticky micro sub-nav -->
+<div class="subnav">
+  <div class="container">
+    <div class="row">
+      <a href="#why">Why</a>
+      <a href="#workstreams">Workstreams</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="#impact">Impact</a>
+      <a href="#partners">Partners</a>
+      <a href="#team">Team</a>
+      <a href="#live">Live</a>
+    </div>
+  </div>
+</div>
+
+<header class="hero" id="hero">
   <div class="glow"></div>
   <div class="container">
     <h1>RMO Chronos (pilot)</h1>
-    <p>Fifteen integrated digital workstreams unify monitoring, diagnostics, optimization and forecasting—built for internal adoption and real field impact.</p>
+    <p>15 agentic modules turn well signals into field actions — live in pilot.</p>
     <div class="badges">
       <span class="badge">Neon-glow UI</span>
       <span class="badge">Agentic AI</span>
       <span class="badge">CLRM-ready</span>
       <span class="badge">Reservoir-grade analytics</span>
     </div>
+    <div class="hint">Tap header to expand</div>
   </div>
 </header>
 
-<section id="why" class="section container reveal">
-  <h2>Why Chronos</h2>
-  <p class="lead">A unified digital fabric for wells and reservoirs—deterministic models fused with AI, designed to shorten the path from signal to decision to action.</p>
+<!-- Fullscreen hero expander -->
+<div id="heroExpander" role="dialog" aria-modal="true" aria-labelledby="hxTitle">
+  <button id="closeExpander" aria-label="Close expanded header">Close</button>
+  <div class="expander-inner">
+    <h2 id="hxTitle" class="expander-title">RMO Chronos (pilot)</h2>
+    <p class="expander-sub">A unified digital fabric for wells and reservoirs — from surveillance to optimization and forecasting, orchestrated for real field impact.</p>
+    <div class="expander-actions">
+      <a href="#workstreams">Browse 15 Workstreams</a>
+      <a href="#roadmap">See Roadmap</a>
+      <a href="#live">Open Live Modules (SSO)</a>
+    </div>
+  </div>
+</div>
+
+<section id="why" class="section container reveal" role="region" aria-labelledby="whyTitle">
+  <h2 id="whyTitle">Why Chronos</h2>
+  <p class="lead">Deterministic models fused with AI to shorten the path from signal → decision → action.</p>
   <div class="feature" style="margin-top:18px">
     <div>
       <h3>Agentic workflows across the lifecycle</h3>
-      <p>From well surveillance to sweep efficiency and forecasting, each module is autonomous yet orchestrated—so actions compound into field-level outcomes.</p>
+      <p>From well surveillance to sweep efficiency and forecasting, modules are autonomous yet orchestrated—so actions compound into field-level outcomes.</p>
       <div class="kpis" style="margin-top:14px">
         <div class="kpi"><div class="n">↑ 15–30%</div><small>Faster diagnostics</small></div>
         <div class="kpi"><div class="n">↓ 20–40%</div><small>Time-to-action</small></div>
@@ -227,9 +312,9 @@ nav li{opacity:.9}
   </div>
 </section>
 
-<section id="workstreams" class="section container reveal">
-  <h2>Digital Workstreams (15)</h2>
-  <p class="lead">Design system: shields for “Guard”, rounded squares for applications. All glow in turquoise/cyan to signal intelligent energy.</p>
+<section id="workstreams" class="section container reveal" role="region" aria-labelledby="wsTitle">
+  <h2 id="wsTitle">Digital Workstreams (15)</h2>
+  <p class="lead">Design system: shields for “Guard”, rounded squares for apps — glowing turquoise/cyan.</p>
   <div class="grid cols-4" style="margin-top:16px">
     <!-- Guard family (6) -->
     <div class="card"><div class="icon shield"></div><h3>GeaGuard</h3><p>Shield + 4 stacked seismic curves.</p></div>
@@ -251,9 +336,8 @@ nav li{opacity:.9}
   </div>
 </section>
 
-<!-- ROADMAP -->
-<section id="roadmap" class="section container reveal">
-  <h2>Roadmap</h2>
+<section id="roadmap" class="section container reveal" role="region" aria-labelledby="rdTitle">
+  <h2 id="rdTitle">Roadmap</h2>
   <div class="grid cols-3" style="margin-top:14px">
     <div class="card">
       <h3>Phase 1 — 2025</h3>
@@ -263,7 +347,7 @@ nav li{opacity:.9}
     <div class="card">
       <h3>Phase 2 — 2026</h3>
       <p class="lead">Scale</p>
-      <p>Expand adoption, strengthen data fabric, and integrate advanced AI/ML workflows.</p>
+      <p>Expand adoption, strengthen data fabric, integrate advanced AI/ML workflows.</p>
     </div>
     <div class="card">
       <h3>Phase 3 — 2027</h3>
@@ -273,8 +357,8 @@ nav li{opacity:.9}
   </div>
 </section>
 
-<section id="impact" class="section container reveal">
-  <h2>From insights to impact</h2>
+<section id="impact" class="section container reveal" role="region" aria-labelledby="imTitle">
+  <h2 id="imTitle">From insights to impact</h2>
   <div class="feature" style="margin-top:16px">
     <div>
       <p>Agentic assistants monitor wells, recommend actions, and simulate outcomes—closing the loop between diagnosis and execution.</p>
@@ -294,8 +378,8 @@ nav li{opacity:.9}
   </div>
 </section>
 
-<section id="partners" class="section container reveal">
-  <h2>Partners</h2>
+<section id="partners" class="section container reveal" role="region" aria-labelledby="paTitle">
+  <h2 id="paTitle">Partners</h2>
   <div class="partnerbar" style="margin-top:14px">
     <div class="partner">Tech Company</div>
     <div class="partner">Service Company</div>
@@ -303,8 +387,8 @@ nav li{opacity:.9}
   </div>
 </section>
 
-<section id="team" class="section container reveal">
-  <h2>Team</h2>
+<section id="team" class="section container reveal" role="region" aria-labelledby="tmTitle">
+  <h2 id="tmTitle">Team</h2>
   <p class="lead">Leadership and contributors who drive the RMO Chronos (pilot) digital ecosystem.</p>
 
   <!-- Leadership -->
@@ -345,11 +429,14 @@ nav li{opacity:.9}
     <button type="button">Contributors (40)</button>
     <div class="collapsible-content">
       <div class="table-wrap">
+        <div class="table-controls">
+          <input id="contribSearch" placeholder="Search name, discipline, company">
+        </div>
         <div class="table-scroll">
           <table class="table40">
             <thead><tr><th>Name</th><th>Discipline</th><th>Company</th></tr></thead>
             <tbody>
-              <!-- Sample rows; duplicate/replace until 40 -->
+              <!-- Example rows — replace with real names -->
               <tr><td>Person 1</td><td>Geologist</td><td>Tech Company</td></tr>
               <tr><td>Person 2</td><td>Geophysicist</td><td>Service Company</td></tr>
               <tr><td>Person 3</td><td>Reservoir Engineer</td><td>Tech Company</td></tr>
@@ -398,8 +485,8 @@ nav li{opacity:.9}
   </div>
 </section>
 
-<section id="live" class="section container reveal">
-  <h2>See it in action</h2>
+<section id="live" class="section container reveal" role="region" aria-labelledby="lvTitle">
+  <h2 id="lvTitle">See it in action</h2>
   <p class="lead">Open the live modules with your company SSO. Replace the links below with your internal URLs.</p>
   <div class="cta-row">
     <a class="button-ghost" href="#" target="_blank" rel="noopener">Launch RMO Dashboard</a>
@@ -412,13 +499,20 @@ nav li{opacity:.9}
   <div class="container">© 2025 RMO Chronos (pilot) • Internal showcase — not for external distribution</div>
 </footer>
 
-<script>
-// mobile drawer toggle
-const menuBtn = document.querySelector('.menu-btn');
-const drawer = document.querySelector('.drawer');
-if(menuBtn) menuBtn.addEventListener('click', ()=> drawer.classList.toggle('open'));
+<a id="totop" href="#top">Top</a>
 
-// smooth anchor with offset + flash + close drawer
+<script>
+// Accessible mobile drawer
+const menuBtn = document.querySelector('.menu-btn');
+const drawer = document.getElementById('mobile-drawer');
+menuBtn.addEventListener('click', ()=>{
+  const open = drawer.classList.toggle('open');
+  menuBtn.setAttribute('aria-expanded', open);
+  drawer.setAttribute('aria-hidden', !open);
+  if(!open) menuBtn.focus();
+});
+
+// Smooth anchor with offset + flash + close drawer when used
 function scrollToSection(id){
   const target = document.getElementById(id);
   if(!target) return;
@@ -435,11 +529,21 @@ drawer.querySelectorAll('a[href^="#"]').forEach(link=>{
     e.preventDefault();
     const id = link.getAttribute('href').slice(1);
     drawer.classList.remove('open');
+    menuBtn.setAttribute('aria-expanded','false');
+    drawer.setAttribute('aria-hidden','true');
     setTimeout(()=> scrollToSection(id), 60);
   });
 });
 
-// collapsibles (PO + Contributors)
+// Hero expand to fullscreen
+const hero = document.getElementById('hero');
+const expander = document.getElementById('heroExpander');
+const closeExp = document.getElementById('closeExpander');
+hero.addEventListener('click', ()=> expander.classList.add('open'));
+closeExp.addEventListener('click', ()=> expander.classList.remove('open'));
+expander.addEventListener('click', (e)=>{ if(e.target===expander) expander.classList.remove('open'); });
+
+// Collapsibles (PO + Contributors)
 document.querySelectorAll(".collapsible button").forEach(btn=>{
   btn.addEventListener("click", ()=>{
     btn.classList.toggle("active");
@@ -449,11 +553,27 @@ document.querySelectorAll(".collapsible button").forEach(btn=>{
   });
 });
 
-// reveal-on-scroll
+// Contributors search
+const input = document.getElementById('contribSearch');
+input?.addEventListener('input', e=>{
+  const q=e.target.value.toLowerCase();
+  document.querySelectorAll('.table40 tbody tr').forEach(tr=>{
+    tr.style.display = tr.innerText.toLowerCase().includes(q) ? '' : 'none';
+  });
+});
+
+// Reveal-on-scroll
 const io = new IntersectionObserver((entries)=> {
   entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('on'); });
 }, {threshold:.14});
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+// Back-to-top visibility
+const fab=document.getElementById('totop');
+window.addEventListener('scroll',()=>{
+  const on = window.scrollY>800;
+  fab.style.opacity= on?1:0; fab.style.pointerEvents= on?'auto':'none';
+});
 </script>
 </body>
 </html>
