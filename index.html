@@ -47,22 +47,26 @@ nav li{opacity:.9}
   background:linear-gradient(135deg,var(--elec),var(--turq));
   box-shadow: 0 10px 30px rgba(86,225,255,.25)}
 
-/* Mobile nav */
+/* Mobile nav: slide-down drawer pushes content */
 .menu-btn{display:none}
+.drawer{display:none} /* default desktop */
 @media (max-width:860px){
   nav ul{display:none}
-  .menu-btn{display:block; margin-left:auto; border:1px solid rgba(255,255,255,.14);
-    background:rgba(15,25,41,.6); color:var(--text); border-radius:10px; padding:8px 10px}
-  /* >>> FIXED DRAWER BACKGROUND <<< */
-  .drawer{
-    position:fixed; inset:56px 0 0 0; z-index:100;
-    background:rgba(10,16,29,.95);           /* solid/dim */
-    backdrop-filter: blur(12px) saturate(140%); /* frosted */
-    -webkit-backdrop-filter: blur(12px) saturate(140%);
-    padding:18px; display:none;
-    border-top:1px solid rgba(255,255,255,.06);
+  .menu-btn{
+    display:block; margin-left:auto; border:1px solid rgba(255,255,255,.14);
+    background:rgba(15,25,41,.6); color:var(--text); border-radius:10px; padding:8px 10px
   }
-  .drawer.open{display:block}
+  .drawer{
+    background:rgba(10,16,29,.95);
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+    border-top:1px solid rgba(255,255,255,.08);
+    overflow:hidden;
+    max-height:0;
+    transition:max-height .4s ease;
+    display:block;       /* present in flow under nav on mobile */
+  }
+  .drawer.open{max-height:500px} /* expands down and pushes content */
   .drawer a{
     display:block; padding:14px 10px; font-size:17px;
     border-bottom:1px solid rgba(255,255,255,.08); color:#e6f3ff;
@@ -174,15 +178,16 @@ footer{padding:40px 0; color:#94a9bd; border-top:1px solid rgba(255,255,255,.06)
       <li><a href="#team">Team</a></li>
       <li><a href="#live" class="cta">See it in action</a></li>
     </ul>
-    <button class="menu-btn" onclick="document.querySelector('.drawer').classList.toggle('open')">Menu</button>
+    <button class="menu-btn">Menu</button>
   </div>
+  <!-- Slide-down drawer lives directly under nav, pushes page down -->
   <div class="drawer">
-    <a href="#why" onclick="document.querySelector('.drawer').classList.remove('open')">Why RMO</a>
-    <a href="#workstreams" onclick="document.querySelector('.drawer').classList.remove('open')">Workstreams</a>
-    <a href="#impact" onclick="document.querySelector('.drawer').classList.remove('open')">Impact</a>
-    <a href="#partners" onclick="document.querySelector('.drawer').classList.remove('open')">Partners</a>
-    <a href="#team" onclick="document.querySelector('.drawer').classList.remove('open')">Team</a>
-    <a href="#live" onclick="document.querySelector('.drawer').classList.remove('open')">See it in action</a>
+    <a href="#why">Why RMO</a>
+    <a href="#workstreams">Workstreams</a>
+    <a href="#impact">Impact</a>
+    <a href="#partners">Partners</a>
+    <a href="#team">Team</a>
+    <a href="#live">See it in action</a>
   </div>
 </nav>
 
@@ -329,6 +334,11 @@ footer{padding:40px 0; color:#94a9bd; border-top:1px solid rgba(255,255,255,.06)
 </footer>
 
 <script>
+// mobile drawer toggle
+const menuBtn = document.querySelector('.menu-btn');
+const drawer = document.querySelector('.drawer');
+menuBtn.addEventListener('click', ()=> drawer.classList.toggle('open'));
+
 // reveal-on-scroll
 const io = new IntersectionObserver((entries)=> {
   entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('on'); });
