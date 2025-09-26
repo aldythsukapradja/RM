@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RMO — Intelligent Digital Workstreams</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg0:#0b1220;            /* dark navy */
+  --bg1:#0e1528;
+  --bg2:#101827;            /* graphite-ish */
+  --cyan:#35d0ff;
+  --turq:#23b6d9;
+  --elec:#56e1ff;
+  --text:#e6f3ff;
+  --muted:#9fb6c7;
+  --card:#0f1a2c;
+  --ring: 0 0 0 1px rgba(86,225,255,.18), 0 0 24px rgba(86,225,255,.22), inset 0 0 18px rgba(35,182,217,.12);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background: radial-gradient(1200px 700px at 10% -10%, #12213a 0%, transparent 60%), linear-gradient(180deg,var(--bg0),var(--bg2)); color:var(--text); font-family:Outfit, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, sans-serif}
+a{color:var(--cyan); text-decoration:none}
+.container{width:min(1200px, 92vw); margin-inline:auto}
+nav{
+  position:sticky; top:0; z-index:20;
+  backdrop-filter:saturate(140%) blur(10px);
+  background:rgba(10,16,29,.6); border-bottom:1px solid rgba(255,255,255,.06);
+}
+.nav-inner{display:flex; align-items:center; gap:24px; padding:14px 0}
+.brand{display:flex; align-items:center; gap:12px; font-weight:700; letter-spacing:.3px}
+.brand .orb{width:26px; height:26px; border-radius:50%;
+  background: radial-gradient(circle at 35% 30%, var(--elec), transparent 60%),
+              radial-gradient(circle at 65% 70%, var(--turq), transparent 60%),
+              #14243d; box-shadow: 0 0 22px rgba(86,225,255,.35)}
+nav ul{display:flex; gap:22px; margin-left:auto; list-style:none; padding:0}
+nav li{opacity:.9}
+.cta{padding:10px 16px; border-radius:10px; color:#06101a;
+  background:linear-gradient(135deg,var(--elec),var(--turq));
+  box-shadow: 0 10px 30px rgba(86,225,255,.25)}
+/* Hero */
+.hero{position:relative; padding:96px 0 72px; overflow:hidden}
+.hero .glow{
+  position:absolute; inset:-20% -10% auto auto; width:700px; height:700px; border-radius:50%;
+  background: radial-gradient(closest-side, rgba(86,225,255,.14), transparent 70%);
+  filter:blur(40px); pointer-events:none;
+}
+.hero h1{font-size:clamp(32px, 5vw, 56px); line-height:1.05; margin:0 0 14px;}
+.hero p{max-width:780px; color:var(--muted); font-size:clamp(16px,1.9vw,20px)}
+.badges{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px}
+.badge{border:1px solid rgba(255,255,255,.08); color:#bfeaff; padding:8px 12px; border-radius:999px; font-size:14px; background:rgba(17,30,54,.5)}
+/* Section */
+.section{padding:56px 0}
+.section h2{font-size:clamp(24px,3.2vw,36px); margin:0 0 10px}
+.section p.lead{color:var(--muted); max-width:820px}
+/* Cards Grid */
+.grid{display:grid; gap:14px}
+.grid.cols-3{grid-template-columns:repeat(3,1fr)}
+.grid.cols-4{grid-template-columns:repeat(4,1fr)}
+@media (max-width:1000px){.grid.cols-4{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:780px){.grid.cols-3,.grid.cols-4{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:520px){.grid.cols-3,.grid.cols-4{grid-template-columns:1fr}}
+.card{
+  background: radial-gradient(180px 120px at 15% 0%, rgba(86,225,255,.06), transparent 40%), var(--card);
+  border-radius:16px; padding:18px 16px 16px; border:1px solid rgba(255,255,255,.06);
+  box-shadow: var(--ring); position:relative; overflow:hidden; transition:transform .25s ease, box-shadow .25s ease;
+}
+.card:hover{transform: translateY(-2px); box-shadow: 0 0 0 1px rgba(86,225,255,.35), 0 0 36px rgba(86,225,255,.25)}
+.card h3{margin:10px 0 4px; font-size:18px}
+.card p{margin:0; color:var(--muted); font-size:14.5px}
+/* Logo icon frames */
+.icon{width:52px; height:52px; display:grid; place-items:center; border-radius:14px; margin-bottom:6px;
+  background:linear-gradient(145deg, rgba(86,225,255,.18), rgba(35,182,217,.10));
+  box-shadow: inset 0 0 18px rgba(86,225,255,.18), 0 0 24px rgba(86,225,255,.12);
+  filter:drop-shadow(0 8px 26px rgba(86,225,255,.14));
+}
+.icon.shield{clip-path: polygon(50% 0%, 90% 18%, 90% 55%, 50% 100%, 10% 55%, 10% 18%);} /* hex-shield */
+.icon.rounded{border-radius:14px}
+/* Simple SVG strokes */
+svg{width:70%; height:70%}
+.stroke{fill:none; stroke:url(#g); stroke-width:2.3; stroke-linecap:round; stroke-linejoin:round; opacity:.96}
+.grad defs linearGradient stop{stop-color:var(--elec)}
+/* Feature rows */
+.feature{
+  display:grid; grid-template-columns:1.1fr .9fr; gap:36px; align-items:center;
+  background: linear-gradient(180deg, rgba(17,30,54,.6), rgba(17,30,54,.35));
+  border:1px solid rgba(255,255,255,.06); border-radius:18px; padding:26px; box-shadow:var(--ring)
+}
+@media (max-width:900px){.feature{grid-template-columns:1fr;}}
+.kpis{display:flex; gap:18px; flex-wrap:wrap}
+.kpi{min-width:140px; padding:14px 16px; border-radius:14px; border:1px solid rgba(255,255,255,.08); background:rgba(15,25,41,.6)}
+.kpi .n{font-size:28px; font-weight:700}
+.partnerbar{display:grid; grid-template-columns:repeat(6,1fr); gap:12px}
+.partner{height:52px; border-radius:12px; border:1px dashed rgba(255,255,255,.18); display:grid; place-items:center; color:#8ebbd3; background:rgba(17,30,54,.3)}
+footer{padding:40px 0; color:#94a9bd; border-top:1px solid rgba(255,255,255,.06)}
+/* Tiny fade-in on scroll */
+.reveal{opacity:0; transform:translateY(12px); transition:opacity .6s ease, transform .6s ease}
+.reveal.on{opacity:1; transform:none}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container nav-inner">
+    <div class="brand"><span class="orb"></span> RMO Intelligence</div>
+    <ul>
+      <li><a href="#why">Why RMO 360</a></li>
+      <li><a href="#workstreams">Workstreams</a></li>
+      <li><a href="#impact">Impact</a></li>
+      <li><a class="cta" href="#contact">Go to Solutions</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="glow"></div>
+  <div class="container">
+    <h1>RMO 360 - Intelligent Reservoir Management</h1>
+    <p>Fifteen integrated digital workstreams unify monitoring, diagnostics, optimization and forecasting—bringing agentic intelligence to wells, reservoirs and field operations.</p>
+    <div class="badges">
+      <span class="badge">Neon-glow UI</span>
+      <span class="badge">Agentic AI</span>
+      <span class="badge">Reservoir-grade analytics</span>
+      <span class="badge">Enterprise secure</span>
+    </div>
+  </div>
+</header>
+
+<section id="why" class="section container reveal">
+  <h2>Why RMO</h2>
+  <p class="lead">Designed for subsurface complexity: consistent data fabric, deterministic + AI fusions, and an experience that lets engineers see, decide, and act in minutes—not weeks.</p>
+  <div class="feature" style="margin-top:18px">
+    <div>
+      <h3>Agentic workflows across the lifecycle</h3>
+      <p>From well surveillance to sweep efficiency and forecasting, each module is autonomous yet orchestrated—so actions compound into field-level impact.</p>
+      <div class="kpis" style="margin-top:14px">
+        <div class="kpi"><div class="n">↑ 15–30%</div><small>Faster diagnostics</small></div>
+        <div class="kpi"><div class="n">↓ 20–40%</div><small>Time-to-action</small></div>
+        <div class="kpi"><div class="n">→ CLRM</div><small>Closed-loop ready</small></div>
+      </div>
+    </div>
+    <div>
+      <div class="grid cols-3">
+        <!-- Three highlight mini-cards -->
+        <div class="card">
+          <div class="icon shield">
+            <!-- GeaGuard icon (4 stacked curves) -->
+            <svg viewBox="0 0 24 24" class="grad">
+              <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#56e1ff"/><stop offset="100%" stop-color="#23b6d9"/></linearGradient></defs>
+              <path class="stroke" d="M5 8c3 0 3.5 2 7 2s4-.9 7-.9"/>
+              <path class="stroke" d="M5 11c3 0 3.5 2 7 2s4-.9 7-.9"/>
+              <path class="stroke" d="M5 14c3 0 3.5 2 7 2s4-.9 7-.9"/>
+            </svg>
+          </div>
+          <h3>GeaGuard</h3>
+          <p>Seismic-time awareness for structural risk and context.</p>
+        </div>
+        <div class="card">
+          <div class="icon shield">
+            <!-- SweepGuard (3 orbiting arrows) -->
+            <svg viewBox="0 0 24 24"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#56e1ff"/><stop offset="100%" stop-color="#23b6d9"/></linearGradient></defs>
+              <circle class="stroke" cx="12" cy="12" r="5"/>
+              <path class="stroke" d="M12 3a9 9 0 0 1 6.9 3.1"/><path class="stroke" d="M21 12a9 9 0 0 1-3.1 6.9"/><path class="stroke" d="M12 21A9 9 0 0 1 5.1 18"/>
+            </svg>
+          </div>
+          <h3>SweepGuard</h3>
+          <p>Orbit-style sweep efficiency and voidage balance signals.</p>
+        </div>
+        <div class="card">
+          <div class="icon rounded">
+            <!-- Prodcast (rising nodes) -->
+            <svg viewBox="0 0 24 24"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#56e1ff"/><stop offset="100%" stop-color="#23b6d9"/></linearGradient></defs>
+              <path class="stroke" d="M3 17l5-4 4 2 5-6 4 3"/>
+              <path class="stroke" d="M3 20h18"/>
+            </svg>
+          </div>
+          <h3>Prodcast</h3>
+          <p>Fast production forecasting with scenario stitching.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="workstreams" class="section container reveal">
+  <h2>Digital Workstreams (15)</h2>
+  <p class="lead">A consistent design system: shields for “Guard”, rounded squares for apps. All glow in turquoise/cyan to signal intelligent energy.</p>
+
+  <!-- 15 cards: 6 Guard (shield) + 9 Non-Guard (rounded) -->
+  <div class="grid cols-4" style="margin-top:16px">
+
+    <!-- 1 GeaGuard -->
+    <div class="card">
+      <div class="icon shield">
+        <svg viewBox="0 0 24 24"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#56e1ff"/><stop offset="100%" stop-color="#23b6d9"/></linearGradient></defs>
+          <path class="stroke" d="M5 8c3 0 3.5 2 7 2s4-.9 7-.9"/>
+          <path class="stroke" d="M5 11c3 0 3.5 2 7 2s4-.9 7-.9"/>
+          <path class="stroke" d="M5 14c3 0 3.5 2 7 2s4-.9 7-.9"/>
+        </svg>
+      </div>
+      <h3>GeaGuard</h3>
+      <p>Shield + 4 stacked seismic curves.</p>
+    </div>
+
+    <!-- 2 TerraGuard -->
+    <div class="card">
+      <div class="icon shield">
+        <svg viewBox="0 0 24 24"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#56e1ff"/><stop offset="100%" stop-color="#23b6d9"/></linearGradient></defs>
+          <path class="stroke" d="M6 9l6 6m0-6l6 6"/>
+          <rect class="stroke" x="6.5" y="6.5" width="11" height="11" rx="2"/>
+        </svg>
+      </div>
+      <h3>TerraGuard</h3>
+      <p>Shield + fractured cube motif.</p>
+    </div>
+
+    <!-- 3 FlowGuard -->
+    <div class="card">
+      <div class="icon shield">
+        <svg viewBox="0 0 24 24"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#56e1ff"/><stop offset="100%" stop-color="#23b6d9"/></linearGradient></defs>
+          <path class="stroke" d="M3 14c4-4 7 4 11 0 3-3 5-3 8-2"/>
+        </svg>
+      </div>
+      <h3>FlowGuard</h3>
+      <p>Shield + smooth upward ribbon wave.</p>
+    </div>
+
+    <!-- 4 FracGuard -->
+    <div class="card">
+      <div class="icon shield">
+        <svg viewBox="0 0 24 24"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#56e1ff"/><stop offset="100%" stop-color="#23b6d9"/></linearGradient></defs>
+          <path class="stroke" d="M4 6l6 6-3 3 7 3-2-7 4-4"/>
+        </svg>
+      </div>
+      <h3>FracGuard</h3>
+      <p>Shield + pulse-crack line.</p>
+    </div>
+
+    <!-- 5 WellGuard -->
+    <div class="card">
+      <div class="icon shield">
+        <svg viewBox="0 0 24 24"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#56e1ff"/><stop offset="100%" stop-color="#23b6d9"/></linearGradient></defs>
+          <path class="stroke" d="M12 6v8"/><circle class="stroke" cx="12" cy="17.5" r="1"/>
+        </svg>
+      </div>
+      <h3>WellGuard</h3>
+      <p>Shield + bold exclamation mark.</p>
+    </div>
+
+    <!-- 6 SweepGuard -->
+    <div class="card">
+      <div class="icon shield">
+        <svg viewBox="0 0 24 24"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#56e1ff"/><stop offset="100%" stop-color="#23b6d9"/></linearGradient></defs>
+          <circle class="stroke" cx="12" cy="12" r="4.2"/>
+          <path class="stroke" d="M8 6l1.6 1M18 10l1.6 1M6 16l1.6 1"/>
+        </svg>
+      </div>
+      <h3>SweepGuard</h3>
+      <p>Shield + three orbiting circular arrows.</p>
+    </div>
+
+    <!-- 7 WellWatch -->
+    <div class="card">
+      <div class="icon rounded">
+        <svg viewBox="0 0 24 24"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#56e1ff"/><stop offset="100%" stop-color="#23b6d9"/></linearGradient></defs>
+          <ellipse class="stroke" cx="12" cy="12" rx="8" ry="5"/>
+          <circle class="stroke" cx="12" cy="12" r="2.4"/>
+        </svg>
+      </div>
+      <h3>WellWatch</h3>
+      <p>Rounded box + circular eye.</p>
+    </div>
+
+    <!-- 8 WellNova -->
+    <div class="card">
+      <div class="icon rounded">
+        <svg viewBox="0 0 24 24"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#56e1ff"/><stop offset="100%" stop-color="#23b6d9"/></linearGradient></defs>
+          <path class="stroke" d="M12 5v14"/><path class="stroke" d="M9.5 12l2.5 2.5L14.5 12 12 9.5z"/>
+        </svg>
+      </div>
+      <h3>WellNova</h3>
+      <p>Rounded box + wellbore & starburst.</p>
+    </div>
+
+    <!-- 9 Stimatlas -->
+    <div class="card">
+      <div class="icon rounded">
+        <svg viewBox="0 0 24 24"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#56e1ff"/><stop offset="100%" stop-color="#23b6d9"/></linearGradient></defs>
+          <path class="stroke" d="M4 8h8v8H4zM12 8h8v8h-8z"/>
+          <circle class="stroke" cx="17" cy="15" r="2"/>
+        </svg>
+      </div>
+      <h3>Stimatlas</h3>
+      <p>Rounded box + open atlas with magnifier.</p>
+    </div>
+
+    <!-- 10 AquaMan -->
+    <div class="card">
+      <div class="icon rounded">
+        <svg viewBox="0 0 24 24"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#56e1ff"/><stop offset="100%" stop-color="#23b6d9"/></linearGradient></defs>
+          <path class="stroke" d="M12 4c3 4 6 6.5 6 10a6 6 0 0 1-12 0c0-3.5 3-6 6-10z"/>
+          <path class="stroke" d="M9 13v2m3-4v6m3-3v1.8"/>
+        </svg>
+      </div>
+      <h3>AquaMan</h3>
+      <p>Rounded box + droplet with circuits.</p>
+    </div>
+
+    <!-- 11 Prodcast -->
+    <div class="card">
+      <div class="icon rounded">
+        <svg viewBox="0 0 24 24"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#56e1ff"/><stop offset="100%" stop-color="#23b6d9"/></linearGradient></defs>
+          <path class="stroke" d="M3 17l5-4 4 2 5-6 4 3"/>
+        </svg>
+      </div>
+      <h3>Prodcast</h3>
+      <p>Rounded box + rising line with nodes.</p>
+    </div>
+
+    <!-- 12 Sypher -->
+    <div class="card">
+      <div class="icon rounded">
+        <svg viewBox="0 0 24 24"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#56e1ff"/><stop offset="100%" stop-color="#23b6d9"/></linearGradient></defs>
+          <path class="stroke" d="M7 7c2-2 4 0 5 1s3 3 5 1M7 17c2 2 4 0 5-1s3-3 5-1"/>
+          <circle class="stroke" cx="12" cy="12" r="1.3"/>
+        </svg>
+      </div>
+      <h3>Sypher</h3>
+      <p>Rounded box + symmetric S/double arrows.</p>
+    </div>
+
+    <!-- 13 Aura -->
+    <div class="card">
+      <div class="icon rounded">
+        <svg viewBox="0 0 24 24"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#56e1ff"/><stop offset="100%" stop-color="#23b6d9"/></linearGradient></defs>
+          <circle class="stroke" cx="12" cy="12" r="3"/>
+          <circle class="stroke" cx="12" cy="12" r="6.5"/>
+        </svg>
+      </div>
+      <h3>Aura</h3>
+      <p>Rounded box + concentric rings.</p>
+    </div>
+
+    <!-- 14 RMO Dashboard -->
+    <div class="card">
+      <div class="icon rounded">
+        <svg viewBox="0 0 24 24"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#56e1ff"/><stop offset="100%" stop-color="#23b6d9"/></linearGradient></defs>
+          <rect class="stroke" x="4" y="6" width="8" height="6" rx="1.5"/>
+          <rect class="stroke" x="14" y="6" width="6" height="12" rx="1.5"/>
+          <rect class="stroke" x="4" y="13" width="8" height="5" rx="1.5"/>
+        </svg>
+      </div>
+      <h3>RMO Dashboard</h3>
+      <p>Rounded box + stacked data panels.</p>
+    </div>
+
+    <!-- 15 RMO360 -->
+    <div class="card">
+      <div class="icon rounded">
+        <svg viewBox="0 0 24 24"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#56e1ff"/><stop offset="100%" stop-color="#23b6d9"/></linearGradient></defs>
+          <circle class="stroke" cx="12" cy="12" r="6"/>
+          <ellipse class="stroke" cx="12" cy="12" rx="9" ry="3.8"/>
+          <path class="stroke" d="M3 12a9 9 0 0 1 18 0"/>
+        </svg>
+      </div>
+      <h3>RMO360</h3>
+      <p>Rounded box + globe with 360° orbit ring.</p>
+    </div>
+
+  </div>
+</section>
+
+<section id="impact" class="section container reveal">
+  <h2>From insights to impact</h2>
+  <div class="feature" style="margin-top:16px">
+    <div>
+      <p>Agentic assistants monitor wells, recommend actions, and simulate outcomes—closing the loop between diagnosis and execution.</p>
+      <div class="kpis" style="margin-top:14px">
+        <div class="kpi"><div class="n">T-15 min</div><small>From alert to plan</small></div>
+        <div class="kpi"><div class="n">+7 kbopd</div><small>Potential uplift scenario</small></div>
+        <div class="kpi"><div class="n">≥ 4D</div><small>Seismic-aware decisions</small></div>
+      </div>
+    </div>
+    <div>
+      <div class="grid cols-3">
+        <div class="card"><h3>WellWatch → Action</h3><p>Auto-detects anomalies and drafts work orders.</p></div>
+        <div class="card"><h3>SweepGuard Loop</h3><p>Optimizes injector/producer pairs to protect voidage.</p></div>
+        <div class="card"><h3>Prodcast Scenarios</h3><p>Rapid what-if forecasts for tactical pacing.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section container reveal">
+  <h2>Partners</h2>
+  <div class="partnerbar" style="margin-top:14px">
+    <div class="partner">Microsoft</div>
+    <div class="partner">SLB</div>
+    <div class="partner">AWS</div>
+    <div class="partner">NVIDIA</div>
+    <div class="partner">Baker Hughes</div>
+    <div class="partner">Khalifa Univ.</div>
+  </div>
+</section>
+
+<section class="section container reveal" id="contact">
+  <h2>Ready to see it?</h2>
+  <p class="lead">Book a live walkthrough of the 15-workstream ecosystem using your field context.</p>
+  <p><a class="cta" href="mailto:aldhyt.sukapradja@gmail.com">Go to Solutions</a></p>
+</section>
+
+<footer>
+  <div class="container">© 2025 RMO Intelligence • Designed for reservoir management excellence</div>
+</footer>
+
+<script>
+// simple reveal-on-scroll
+const io = new IntersectionObserver((entries)=> {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('on'); });
+}, {threshold:.14});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
