@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>RMO Chronos — Internal Digital Workstreams Showcase</title>
+<title>RMO Chronos (pilot) — Internal Digital Workstreams Showcase</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -21,7 +21,7 @@ html,body{
     radial-gradient(1200px 700px at 10% -10%, #12213a 0%, transparent 60%),
     radial-gradient(1000px 600px at 110% 10%, rgba(53,208,255,.08), transparent 60%),
     linear-gradient(180deg,var(--bg0),var(--bg2));
-  scroll-behavior:smooth; /* smooth scroll to anchors */
+  scroll-behavior:smooth;
 }
 a{color:var(--cyan); text-decoration:none}
 .container{width:min(1200px, 92vw); margin-inline:auto}
@@ -178,7 +178,7 @@ footer{padding:40px 0; color:#94a9bd; border-top:1px solid rgba(255,255,255,.06)
 
 <nav>
   <div class="container nav-inner">
-    <div class="brand"><span class="orb"></span> RMO Chronos</div>
+    <div class="brand"><span class="orb"></span> RMO Chronos (pilot)</div>
     <ul>
       <li><a href="#why">Why Chronos</a></li>
       <li><a href="#workstreams">Workstreams</a></li>
@@ -296,7 +296,7 @@ footer{padding:40px 0; color:#94a9bd; border-top:1px solid rgba(255,255,255,.06)
 
 <section id="team" class="section container reveal">
   <h2>Team</h2>
-  <p class="lead">Leadership and product owners who drive the RMO Chronos digital ecosystem.</p>
+  <p class="lead">Leadership and product owners who drive the RMO Chronos (pilot) digital ecosystem.</p>
 
   <!-- Leadership -->
   <h3 style="margin-top:8px">Leadership</h3>
@@ -339,7 +339,7 @@ footer{padding:40px 0; color:#94a9bd; border-top:1px solid rgba(255,255,255,.06)
 </section>
 
 <footer>
-  <div class="container">© 2025 RMO Chronos • Internal showcase — not for external distribution</div>
+  <div class="container">© 2025 RMO Chronos (pilot) • Internal showcase — not for external distribution</div>
 </footer>
 
 <script>
@@ -348,26 +348,28 @@ const menuBtn = document.querySelector('.menu-btn');
 const drawer = document.querySelector('.drawer');
 menuBtn.addEventListener('click', ()=> drawer.classList.toggle('open'));
 
-// when clicking any drawer link: close drawer, smooth-scroll WITH offset, flash target
-const NAV_HEIGHT = document.querySelector('nav').offsetHeight;
+// when clicking any drawer link: close drawer, smooth-scroll WITH tuned offset, flash target
+function scrollToSection(id){
+  const target = document.getElementById(id);
+  if(!target) return;
+  // Height of sticky nav:
+  const NAV_HEIGHT = document.querySelector('nav').offsetHeight || 0;
+  // Extra offset so the section title is fully visible on mobile
+  const isMobile = window.matchMedia('(max-width:860px)').matches;
+  const EXTRA = isMobile ? 28 : 8;  // tuned: ensures H2 sits fully below nav on phones
+  const top = target.getBoundingClientRect().top + window.pageYOffset - (NAV_HEIGHT + EXTRA);
+  window.scrollTo({top, behavior:'smooth'});
+  target.classList.add('flash');
+  setTimeout(()=> target.classList.remove('flash'), 1300);
+}
 
 drawer.querySelectorAll('a[href^="#"]').forEach(link=>{
   link.addEventListener('click', (e)=>{
     e.preventDefault();
     const id = link.getAttribute('href').slice(1);
-    const target = document.getElementById(id);
-    if (!target) return;
-
-    // close drawer (slide up)
-    drawer.classList.remove('open');
-
-    // custom smooth scroll with offset (so header isn't hidden under sticky nav)
-    const top = target.getBoundingClientRect().top + window.pageYOffset - (NAV_HEIGHT + 12);
-    window.scrollTo({top, behavior:'smooth'});
-
-    // highlight animation
-    target.classList.add('flash');
-    setTimeout(()=> target.classList.remove('flash'), 1300);
+    drawer.classList.remove('open'); // slide up
+    // delay a tick to let drawer collapse height before scrolling for perfect positioning
+    setTimeout(()=> scrollToSection(id), 60);
   });
 });
 
@@ -376,6 +378,9 @@ const io = new IntersectionObserver((entries)=> {
   entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('on'); });
 }, {threshold:.14});
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+// re-tune on resize orientation changes
+window.addEventListener('resize', ()=>{/* no-op; matchMedia re-evaluates in scrollToSection */});
 </script>
 </body>
 </html>
