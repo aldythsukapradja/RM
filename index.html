@@ -701,10 +701,10 @@ async function syncCloudState(){
 function render(){
   if(!S.user){return renderLogin()}
   const app=$('#app');
-  const tabs=[['predict','Predict'],['schedule','Schedule'],['matches','Matches'],['leaderboard','Standings'],['chatbot','Agent'],['profile','Profile']];
+  const tabs=[['predict','Predict'],['schedule','Schedule'],['chatbot','Agent'],['leaderboard','Standings'],['profile','Profile']];
   app.innerHTML=`
    <div class="topbar">
-     <div class="brand"><span class="wm"><span class="z">Z</span>ZENITH</span><span class="tag">RMO · WC26</span></div>
+     <div class="brand"><span class="wm"><span class="z">Z</span>RMO ZENITH</span><span class="tag">World Cup 2026</span></div>
      <div class="avatar" style="background:${avatarBG(S.user.name)}" onclick="go('profile')">${initials(S.user.name)}</div>
    </div>
    <div class="main" id="main"></div>
@@ -1069,8 +1069,8 @@ function renderChatbot(m){
       <div class="agent-compose">
       <textarea id="chatPrompt" maxlength="500" placeholder="Ask about a team, a matchup, recent achievements, or tell Zenith to autofill your bracket..." oninput="S.chatDraft=this.value">${S.chatDraft||''}</textarea>
       <div class="row">
-        <button class="btn primary" onclick="chatSend()" ${S.agentBusy?'disabled':''}>Ask Gemini</button>
-        <button class="btn ghost" onclick="chatFill()" ${S.agentBusy?'disabled':''}>Automated Prediction</button>
+        <button class="btn primary" onclick="chatSend()" ${S.agentBusy?'disabled':''}>🗨 Ask Zenith</button>
+        <button class="btn ghost" onclick="chatFill()" ${S.agentBusy?'disabled':''}>✨Automated Forecast</button>
       </div>
       <div class="agent-limit">${remaining} characters left</div>
       </div>
