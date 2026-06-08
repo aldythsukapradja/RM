@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>RMO Zenith · World Cup 2026</title>
+<title>RMO Zenith · World Cup 2026 Forecast Arena</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
@@ -105,8 +105,8 @@ input{font-family:inherit}
 .inp{width:100%;background:var(--solid);border:1px solid var(--sep);border-radius:12px;padding:13px 14px;font-size:16px;font-weight:500;color:var(--ink)}
 .inp:focus{outline:none;border-color:var(--tint);box-shadow:0 0 0 3px rgba(10,132,255,.18)}
 .err{color:var(--danger);font-size:13px;font-weight:600;margin-top:4px;min-height:16px}
-.flagrow{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:26px;opacity:.9}
-.flagrow .flag{width:26px;height:26px}
+
+
 
 /* progress rail */
 .rail{margin:2px 0 16px}
@@ -150,11 +150,11 @@ input{font-family:inherit}
 
 /* third list */
 .tpick{display:flex;align-items:center;gap:11px;padding:13px;border-radius:14px;margin-bottom:8px;cursor:pointer;
-  background:var(--surface);border:1px solid var(--hair);transition:.14s}
+  background:rgba(255,255,255,0.92);border:1.5px solid rgba(60,60,67,0.18);box-shadow:0 2px 10px rgba(0,0,0,0.06);transition:.14s}
 .tpick .flag{font-size:24px}
 .tpick .nm{flex:1;font-weight:700}
 .tpick .badge{font-size:10px;font-weight:800;color:#a06a00;background:rgba(245,179,1,.22);padding:4px 9px;border-radius:8px}
-.tpick.on{border-color:rgba(47,200,91,.6);background:rgba(47,200,91,.08)}
+.tpick.on{border-color:rgba(47,200,91,.7);background:rgba(47,200,91,.12);box-shadow:0 2px 12px rgba(47,200,91,0.15)}
 .seldot{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--ink3)}
 .tpick.on .seldot{background:var(--win);border-color:var(--win);color:#fff}
 
@@ -272,12 +272,46 @@ input{font-family:inherit}
 .breakrow{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--sep);font-weight:600}
 .breakrow span{color:var(--ink2)} .breakrow b{font-weight:800}
 
+
+/* === V3 ADDITIONS === */
+.elo-pill{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;padding:3px 8px;border-radius:99px;letter-spacing:.3px;margin-left:auto;flex-shrink:0}
+.elo-pill.gold{background:linear-gradient(135deg,rgba(245,179,1,.22),rgba(245,179,1,.10));color:#a06a00;border:1px solid rgba(245,179,1,.25)}
+.elo-pill.blue{background:rgba(10,132,255,.12);color:var(--tint);border:1px solid rgba(10,132,255,.18)}
+.elo-pill.gray{background:rgba(118,118,128,.10);color:var(--ink3);border:1px solid rgba(118,118,128,.12)}
+.ai-btn{display:inline-flex;align-items:center;gap:7px;padding:10px 18px;border-radius:12px;font-weight:700;font-size:13px;
+  background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;cursor:pointer;
+  box-shadow:0 6px 20px rgba(102,126,234,.35);transition:transform .12s,box-shadow .12s}
+.ai-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(102,126,234,.45)}
+.ai-btn:active{transform:scale(.97)}
+.score-sys{padding:16px;margin-bottom:14px}
+.score-sys h3{font-size:14px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.score-sys .sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px}
+.score-sys .sitem{display:flex;justify-content:space-between;padding:8px 12px;border-radius:10px;background:var(--surface2);font-size:12px;font-weight:600}
+.score-sys .sitem b{color:var(--tint);font-weight:800}
+.search-bar{position:relative;margin-bottom:12px}
+.search-bar input{width:100%;padding:12px 14px 12px 42px;border-radius:14px;border:1px solid var(--sep);background:var(--solid);
+  font-size:14px;font-weight:500;color:var(--ink);font-family:var(--ff);box-sizing:border-box}
+.search-bar input:focus{outline:none;border-color:var(--tint);box-shadow:0 0 0 3px rgba(10,132,255,.15)}
+.search-bar .sico{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--ink3);pointer-events:none;font-style:normal}
+.zenith-emblem{margin:0 auto 16px;display:block}
+.winner-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;padding:4px 10px;border-radius:8px;
+  background:rgba(47,200,91,.14);color:#1c8f43;letter-spacing:.3px}
+.h2h-card{padding:20px;margin-bottom:14px;text-align:center}
+.h2h-card .versus{display:flex;align-items:center;justify-content:center;gap:20px;margin:12px 0}
+.h2h-card .side{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1}
+.h2h-card .side .score{font-size:36px;font-weight:900;color:var(--tint)}
+.h2h-card .side .nm{font-weight:700;font-size:15px}
+.h2h-card .divider{font-weight:900;font-size:22px;color:var(--ink3)}
+/* === END V3 ADDITIONS === */
 @media(min-width:901px){
-  .nav{top:0;bottom:0;right:auto;width:96px;flex-direction:column;justify-content:flex-start;gap:6px;
-    padding-top:90px;border-top:none;border-right:1px solid var(--hair)}
-  .nav button{width:100%}
-  .main{margin-left:96px;max-width:680px}
-  .topbar{padding-left:112px}
+  .nav{left:50%;right:auto;top:auto;bottom:20px;transform:translateX(-50%);width:auto;
+    display:inline-flex;gap:4px;padding:10px 24px;border-radius:28px;border-top:none;
+    border:1px solid var(--hair);background:rgba(255,255,255,0.72);
+    backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);
+    box-shadow:0 12px 40px rgba(31,52,110,0.15);justify-content:center}
+  .nav button{width:auto;padding:8px 16px}
+  .main{max-width:680px;margin:0 auto;padding-bottom:100px}
+  .topbar{max-width:760px;margin:0 auto}
   .match{gap:16px}
 }
 </style>
@@ -330,6 +364,9 @@ const T={
 const NAME=k=>T[k][0],ISO=k=>T[k][1],GRP=k=>T[k][2],ELO=k=>T[k][3];
 const GROUPS="ABCDEFGHIJKL".split("");
 const gTeams={};GROUPS.forEach(g=>gTeams[g]=Object.keys(T).filter(k=>GRP(k)===g).sort((a,b)=>ELO(b)-ELO(a)));
+const GLOBAL_ELO_RANK={};(function(){const all=Object.keys(T).sort((a,b)=>ELO(b)-ELO(a));all.forEach((k,i)=>GLOBAL_ELO_RANK[k]=i+1)})();
+function eloPillClass(k){const r=GLOBAL_ELO_RANK[k];return r<=8?'gold':r<=16?'blue':'gray'}
+function eloPillHTML(k){return `<span class="elo-pill ${eloPillClass(k)}">#${GLOBAL_ELO_RANK[k]} · ${ELO(k)}</span>`}
 const gColor=g=>`hsl(${GROUPS.indexOf(g)*30},78%,58%)`;
 const COUNTRY={USA:'us',CAN:'ca',MEX:'mx'},CONAME={USA:'USA',CAN:'Canada',MEX:'Mexico'};
 
@@ -443,7 +480,7 @@ function genBracket(seedStr,upset){
 
 /* ============ STATE / STORAGE ============ */
 const LS={get(k,d){try{const v=localStorage.getItem('zen_'+k);return v?JSON.parse(v):d}catch(e){return (this.mem&&this.mem[k])??d}},set(k,v){try{localStorage.setItem('zen_'+k,JSON.stringify(v))}catch(e){(this.mem=this.mem||{})[k]=v}}};
-let S={user:LS.get('user',null),preds:LS.get('preds',{}),official:LS.get('official',null),oracle:LS.get('oracle',null),tab:'predict',step:0,draft:null,curGroup:'A',koRound:0,schedFilter:'Group',mRound:'Round of 16',lbMode:'Total'};
+let S={user:LS.get('user',null),preds:LS.get('preds',{}),official:LS.get('official',null),oracle:LS.get('oracle',null),tab:'predict',step:0,draft:null,curGroup:'A',koRound:0,schedFilter:'All',mRound:'Round of 16',lbMode:'Total'};
 const WEIGHTS={g1:3,g2:3,third:2,R32:2,R16:3,QF:5,SF:8,finalist:4,champ:15,exact:5,ending:3};
 
 function seedDemo(){
@@ -473,9 +510,9 @@ function score(p){
   const total=Object.values(bd).reduce((a,b)=>a+b,0);return{total,bd};
 }
 function standings(){
-  const rows=[];Object.keys(S.preds).forEach(n=>{if(n==='__demo')return;rows.push({name:n,pts:score(S.preds[n]).total,kind:'friend'})});
+  const rows=[];
+  if(S.user&&S.user.name!=='admin'&&S.preds[S.user.name])rows.push({name:S.user.name,pts:score(S.preds[S.user.name]).total,kind:'you'});
   rows.push({name:'Panda',pts:score(S.oracle).total,kind:'panda'});
-  if(S.user&&S.preds[S.user.name]){}else if(S.user&&S.draftSubmitted){}
   rows.sort((a,b)=>b.pts-a.pts);return rows;
 }
 
@@ -483,7 +520,7 @@ function standings(){
 const $=s=>document.querySelector(s);
 const flag=(iso,cls='')=>`<span class="flag ${cls}"><img src="https://hatscripts.github.io/circle-flags/flags/${iso}.svg" onerror="this.remove()" alt=""><i>${(iso||'').slice(0,2).toUpperCase()}</i></span>`;
 const tflag=k=>flag(ISO(k));
-function avatarBG(name){const h=hash32(name||'x');return `linear-gradient(135deg,hsl(${h%360} 80% 60%),hsl(${(h>>3)%360} 75% 48%))`}
+function avatarBG(name){const palettes=[['#1a1a2e','#16213e'],['#0f3460','#533483'],['#2d4059','#ea5455'],['#1b262c','#0f4c75'],['#364f6b','#3fc1c9'],['#303841','#d72323'],['#2b2e4a','#e84545'],['#0b0c10','#45567d'],['#1a1a2e','#e94560'],['#222831','#00adb5'],['#2c3333','#395B64'],['#1B2430','#51557E'],['#0d1b2a','#1b4965'],['#212529','#6c757d'],['#1d3557','#457b9d'],['#2b2d42','#8d99ae']];const h=hash32(name||'x');const p=palettes[h%palettes.length];return `linear-gradient(135deg,${p[0]},${p[1]})`}
 const initials=n=>(n||'?').trim().split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase();
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2200)}
 function rankColor(n){return n===0?'var(--gold)':n===1?'var(--silver)':n===2?'var(--bronze)':'var(--ink2)'}
@@ -502,11 +539,11 @@ function render(){
    </div>
    <div class="main" id="main"></div>
    <nav class="nav">
-     ${[['predict','Predict'],['schedule','Schedule'],['matches','Matches'],['leaderboard','Board'],['profile','Profile']].map(([k,l])=>`<button class="${S.tab===k?'on':''}" onclick="go('${k}')">${svgIc(k)}<span>${l}</span></button>`).join('')}
+     ${[['predict','Predict'],['schedule','Schedule'],['matches','Matches'],['leaderboard','Standings'],['profile','Profile']].map(([k,l])=>`<button class="${S.tab===k?'on':''}" onclick="go('${k}')">${svgIc(k)}<span>${l}</span></button>`).join('')}
    </nav>`;
   const v={predict:renderPredict,schedule:renderSchedule,matches:renderMatches,leaderboard:renderBoard,profile:renderProfile,admin:renderAdmin}[S.tab]||renderPredict;
   v($('#main'));
-  if(window.gsap){gsap.from('#main > *',{y:14,opacity:0,duration:.45,stagger:.05,ease:'power3.out'})}
+  
 }
 function go(tab){S.tab=tab;render();window.scrollTo({top:0,behavior:'smooth'})}
 window.go=go;
@@ -515,17 +552,32 @@ window.go=go;
 function renderLogin(){
   $('#app').innerHTML=`
   <div class="hero"><div class="hero-inner">
-    <div class="sub">Predict · Compete · Reign</div>
+    <div class="sub">WORLD CUP 2026 · FORECAST ARENA</div>
+    <svg class="zenith-emblem" width="80" height="90" viewBox="0 0 80 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="shieldGrad" x1="0" y1="0" x2="80" y2="90" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#2A95FF"/><stop offset="50%" stop-color="#0050D6"/><stop offset="100%" stop-color="#F5B301"/>
+        </linearGradient>
+        <linearGradient id="starGrad" x1="30" y1="10" x2="50" y2="50" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#FFC83C"/><stop offset="100%" stop-color="#F5B301"/>
+        </linearGradient>
+        <filter id="embGlow"><feGaussianBlur stdDeviation="3" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <path d="M40 4L8 20v30c0 18 14 30 32 36 18-6 32-18 32-36V20L40 4z" fill="url(#shieldGrad)" opacity=".92" filter="url(#embGlow)"/>
+      <path d="M40 10L14 23v25c0 15 12 26 26 31 14-5 26-16 26-31V23L40 10z" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.2"/>
+      <circle cx="40" cy="42" r="14" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.5" stroke-dasharray="3 3"/>
+      <text x="40" y="49" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-size="24" font-weight="900" fill="#fff" filter="url(#embGlow)">Z</text>
+      <polygon points="40,14 42.4,20.4 49.2,20.8 43.8,25.2 45.6,32 40,28 34.4,32 36.2,25.2 30.8,20.8 37.6,20.4" fill="url(#starGrad)" opacity=".9"/>
+    </svg>
     <div class="big">RMO<br>ZENITH</div>
-    <div class="tag2">World Cup 2026 prediction league. Beat your friends — and beat Panda.</div>
+    <div class="tag2">Predict the bracket. Track the tournament. See how you stack up.</div>
     <div class="authcard glass">
-      <div class="field"><label>Name</label><input class="inp" id="inName" placeholder="e.g. Aldyth" autocomplete="off"></div>
+      <div class="field"><label>Name</label><input class="inp" id="inName" placeholder="e.g. Panda" autocomplete="off"></div>
       <div class="field"><label>Password</label><input class="inp" id="inPw" type="password" placeholder="••••••••"></div>
       <div class="err" id="authErr"></div>
       <button class="btn primary block" id="loginBtn">Log in / Sign up</button>
-      <div style="font-size:12px;color:var(--ink2);margin-top:10px;text-align:center">New name → we create your account. Admin: <b>admin</b> / <b>rmowc2026</b></div>
+      
     </div>
-    <div class="flagrow">${['br','ar','fr','es','gb-eng','de','pt','nl','ma','jp','mx','us'].map(c=>flag(c)).join('')}</div>
   </div></div>`;
   $('#loginBtn').onclick=doLogin;$('#inPw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
   initTerrain();
@@ -558,7 +610,7 @@ function renderPredict(m){
     m.innerHTML=railHTML()+`<div class="glass" style="padding:26px;text-align:center">
       <div class="avatar" style="width:74px;height:74px;font-size:26px;margin:0 auto 12px;background:${avatarBG(S.user.name)}">${initials(S.user.name)}</div>
       <h1 style="font-size:24px;font-weight:800">Welcome, ${S.user.name}</h1>
-      <p style="color:var(--ink2);margin:8px 0 4px">Fill your bracket, then race Panda and the league. You can edit until predictions lock.</p>
+      <p style="color:var(--ink2);margin:8px 0 4px">Fill your bracket and track the tournament. You can edit until predictions lock.</p>
       </div><div class="navbtns"><span></span><button class="btn primary" onclick="stepTo(1)">Begin →</button></div>`;
     return;
   }
@@ -573,17 +625,21 @@ function stepGroups(m){
   const g=S.curGroup,gp=S.draft.groups[g]||{};
   const done=GROUPS.filter(x=>S.draft.groups[x]&&S.draft.groups[x].first&&S.draft.groups[x].second).length;
   m.innerHTML=railHTML()+`
-   <div class="page-h"><div class="lt">Stage 1</div><h1>Group Stage</h1><p>Tap 1st then 2nd in each group. Tap again to clear.</p></div>
-   <div class="statcard glass"><span class="l">Groups set</span><span class="v"><b>${done}</b> / 12</span></div>
+   <div class="page-h"><div class="lt">Stage 1</div><h1>Group Stage</h1><p>Tap 1st then 2nd in each group, or let the AI auto-fill by world ranking.</p></div>
+   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+     <div class="statcard glass" style="flex:1;margin-bottom:0"><span class="l">Groups set</span><span class="v"><b>${done}</b> / 12</span></div>
+     <button class="ai-btn" onclick="autoFillGroups()">✨ AI Auto-Fill</button>
+   </div>
    <div class="chips">${GROUPS.map(x=>{const c=S.draft.groups[x]&&S.draft.groups[x].first&&S.draft.groups[x].second;return `<button class="chip ${x===g?'on':c?'ok':''}" onclick="setGroup('${x}')">${x}</button>`}).join('')}</div>
    <div class="gcard glass">
      <div class="gh"><div class="nm"><span class="gdot" style="background:${gColor(g)}"></span>Group ${g}</div></div>
      <div class="section-lt">1st & 2nd place</div>
-     ${gTeams[g].map(k=>{let cls='trow';if(gp.first===k)cls+=' first';else if(gp.second===k)cls+=' second';const pos=gp.first===k?'1ST':gp.second===k?'2ND':'';return `<div class="${cls}" onclick="pickGroup('${g}','${k}')">${tflag(k)}<span class="nm">${NAME(k)}</span><span class="pos">${pos}</span></div>`}).join('')}
+     ${gTeams[g].map(k=>{let cls='trow';if(gp.first===k)cls+=' first';else if(gp.second===k)cls+=' second';const pos=gp.first===k?'1ST':gp.second===k?'2ND':'';return `<div class="${cls}" onclick="pickGroup('${g}','${k}')">${tflag(k)}<span class="nm">${NAME(k)}</span>${eloPillHTML(k)}<span class="pos">${pos}</span></div>`}).join('')}
    </div>
    <div class="navbtns"><button class="btn ghost" onclick="stepTo(0)">← Back</button><button class="btn primary" ${done<12?'disabled':''} onclick="stepTo(2)">Next: 3rd places →</button></div>`;
 }
 window.setGroup=g=>{S.curGroup=g;render()};
+window.autoFillGroups=()=>{GROUPS.forEach(g=>{const sorted=gTeams[g];S.draft.groups[g]={first:sorted[0],second:sorted[1]}});S.draft.ko={};S.draft.thirds=[];S.draft.thirdAssign=null;S.draft.final={};toast('Auto-filled all groups by world ranking');render()};
 window.pickGroup=(g,k)=>{const gp=S.draft.groups[g]||(S.draft.groups[g]={first:'',second:''});if(gp.first===k)gp.first='';else if(gp.second===k)gp.second='';else if(!gp.first)gp.first=k;else if(!gp.second)gp.second=k;else gp.second=k;S.draft.ko={};S.draft.thirds=[];S.draft.thirdAssign=null;S.draft.final={};render()};
 function stepThirds(m){
   const cand=computeThirdCandidates();const sel=S.draft.thirds||[];
@@ -673,31 +729,34 @@ function showSubmitted(){
     <div class="glass" style="padding:14px;text-align:left;background:var(--surface2)">
       <div class="breakrow"><span>Champion</span><b style="display:inline-flex;gap:8px;align-items:center">${tflag(p.final.champion)} ${NAME(p.final.champion)}</b></div>
       <div class="breakrow"><span>Final</span><b>${p.final.scoreA}–${p.final.scoreB}${p.final.ending==='penalties'?' (pens)':''}</b></div>
-      <div class="breakrow" style="border:none"><span>vs Panda</span><b>${score(p).total} pts</b></div>
+      <div class="breakrow" style="border:none"><span>Your points</span><b>${score(p).total} pts</b></div>
     </div>
-    <button class="btn primary block" style="margin-top:16px" onclick="go('leaderboard')">See leaderboard →</button>
+    <button class="btn primary block" style="margin-top:16px" onclick="go('leaderboard')">See standings →</button>
   </div>`;
-  if(window.gsap){gsap.from('#okring',{scale:.4,opacity:0,duration:.6,ease:'back.out(2)'});confetti()}
+  
 }
 
 /* ============ SCHEDULE ============ */
 function renderSchedule(m){
-  const filt=S.schedFilter;
+  const filt=S.schedFilter||'All';
   let fixtures=[];
-  if(filt!=='Knockout')GF.forEach((f,i)=>fixtures.push({d:f[0],t:f[1],rd:'Group '+f[2],a:f[3],b:f[4],v:f[5],c:f[6],co:f[7],key:'G'+i}));
-  if(filt!=='Group')KF.forEach(f=>{const [a,b]=mySlot(f[2]);fixtures.push({d:f[0],t:f[1],rd:roundOf[f[2]]||'Final',a,b,sa:KO[f[2]][0],sb:KO[f[2]][1],v:f[3],c:f[4],co:f[5],key:'M'+f[2]})});
-  if(filt==='Mine'){const mine=myTeams();fixtures=fixtures.filter(f=>mine.has(f.a)||mine.has(f.b))}
+  if(filt==='Group'||filt==='All')GF.forEach((f,i)=>fixtures.push({d:f[0],t:f[1],rd:'Group '+f[2],a:f[3],b:f[4],v:f[5],c:f[6],co:f[7],key:'G'+i}));
+  if(filt==='Knockout'||filt==='All')KF.forEach(f=>{const [a,b]=mySlot(f[2]);fixtures.push({d:f[0],t:f[1],rd:roundOf[f[2]]||'Final',a,b,sa:KO[f[2]][0],sb:KO[f[2]][1],v:f[3],c:f[4],co:f[5],key:'M'+f[2]})});
   fixtures.sort((a,b)=>order(a)-order(b));
-  // next match countdown (demo: first fixture)
+  const q=(S.schedQuery||'').toLowerCase().trim();
+  if(q){fixtures=fixtures.filter(f=>{const haystack=[f.d,f.t,f.rd,f.a?NAME(f.a):'',f.b?NAME(f.b):'',f.v||'',f.c||'',CONAME[f.co]||''].join(' ').toLowerCase();return haystack.includes(q)})}
   m.innerHTML=`<div class="page-h"><div class="lt">All times Qatar 🇶🇦 (AST)</div><h1>Schedule</h1></div>
-   <div style="display:flex;justify-content:center;margin-bottom:6px"><div class="seg">${['Group','Knockout','Mine'].map(x=>`<button class="${filt===x?'on':''}" onclick="setSched('${x}')">${x}</button>`).join('')}</div></div>
+   <div class="search-bar"><span class="sico">🔍</span><input id="schedSearch" value="${S.schedQuery||''}" placeholder="Search by date, team, city, venue…" oninput="schedSearchFn(this.value)"></div>
+   <div style="display:flex;justify-content:center;margin-bottom:6px"><div class="seg">${['All','Group','Knockout'].map(x=>`<button class="${filt===x?'on':''}" onclick="setSched('${x}')">${x}</button>`).join('')}</div></div>
    ${groupByDay(fixtures)}`;
+  const si=document.getElementById('schedSearch');if(si&&S.schedQuery){si.focus();si.setSelectionRange(si.value.length,si.value.length)}
 }
 window.setSched=x=>{S.schedFilter=x;render()};
+window.schedSearchFn=v=>{S.schedQuery=v;render()};
 function mySlot(id){const p=S.preds[S.user.name];if(!p)return ['',''];return [resolveSlot(p,KO[id][0]),resolveSlot(p,KO[id][1])]}
 function myTeams(){const p=S.preds[S.user.name];const s=new Set();if(p)GROUPS.forEach(g=>{if(p.groups[g]){s.add(p.groups[g].first);s.add(p.groups[g].second)}});(p&&p.thirds||[]).forEach(t=>s.add(t));return s}
 const MO={Jun:6,Jul:7};function order(f){const [d,mo]=f.d.split(' ');return MO[mo]*100+ +d + (f.t<'12:00'?0.5:0)}
-function groupByDay(fx){let out='',cur='';fx.forEach(f=>{if(f.d!==cur){cur=f.d;out+=`<div class="daylt">${f.d}</div>`}out+=fixHTML(f)});return out||'<div style="color:var(--ink2);text-align:center;padding:30px">No matches match this filter yet — finish your bracket to see "Mine".</div>'}
+function groupByDay(fx){let out='',cur='';fx.forEach(f=>{if(f.d!==cur){cur=f.d;out+=`<div class="daylt">${f.d}</div>`}out+=fixHTML(f)});return out||'<div style="color:var(--ink2);text-align:center;padding:30px">No matches found for this filter.</div>'}
 function fixHTML(f){
   const tA=f.a?`${tflag(f.a)} ${NAME(f.a)}`:`<span class="flag" style="opacity:.4"></span> <span style="color:var(--ink3)">${slotLabel(f.sa)}</span>`;
   const tB=f.b?`${NAME(f.b)} ${tflag(f.b)}`:`<span style="color:var(--ink3)">${slotLabel(f.sb)}</span> <span class="flag" style="opacity:.4"></span>`;
@@ -731,21 +790,15 @@ window.setMRound=x=>{S.mRound=x;render()};
 function mresHTML(id,me){
   const o=S.official.matches[id]||{};const pub=o.status==='published'&&o.winner;
   const [a,b]=oResolve(id);
-  const pPick=S.oracle.ko[id],yPick=me?me.ko[id]:'';
-  // % of friends who picked each side (only meaningful if teams known) — use winner team popularity
-  let pct=0,denom=0,picksW={};if(a&&b){Object.keys(S.preds).forEach(n=>{if(n==='__demo')return;const w=S.preds[n].ko[id];if(w){denom++;picksW[w]=(picksW[w]||0)+1}})}
-  if(pub&&denom)pct=Math.round((picksW[o.winner]||0)/denom*100);
-  const yTag=me&&yPick&&pub?(yPick===o.winner?`<span class="tagok">you ✓</span>`:`<span class="tagno">you ✗</span>`):'';
-  const pTag=pPick&&pub?(pPick===o.winner?`<span class="tagok">Panda ✓</span>`:`<span class="tagno">Panda ✗</span>`):'';
   if(pub){
     const wa=o.winner===a;
-    return `<div class="mres glass"><div class="row1">${tflag(a)}<span class="nm" style="${wa?'font-weight:900':''}">${NAME(a)}</span><span class="sc">${''}</span><span class="vsx">${'beat'}</span><span class="nm" style="${!wa?'font-weight:900':''}">${NAME(b)}</span>${tflag(b)}</div>
-     <div class="meta"><span>${yTag} ${yTag&&pTag?'·':''} ${pTag}</span><span>${denom?pct+'% picked '+NAME(o.winner):''}</span></div></div>`;
+    const kf=KF.find(f=>f[2]===id);
+    return `<div class="mres glass"><div class="row1">${tflag(a)}<span class="nm" style="${wa?'font-weight:900':''}">${NAME(a)}</span>${wa?'<span class="winner-badge">✓ Winner</span>':''}<span class="sc"></span><span class="vsx">vs</span><span class="nm" style="${!wa?'font-weight:900':''}">${NAME(b)}</span>${!wa?'<span class="winner-badge">✓ Winner</span>':''}${tflag(b)}</div>
+     <div class="meta"><span>${roundOf[id]||'Match '+id}</span><span>${kf?kf[0]+' · '+kf[4]:''}</span></div></div>`;
   }
-  // upcoming
   const kf=KF.find(f=>f[2]===id);
   return `<div class="mres glass"><div class="row1">${a?tflag(a):'<span class="flag" style="opacity:.4"></span>'}<span class="nm">${a?NAME(a):slotLabel(KO[id][0])}</span><span class="vsx">vs</span><span class="nm">${b?NAME(b):slotLabel(KO[id][1])}</span>${b?tflag(b):'<span class="flag" style="opacity:.4"></span>'}</div>
-   <div class="meta"><span>${me&&yPick?'you: '+NAME(yPick):''} ${pPick?'· Panda: '+NAME(pPick):''}</span><span>${svgIc('clock')} ${kf?kf[0]+' '+kf[1]+' Qatar':''}</span></div></div>`;
+   <div class="meta"><span>Pending result</span><span>${svgIc('clock')} ${kf?kf[0]+' '+kf[1]+' Qatar':''}</span></div></div>`;
 }
 function oResolve(id){ // resolve teams from official results where known, else from tree using official winners
   const o=S.official;
@@ -760,23 +813,45 @@ window.pandaInfo=()=>openModal('How Panda predicts',`
 /* ============ LEADERBOARD ============ */
 function renderBoard(m){
   let rows=standings();
-  // include current user live (draft submitted -> already in preds)
-  const prevOrder=LS.get('lb_prev',null);
-  rows.forEach((r,i)=>{r.rank=i;if(prevOrder){const pi=prevOrder.indexOf(r.name);r.delta=pi<0?0:pi-i}else r.delta=0});
-  LS.set('lb_prev',rows.map(r=>r.name));
-  const top=rows.slice(0,3);
-  const podOrder=[top[1],top[0],top[2]].filter(Boolean);
-  m.innerHTML=`<div class="page-h"><div class="lt">● Live · ${rows.length} players</div><h1>Leaderboard</h1></div>
-   <div class="podium">${podOrder.map(r=>{const rk=r.rank;return `<div class="pod glass p${rk+1}"><div class="medal">${['🥇','🥈','🥉'][rk]}</div><div class="av" style="background:${r.kind==='panda'?'var(--ivory)':avatarBG(r.name)};${r.kind==='panda'?'box-shadow:inset 0 0 0 2px rgba(245,179,1,.6)':''}">${r.kind==='panda'?pandaSVG(28):initials(r.name)}</div><div class="nm">${r.name}</div><div class="pt">${r.pts}</div></div>`}).join('')}</div>
-   <div class="glass" style="padding:4px 4px">
-     ${rows.map(r=>{const you=S.user&&r.name===S.user.name;const d=r.delta;const dcls=d>0?'up':d<0?'down':'same';const dtxt=d>0?'▲'+d:d<0?'▼'+(-d):'—';
-       return `<div class="lbrow ${you?'you':''} ${r.kind==='panda'?'panda':''}" onclick="openBreak('${r.name}','${r.kind}')">
-         <span class="rk">${r.rank+1}</span>
-         <span class="av" style="background:${r.kind==='panda'?'var(--ivory)':avatarBG(r.name)}">${r.kind==='panda'?pandaSVG(20):initials(r.name)}</span>
-         <span class="nm">${r.name}${you?' <span style="color:var(--tint);font-size:11px">· you</span>':''}</span>
-         <span class="pt">${r.pts}</span><span class="dl ${dcls}">${dtxt}</span></div>`}).join('')}
-   </div>`;
-  if(window.gsap){gsap.from('.lbrow',{x:-12,opacity:0,stagger:.03,duration:.4,ease:'power2.out'});gsap.from('.pod',{y:18,opacity:0,stagger:.08,duration:.5,ease:'back.out(1.5)'})}
+  const me=rows.find(r=>r.kind==='you');
+  const panda=rows.find(r=>r.kind==='panda');
+  const meScore=me?score(S.preds[me.name]):{total:0,bd:{}};
+  const pandaScore=score(S.oracle);
+  const leader=rows[0];
+  m.innerHTML=`<div class="page-h"><div class="lt">● Live standings</div><h1>Standings</h1></div>
+   <div class="h2h-card glass">
+     <div style="font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink3);margin-bottom:8px">Head to Head</div>
+     <div class="versus">
+       <div class="side">
+         <div class="avatar" style="width:56px;height:56px;font-size:20px;background:${me?avatarBG(me.name):'var(--surface2)'}">${me?initials(me.name):'?'}</div>
+         <div class="nm">${me?me.name:'You'}</div>
+         <div class="score">${me?me.pts:0}</div>
+         <div style="font-size:11px;color:var(--ink2);font-weight:600">points</div>
+       </div>
+       <div class="divider">vs</div>
+       <div class="side">
+         <div style="width:56px;height:56px;border-radius:50%;background:var(--ivory);display:grid;place-items:center;box-shadow:inset 0 0 0 2px rgba(245,179,1,.6);margin:0 auto">${pandaSVG(36)}</div>
+         <div class="nm">Panda</div>
+         <div class="score">${panda?panda.pts:0}</div>
+         <div style="font-size:11px;color:var(--ink2);font-weight:600">points</div>
+       </div>
+     </div>
+     ${leader?`<div style="margin-top:8px;padding:8px 14px;border-radius:10px;background:rgba(245,179,1,.12);text-align:center;font-weight:700;font-size:13px">🏆 ${leader.kind==='panda'?'Panda':leader.name} is leading</div>`:''}
+   </div>
+   <div class="section-lt">Points breakdown</div>
+   ${rows.map(r=>{
+     const sc=r.kind==='panda'?pandaScore:meScore;
+     const isPanda=r.kind==='panda';
+     return `<div class="glass" style="padding:14px;margin-bottom:10px" onclick="openBreak('${r.name}','${r.kind}')">
+       <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+         <span class="av" style="width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:14px;background:${isPanda?'var(--ivory)':avatarBG(r.name)};${isPanda?'box-shadow:inset 0 0 0 2px rgba(245,179,1,.6)':''}">${isPanda?pandaSVG(22):initials(r.name)}</span>
+         <div style="flex:1"><div style="font-weight:800">${r.name}${r.kind==='you'?' <span style="color:var(--tint);font-size:11px">· you</span>':''}</div></div>
+         <div style="font-weight:900;font-size:20px">${r.pts}</div>
+       </div>
+       <div style="display:flex;gap:6px;flex-wrap:wrap">${['Groups','Thirds','R32','R16','QF','SF','Final'].map(k=>
+         `<span style="padding:4px 8px;border-radius:8px;background:var(--surface2);font-size:11px;font-weight:700"><span style="color:var(--ink3)">${k}</span> <b style="color:var(--tint)">${sc.bd[k]||0}</b></span>`
+       ).join('')}</div>
+     </div>`}).join('')}`;
 }
 window.openBreak=(name,kind)=>{
   const p=kind==='panda'?S.oracle:S.preds[name];const sc=score(p);
@@ -875,7 +950,7 @@ function initTerrain(){
     const mesh=new THREE.Mesh(geo,mat);sc.add(mesh);
     sc.add(new THREE.AmbientLight(0xffffff,.8));const dl=new THREE.DirectionalLight(0x66aaff,.7);dl.position.set(3,5,2);sc.add(dl);
     const pos=geo.attributes.position;const base=[];for(let i=0;i<pos.count;i++)base.push(pos.getX(i),pos.getY(i),pos.getZ(i));
-    let t=0;function loop(){t+=0.012;for(let i=0;i<pos.count;i++){const x=base[i*3],z=base[i*3+2];const y=Math.sin(x*0.4+t)*0.5+Math.cos(z*0.5+t*0.8)*0.5;pos.setY(i,y)}pos.needsUpdate=true;mesh.rotation.y=Math.sin(t*0.1)*0.1;rn.render(sc,cam);terrainAnim=requestAnimationFrame(loop)}
+    let t=0;function loop(){t+=0.004;for(let i=0;i<pos.count;i++){const x=base[i*3],z=base[i*3+2];const y=Math.sin(x*0.4+t)*0.5+Math.cos(z*0.5+t*0.8)*0.5;pos.setY(i,y)}pos.needsUpdate=true;mesh.rotation.y=Math.sin(t*0.04)*0.06;rn.render(sc,cam);terrainAnim=requestAnimationFrame(loop)}
     if(!matchMedia('(prefers-reduced-motion: reduce)').matches)loop();else rn.render(sc,cam);
     window.addEventListener('resize',()=>{rn.setSize(window.innerWidth,window.innerHeight);cam.aspect=window.innerWidth/window.innerHeight;cam.updateProjectionMatrix()});
   }catch(e){}
