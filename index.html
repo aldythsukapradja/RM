@@ -582,10 +582,7 @@ const LS={get(k,d){try{const v=localStorage.getItem('zen_'+k);return v?JSON.pars
 const HARDCODED_GEMINI_KEY='AQ.Ab8RN6K2hlRtOjvI1hpOz8mkKb05hAnd88CP1AfVAPDMV4QM3A';
 const SHEETS_API_URL='https://script.google.com/macros/s/AKfycby6gGEuATCTT1ysXZG9t4YS_4N8HwASJ8U7_HXfruRCEaspdxPNMvB4LU9hTsUnwcv7/exec';
 const CHAT_SUGGESTIONS=[
-  'Compare Portugal vs Argentina',
-  'What are Brazil\'s title chances?',
-  'Give me the squad strength of Spain',
-  'Summarize Germany\'s recent achievements',
+
   'Autofill my full bracket'
 ];
 const THINK_STEPS=['Scanning tournament context','Comparing squads and form','Projecting match paths','Packaging the answer'];
@@ -682,7 +679,7 @@ async function syncCloudState(){
 function render(){
   if(!S.user){return renderLogin()}
   const app=$('#app');
-  const tabs=[['predict','Predict'],['schedule','Schedule'],['matches','Matches'],['chatbot','Chatbot'],['leaderboard','Standings'],['profile','Profile']];
+  const tabs=[['predict','Predict'],['schedule','Schedule'],['matches','Matches'],['leaderboard','Standings'],['chatbot','Agent'],['profile','Profile']];
   app.innerHTML=`
    <div class="topbar">
      <div class="brand"><span class="wm"><span class="z">Z</span>ZENITH</span><span class="tag">RMO · WC26</span></div>
@@ -1028,7 +1025,7 @@ function chatFeedHTML(){
   </div>`).join('');
 }
 function chatStatusHTML(){
-  return S.geminiKey?`<span class="agent-status"><i></i>Gemini 2.5 Flash connected</span>`:`<span class="agent-status"><i></i>Gemini key needed</span>`;
+  return S.geminiKey?`<span class="agent-status"><i></i>Agent Live</span>`:`<span class="agent-status"><i></i>Gemini key needed</span>`;
 }
 function renderChatbot(m){
   const remaining=500-(S.chatDraft||'').length;
@@ -1038,15 +1035,15 @@ function renderChatbot(m){
         <div class="agent-mark">
           <div class="agent-orb">Z</div>
           <div>
-            <div class="agent-name">Zenith Intelligence</div>
-            <div class="agent-copy">Fast Gemini guidance for probabilities, squad strength, recent achievements, and one-tap bracket autofill.</div>
+            <div class="agent-name">RMO Zenith</div>
+            <div class="agent-copy"> Worldcup Forecast Agent</div>
           </div>
         </div>
         ${chatStatusHTML()}
       </div>
       <div class="agent-feed" id="agentFeed">${chatFeedHTML()}</div>
       ${S.agentBusy?`<div class="agent-think"><div class="agent-dots"><i></i><i></i><i></i></div><div class="agent-phase">${THINK_STEPS[S.agentPhase%THINK_STEPS.length]}</div></div>`:''}
-      <div class="agent-sugs">${CHAT_SUGGESTIONS.map(s=>`<button onclick='useSuggestion(${JSON.stringify(s)})'>${escapeHTML(s)}</button>`).join('')}</div>
+
       <div class="agent-compose">
       <textarea id="chatPrompt" maxlength="500" placeholder="Ask about a team, a matchup, recent achievements, or tell Zenith to autofill your bracket..." oninput="S.chatDraft=this.value">${S.chatDraft||''}</textarea>
       <div class="row">
