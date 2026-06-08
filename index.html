@@ -59,8 +59,30 @@ input{font-family:inherit}
 .btn:disabled{opacity:.45;pointer-events:none}
 
 /* layout shell */
-.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;
-  padding:calc(env(safe-area-inset-top) + 10px) 16px 10px;}
+.topbar{
+  position:sticky;
+  top:10px;
+  z-index:20;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  margin:12px;
+  padding:14px 18px;
+
+  background:rgba(255,255,255,.55);
+  backdrop-filter:blur(24px) saturate(180%);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);
+
+  border:1px solid rgba(255,255,255,.6);
+  border-radius:20px;
+
+  box-shadow:
+    0 10px 30px rgba(31,52,110,.12),
+    inset 0 1px 0 rgba(255,255,255,.6);
+}
+
 .brand{display:flex;align-items:center;gap:10px}
 .brand .wm{font-weight:800;letter-spacing:.5px;font-size:18px;display:flex;align-items:center;gap:7px}
 .brand .z{width:26px;height:26px;display:grid;place-items:center;border-radius:8px;
@@ -579,13 +601,13 @@ function wpPillHTML(k){return `<span class="wp-pill ${wpClass(k)}">${wcPct(k)}% 
 
 /* ============ STATE / STORAGE ============ */
 const LS={get(k,d){try{const v=localStorage.getItem('zen_'+k);return v?JSON.parse(v):d}catch(e){return (this.mem&&this.mem[k])??d}},set(k,v){try{localStorage.setItem('zen_'+k,JSON.stringify(v))}catch(e){(this.mem=this.mem||{})[k]=v}}};
-const HARDCODED_GEMINI_KEY='AQ.Ab8RN6K2hlRtOjvI1hpOz8mkKb05hAnd88CP1AfVAPDMV4QM3A';
+const HARDCODED_GEMINI_KEY='AQ.Ab8RN6IwD1K0QYIi1biWxppgQF20bc6b7jA3IlD0b00kOpktSw';
 const SHEETS_API_URL='https://script.google.com/macros/s/AKfycby6gGEuATCTT1ysXZG9t4YS_4N8HwASJ8U7_HXfruRCEaspdxPNMvB4LU9hTsUnwcv7/exec';
 const CHAT_SUGGESTIONS=[
 
   'Autofill my full bracket'
 ];
-const THINK_STEPS=['Scanning tournament context','Comparing squads and form','Projecting match paths','Packaging the answer'];
+const THINK_STEPS=['Thinking. . .'];
 let S={user:LS.get('user',null),userPw:LS.get('userPw',''),preds:LS.get('preds',{}),official:LS.get('official',null),oracle:LS.get('oracle',null),tab:'predict',step:0,draft:null,curGroup:'A',koRound:0,schedFilter:'All',mRound:'Round of 16',lbMode:'Total',chatMessages:LS.get('chatMessages',[]),chatDraft:'',geminiKey:HARDCODED_GEMINI_KEY,agentBusy:false,agentPhase:0};
 const WEIGHTS={g1:3,g2:3,third:2,R32:2,R16:3,QF:5,SF:8,finalist:4,champ:15,exact:5,ending:3};
 
@@ -719,10 +741,10 @@ function renderLogin(){
     <div class="big">RMO<br>ZENITH</div>
     <div class="tag2">Predict the bracket. Track the tournament. See how you stack up.</div>
     <div class="authcard glass">
-      <div class="field"><label>Name</label><input class="inp" id="inName" placeholder="e.g. Aldyth" autocomplete="off"></div>
-      <div class="field"><label>Password</label><input class="inp" id="inPw" type="password" placeholder="••••••••"></div>
+      <div class="field"><label>Name</label><input class="inp" id="inName" placeholder="<<YOUR USERNAME HERE>>" autocomplete="off"></div>
+      <div class="field"><label>Password</label><input class="inp" id="inPw" type="password" placeholder="<<PASSWORD>>"></div>
       <div class="err" id="authErr"></div>
-      <button class="btn primary block" id="loginBtn">Log in / Sign up</button>
+      <button class="btn primary block" id="loginBtn">Log in</button>
     </div>
   </div></div>`;
   $('#loginBtn').onclick=doLogin;$('#inPw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
@@ -1048,7 +1070,7 @@ function renderChatbot(m){
       <textarea id="chatPrompt" maxlength="500" placeholder="Ask about a team, a matchup, recent achievements, or tell Zenith to autofill your bracket..." oninput="S.chatDraft=this.value">${S.chatDraft||''}</textarea>
       <div class="row">
         <button class="btn primary" onclick="chatSend()" ${S.agentBusy?'disabled':''}>Ask Gemini</button>
-        <button class="btn ghost" onclick="chatFill()" ${S.agentBusy?'disabled':''}>Auto-fill bracket</button>
+        <button class="btn ghost" onclick="chatFill()" ${S.agentBusy?'disabled':''}>Automated Prediction</button>
       </div>
       <div class="agent-limit">${remaining} characters left</div>
       </div>
