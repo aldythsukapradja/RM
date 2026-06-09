@@ -1662,7 +1662,7 @@ function zDark(seed){
 }
 function zGreet(seed){
   const txt=zSeedPick([
-    `I'm RMO Zenith — your World Cup 2026 analyst. Ask me about any of the 48 teams, a head-to-head, group standings, title odds, or tell me to fill your bracket.`,
+    `I'm RMO World Cup Agent — your World Cup 2026 analyst. Ask me about any of the 48 teams, a head-to-head, group standings, title odds, or tell me to fill your bracket.`,
     `Hey! I run thousands of tournament simulations to forecast World Cup 2026. Try a matchup, a team profile, or "fill my bracket".`
   ],seed+'gr');
   return {type:'text',text:txt,chips:['Top 5 contenders','Argentina vs Brazil','Dark horses','Fill my bracket']};
@@ -1761,7 +1761,7 @@ function renderChatbot(m){
     <div class="whead">
       <button class="wback" onclick="go('predict')">${svgIc('back')}</button>
       <div class="worb ${S.agentBusy?'busy':''}">Z</div>
-      <div class="whead-i"><div class="wh-name">RMO Zenith</div><div class="wh-status">${S.agentBusy?'<span class="typing">analyzing…</span>':'<span class="dot-on"></span>Online · World Cup Agent'}</div></div>
+      <div class="whead-i"><div class="wh-name">RMO World Cup Agent</div><div class="wh-status">${S.agentBusy?'<span class="typing">analyzing…</span>':'<span class="dot-on"></span>Online · World Cup Agent'}</div></div>
       <button class="wmenu" onclick="chatMenu()">${svgIc('dots')}</button>
     </div>
     <div class="wfeed" id="agentFeed">${chatFeedHTML()}
