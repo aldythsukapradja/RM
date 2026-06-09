@@ -343,31 +343,93 @@ input{font-family:inherit}
 .wp-pill.gray{background:rgba(118,118,128,.12);color:var(--ink3)}
 
 /* ZENITH INTELLIGENCE auto-fill button — white fill, glowing gradient border, blue text */
-.ai-btn{position:relative;display:inline-flex;align-items:center;gap:10px;padding:13px 17px;border-radius:14px;font-weight:800;font-size:13.5px;
-  letter-spacing:.2px;color:var(--tint2);border:none;cursor:pointer;isolation:isolate;white-space:nowrap;
-  background:var(--solid);
-  box-shadow:0 4px 14px rgba(10,80,214,.16);
-  transition:transform .14s,box-shadow .14s}
-/* animated glowing gradient OUTER border */
-.ai-btn::before{content:"";position:absolute;inset:-2.5px;z-index:-1;border-radius:16px;
-  background:linear-gradient(120deg,#0A84FF,#8E4DFF,#F5B301,#0A84FF);background-size:300% 300%;
-  filter:blur(6px);opacity:.85;animation:aiGlow 4.5s ease-in-out infinite}
-/* crisp gradient ring directly on the edge */
-.ai-btn::after{content:"";position:absolute;inset:-1.5px;z-index:-1;border-radius:15.5px;
-  background:linear-gradient(120deg,#0A84FF,#8E4DFF,#F5B301,#0A84FF);background-size:300% 300%;
-  animation:aiGlow 4.5s ease-in-out infinite}
-@keyframes aiGlow{0%,100%{background-position:0% 50%;opacity:.85}50%{background-position:100% 50%;opacity:1}}
-.ai-btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(10,80,214,.24)}
-.ai-btn:active{transform:scale(.98)}
-.ai-btn .ai-spark{width:17px;height:17px;flex:none}
-.ai-btn .ai-spark path{fill:url(#aiGrad)}
-.ai-btn .ai-txt{display:flex;flex-direction:column;align-items:flex-start;line-height:1.12;text-align:left}
-.ai-btn .ai-sub{font-size:10px;font-weight:600;color:var(--ink3)}
-.ai-btn .ai-badge{display:none}
-/* compact inline variant (sits beside the group counter) */
-.ai-btn.compact{padding:12px 15px}
-.ai-btn.compact .ai-sub{display:none}
+/* Zenith AI Compact */
+.ai-btn{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
 
+  height:52px;
+  padding:0 14px;
+
+  border-radius:14px;
+  background:#fff;
+
+  color:var(--tint2);
+  border:none;
+  cursor:pointer;
+
+  isolation:isolate;
+  white-space:nowrap;
+
+  box-shadow:none;
+  transition:.15s;
+}
+
+/* outer glow */
+.ai-btn::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  z-index:-2;
+  border-radius:16px;
+
+  background:linear-gradient(
+    120deg,
+    #0A84FF,
+    #8E4DFF,
+    #F5B301,
+    #0A84FF
+  );
+
+  background-size:300% 300%;
+  filter:blur(8px);
+  opacity:.7;
+
+  animation:aiGlow 5s linear infinite;
+}
+
+/* border ring */
+.ai-btn::after{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  z-index:-1;
+  border-radius:15px;
+
+  background:#ffffff;
+
+  background-size:300% 300%;
+  animation:aiGlow 5s linear infinite;
+}
+
+.ai-btn .ai-spark{
+  width:14px;
+  height:14px;
+}
+
+.ai-btn .ai-txt{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  line-height:1;
+}
+
+.ai-btn .ai-sub{
+  display:none;
+}
+
+.ai-btn{
+  font-size:12px;
+  font-weight:800;
+}
+
+.ai-btn.compact{
+  height:52px;
+  padding:0 12px;
+}
 .score-sys{padding:16px;margin-bottom:14px}
 .score-sys h3{font-size:14px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .search-bar{position:relative;margin-bottom:12px}
