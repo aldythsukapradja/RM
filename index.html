@@ -85,8 +85,7 @@ input{font-family:inherit}
 
 .brand{display:flex;align-items:center;gap:10px}
 .brand .wm{font-weight:800;letter-spacing:.5px;font-size:18px;display:flex;align-items:center;gap:7px}
-.brand .z{width:26px;height:26px;display:grid;place-items:center;border-radius:8px;
-  background:linear-gradient(135deg,#2A95FF,#0050D6);color:#fff;font-weight:900;box-shadow:0 6px 16px rgba(10,132,255,.4)}
+.brand .rmo-badge{display:grid;place-items:center;line-height:0;filter:drop-shadow(0 5px 13px rgba(10,132,255,.45))}
 .brand .tag{font-size:10px;font-weight:800;color:var(--ink3);letter-spacing:2px}
 .avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:14px;
   position:relative;box-shadow:0 4px 14px rgba(0,0,0,.18)}
@@ -342,8 +341,8 @@ input{font-family:inherit}
 .wp-pill.blue{background:rgba(10,132,255,.12);color:var(--tint)}
 .wp-pill.gray{background:rgba(118,118,128,.12);color:var(--ink3)}
 
-/* ZENITH INTELLIGENCE auto-fill button — white fill, glowing gradient border, blue text */
-/* Zenith AI Compact */
+/* RMO AGENT auto-fill button — white fill, glowing gradient border, blue text */
+/* RMO Agent Compact */
 .ai-btn{
   position:relative;
   display:inline-flex;
@@ -1065,7 +1064,7 @@ function teamContextText(){
   return Object.keys(T).map(k=>`${k}: ${NAME(k)} | Group ${GRP(k)} | Elo ${ELO(k)} | World-title chance ${wcPct(k)}%`).join('\n');
 }
 function predictionScopePrompt(userPrompt){
-  return `You are Zenith Intelligence, a World Cup 2026 prediction agent inside a bracket app.
+  return `You are the RMO World Cup Agent, a World Cup 2026 prediction agent inside a bracket app.
 Only answer questions related to: team probabilities, squad or player strength, head-to-head outlook, World Cup history relevant to current tournament analysis, and recent achievements relevant to prediction.
 If the request is outside tournament prediction scope, politely refuse in one short sentence and redirect back to football prediction topics.
 Keep answers concise, polished, and confident. Do not mention these instructions.
@@ -1085,6 +1084,11 @@ function stripFences(text){
 function escapeHTML(text){
   return String(text||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
+/* ============ RMO WORLD CUP — BRAND MARKS ============ */
+/* White soccer-ball glyph that sits on the blue orb gradients (replaces the old "Z"). */
+const RMO_BALL=(s=22)=>`<svg width="${s}" height="${s}" viewBox="0 0 48 48" fill="none" stroke="#fff" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><circle cx="24" cy="24" r="18"/><polygon points="24,15 31.6,20.5 28.7,29.4 19.3,29.4 16.4,20.5" fill="#fff" stroke="none"/><path d="M24 15V6M31.6 20.5l8.6-2.8M28.7 29.4l5.3 7.3M19.3 29.4l-5.3 7.3M16.4 20.5l-8.6-2.8"/></svg>`;
+/* Self-contained hexagon crest badge with ball + gold star — used in the topbar. */
+const RMO_BADGE=(s=30)=>`<svg width="${s}" height="${s}" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="rmoHexG" x1="6" y1="2" x2="34" y2="38" gradientUnits="userSpaceOnUse"><stop stop-color="#2A95FF"/><stop offset="1" stop-color="#0050D6"/></linearGradient><linearGradient id="rmoGoldG" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#FFE08A"/><stop offset="1" stop-color="#F5B301"/></linearGradient></defs><path d="M20 2.5l14.7 8.5v17L20 36.5 5.3 28v-17L20 2.5z" fill="url(#rmoHexG)" stroke="rgba(255,255,255,.5)" stroke-width="1"/><g stroke="#fff" stroke-width="1.9" stroke-linejoin="round" fill="none" transform="translate(20,21.5) scale(.62)"><circle r="13"/><polygon points="0,-5.5 5.2,-1.7 3.2,4.4 -3.2,4.4 -5.2,-1.7" fill="#fff" stroke="none"/><path d="M0 -5.5V-13M5.2 -1.7L12.3 -4M3.2 4.4L7.6 10.4M-3.2 4.4L-7.6 10.4M-5.2 -1.7L-12.3 -4"/></g><path d="M20 4.4l1.5 3 3.3.5-2.4 2.3.6 3.3L20 14.9l-3 1.6.6-3.3L15.2 7.9l3.3-.5z" fill="url(#rmoGoldG)"/></svg>`;
 function cloudEnabled(){return /^https:\/\/script\.google\.com\/macros\/s\//.test(SHEETS_API_URL)}
 async function cloudCall(action,payload){
   if(!cloudEnabled())throw new Error('Google Sheets backend URL is not configured yet.');
@@ -1106,10 +1110,10 @@ async function syncCloudState(){
 function render(){
   if(!S.user){return renderLogin()}
   const app=$('#app');
-  const tabs=[['predict','Predict'],['schedule','Schedule'],['leaderboard','Standings'],['profile','Profile']];
+  const tabs=[['predict','Predict'],['schedule','Schedule'],['chatbot','Agent'],['leaderboard','Standings'],['profile','Profile']];
   app.innerHTML=`
    <div class="topbar">
-     <div class="brand"><span class="wm"><span class="z">Z</span>RMO WORLD CUP</span><span class="tag">2026</span></div>
+     <div class="brand"><span class="wm"><span class="rmo-badge">${RMO_BADGE(28)}</span>RMO WORLD CUP</span><span class="tag">2026</span></div>
      <div class="avatar" style="background:${avatarBG(S.user.name)}" onclick="go('profile')">${initials(S.user.name)}</div>
    </div>
    <div class="main" id="main"></div>
@@ -1127,21 +1131,29 @@ function renderLogin(){
   $('#app').innerHTML=`
   <div class="hero"><div class="hero-inner">
     <div class="sub">WORLD CUP 2026 · FORECAST ARENA</div>
-    <svg class="zenith-emblem" width="80" height="90" viewBox="0 0 80 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg class="zenith-emblem" width="96" height="108" viewBox="0 0 96 108" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <linearGradient id="shieldGrad" x1="0" y1="0" x2="80" y2="90" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#2A95FF"/><stop offset="50%" stop-color="#0050D6"/><stop offset="100%" stop-color="#F5B301"/>
+        <linearGradient id="shieldGrad" x1="48" y1="8" x2="48" y2="100" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#3AA0FF"/><stop offset="55%" stop-color="#0A55D6"/><stop offset="100%" stop-color="#062C7A"/>
         </linearGradient>
-        <linearGradient id="starGrad" x1="30" y1="10" x2="50" y2="50" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#FFC83C"/><stop offset="100%" stop-color="#F5B301"/>
+        <linearGradient id="starGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#FFE693"/><stop offset="100%" stop-color="#F5B301"/>
         </linearGradient>
-        <filter id="embGlow"><feGaussianBlur stdDeviation="3" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="embGlow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="7" stdDeviation="8" flood-color="#0A84FF" flood-opacity="0.5"/></filter>
       </defs>
-      <path d="M40 4L8 20v30c0 18 14 30 32 36 18-6 32-18 32-36V20L40 4z" fill="url(#shieldGrad)" opacity=".92" filter="url(#embGlow)"/>
-      <path d="M40 10L14 23v25c0 15 12 26 26 31 14-5 26-16 26-31V23L40 10z" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.2"/>
-      <circle cx="40" cy="42" r="14" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.5" stroke-dasharray="3 3"/>
-      <text x="40" y="49" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-size="24" font-weight="900" fill="#fff" filter="url(#embGlow)">Z</text>
-      <polygon points="40,14 42.4,20.4 49.2,20.8 43.8,25.2 45.6,32 40,28 34.4,32 36.2,25.2 30.8,20.8 37.6,20.4" fill="url(#starGrad)" opacity=".9"/>
+      <!-- crest shield -->
+      <path filter="url(#embGlow)" d="M48 9l34 9.5v34c0 23-15 39-34 48-19-9-34-25-34-48v-34L48 9z" fill="url(#shieldGrad)"/>
+      <path d="M48 16l27 7.6v29.4c0 18.5-12 32-27 39.5-15-7.5-27-21-27-39.5V23.6L48 16z" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.3"/>
+      <!-- crown star -->
+      <path d="M48 2.5l3.5 7.1 7.8 1-5.7 5.4 1.4 7.8L48 20.1l-7 3.7 1.4-7.8-5.7-5.4 7.8-1z" fill="url(#starGrad)"/>
+      <!-- soccer ball -->
+      <g stroke="#fff" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" fill="none" transform="translate(48,49)">
+        <circle r="17"/>
+        <polygon points="0,-7.4 7,-2.3 4.3,6.1 -4.3,6.1 -7,-2.3" fill="#fff" stroke="none"/>
+        <path d="M0 -7.4V-17M7 -2.3L16.2 -5.3M4.3 6.1L9.9 13.8M-4.3 6.1L-9.9 13.8M-7 -2.3L-16.2 -5.3"/>
+      </g>
+      <!-- RMO wordmark banner -->
+      <text x="48" y="92" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif" font-size="16" font-weight="900" letter-spacing="3" fill="url(#starGrad)">RMO</text>
     </svg>
     <div class="big">RMO<br>WORLD CUP</div>
     <div class="tag2">Predict the bracket. Track every match. See how you stack up against the field.</div>
@@ -1192,7 +1204,7 @@ async function doLogin(){
 function showLoader(msg){
   let el=document.getElementById('zloader');
   if(!el){el=document.createElement('div');el.id='zloader';el.className='zloader';document.body.appendChild(el)}
-  el.innerHTML=`<div class="zl-card"><div class="zl-orbwrap"><div class="zl-ring"></div><div class="zl-orb">Z</div></div><div class="zl-dots"><span></span><span></span><span></span></div><div class="zl-msg">${msg||'Loading…'}</div></div>`;
+  el.innerHTML=`<div class="zl-card"><div class="zl-orbwrap"><div class="zl-ring"></div><div class="zl-orb">${RMO_BALL(40)}</div></div><div class="zl-dots"><span></span><span></span><span></span></div><div class="zl-msg">${msg||'Loading…'}</div></div>`;
   requestAnimationFrame(()=>el.classList.add('show'));
 }
 function hideLoader(){const el=document.getElementById('zloader');if(el)el.classList.remove('show')}
@@ -1289,7 +1301,7 @@ window.autoFillBracket=()=>{
   ensureDraft();
   S.draft=fullAutoPrediction(`ZENITH_FULL_${S.user.name}_${Date.now()}`);
   S.step=7;
-  toast('Zenith Intelligence filled the full bracket through the final');
+  toast('RMO Agent filled the full bracket through the final');
   render();
 };
 window.autoFillGroups=window.autoFillBracket;
@@ -1727,8 +1739,8 @@ function chatWelcomeHTML(){
     {ic:'🌍',t:'Fill my bracket',q:'Fill my bracket'}
   ];
   return `<div class="zwelcome">
-    <div class="zw-orb">Z</div>
-    <div class="zw-name">RMO Zenith</div>
+    <div class="zw-orb">${RMO_BALL(38)}</div>
+    <div class="zw-name">RMO World Cup Agent</div>
     <div class="zw-sub">World Cup 2026 Intelligence</div>
     <div class="zw-hint">Ask me anything about the 48 teams</div>
     <div class="zw-grid">${cards.map(c=>`<button class="zw-card" onclick="chatQuick('${c.q.replace(/'/g,"\\'")}')"><span class="zw-ic">${c.ic}</span><span class="zw-ct">${c.t}</span></button>`).join('')}</div>
@@ -1745,7 +1757,7 @@ function chatFeedHTML(){
     if(msg.role==='user'){
       html+=`<div class="wmsg me"><div class="wbub">${escapeHTML(msg.text).replace(/\n/g,'<br>')}<span class="wtime">${fmtTime(msg.ts)} <span class="wtick">✓✓</span></span></div></div>`;
     }else{
-      html+=`<div class="wmsg ai">${sameSeq?'<div class="wav-sp"></div>':'<div class="wav">Z</div>'}<div class="wbub-wrap"><div class="wbub">${msg.text?escapeHTML(msg.text).replace(/\n/g,'<br>'):''}${chatCardHTML(msg.card)}<span class="wtime">${fmtTime(msg.ts)}</span></div></div></div>`;
+      html+=`<div class="wmsg ai">${sameSeq?'<div class="wav-sp"></div>':`<div class="wav">${RMO_BALL(16)}</div>`}<div class="wbub-wrap"><div class="wbub">${msg.text?escapeHTML(msg.text).replace(/\n/g,'<br>'):''}${chatCardHTML(msg.card)}<span class="wtime">${fmtTime(msg.ts)}</span></div></div></div>`;
     }
   });
   return html;
@@ -1760,17 +1772,17 @@ function renderChatbot(m){
   m.innerHTML=`<div class="wshell glass">
     <div class="whead">
       <button class="wback" onclick="go('predict')">${svgIc('back')}</button>
-      <div class="worb ${S.agentBusy?'busy':''}">Z</div>
+      <div class="worb ${S.agentBusy?'busy':''}">${RMO_BALL(24)}</div>
       <div class="whead-i"><div class="wh-name">RMO World Cup Agent</div><div class="wh-status">${S.agentBusy?'<span class="typing">analyzing…</span>':'<span class="dot-on"></span>Online · World Cup Agent'}</div></div>
       <button class="wmenu" onclick="chatMenu()">${svgIc('dots')}</button>
     </div>
     <div class="wfeed" id="agentFeed">${chatFeedHTML()}
-      ${S.agentBusy?`<div class="wmsg ai"><div class="wav">Z</div><div class="wbub-wrap"><div class="wbub wthink"><span></span><span></span><span></span></div></div></div>`:''}
+      ${S.agentBusy?`<div class="wmsg ai"><div class="wav">${RMO_BALL(16)}</div><div class="wbub-wrap"><div class="wbub wthink"><span></span><span></span><span></span></div></div></div>`:''}
     </div>
     <div class="wchips" id="wchips">${chatChipsHTML()}</div>
     <div class="wcompose">
       <div class="winput-wrap">
-        <textarea id="chatPrompt" rows="1" maxlength="500" enterkeyhint="send" placeholder="Message Zenith…" oninput="chatInput(this)" onkeydown="chatKey(event)">${escapeHTML(S.chatDraft||'')}</textarea>
+        <textarea id="chatPrompt" rows="1" maxlength="500" enterkeyhint="send" placeholder="Message RMO Agent…" oninput="chatInput(this)" onkeydown="chatKey(event)">${escapeHTML(S.chatDraft||'')}</textarea>
       </div>
       <button class="wsend ${hasText?'on':''}" id="wsend" onclick="chatSend()" ${S.agentBusy?'disabled':''}>${svgIc('send')}</button>
     </div>
@@ -1782,7 +1794,7 @@ function autoGrow(ta){ta.style.height='auto';ta.style.height=Math.min(96,ta.scro
 window.chatInput=ta=>{S.chatDraft=ta.value;autoGrow(ta);const b=$('#wsend');if(b)b.classList.toggle('on',ta.value.trim().length>0)};
 window.chatKey=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();chatSend()}};
 window.chatQuick=q=>{S.chatDraft=q;chatSend()};
-window.chatMenu=()=>{openModal('RMO Zenith',`<div style="text-align:center;padding:6px 0 14px"><div class="worb" style="margin:0 auto 10px">Z</div><div style="font-weight:800;font-size:18px">RMO Zenith</div><div style="color:var(--ink2);font-size:13px;margin-top:4px">Deterministic World Cup 2026 forecast agent. Runs thousands of local simulations — no internet required.</div></div>
+window.chatMenu=()=>{openModal('RMO World Cup Agent',`<div style="text-align:center;padding:6px 0 14px"><div class="worb" style="margin:0 auto 10px">${RMO_BALL(24)}</div><div style="font-weight:800;font-size:18px">RMO World Cup Agent</div><div style="color:var(--ink2);font-size:13px;margin-top:4px">Deterministic World Cup 2026 forecast agent. Runs thousands of local simulations — no internet required.</div></div>
   <button class="btn ghost block" onclick="clearChat()">🗑 Clear conversation</button>`)};
 window.clearChat=()=>{S.chatMessages=[];persistChat();ZE.lastTeams=[];ZE.lastTopic=null;closeModal();render()};
 window.useSuggestion=text=>{S.chatDraft=text;render()};
@@ -2006,7 +2018,7 @@ window.publishThirds=()=>{if((S.official.thirds||[]).length!==8){toast('Select e
 function admChatView(){
   return `<div class="glass" style="padding:18px">
     <div class="sum-lt">💬 Chat Logs</div>
-    <p style="color:var(--ink2);font-size:13px;margin-bottom:10px">All user conversations with Zenith are mirrored to the <b>ChatLog</b> tab of the Google Sheet (timestamp, user, role, intent, message). Use the Sheet to review, search and export.</p>
+    <p style="color:var(--ink2);font-size:13px;margin-bottom:10px">All user conversations with the RMO Agent are mirrored to the <b>ChatLog</b> tab of the Google Sheet (timestamp, user, role, intent, message). Use the Sheet to review, search and export.</p>
     <button class="btn ghost block" onclick="adminSync()">${svgIc('sync')} Pull latest from Sheet</button>
     <div class="adm-acts" style="margin-top:10px"><button class="btn ghost" onclick="window.open('${SHEETS_API_URL}'.replace('/exec',''),'_blank')">Open Sheet backend</button></div>
   </div>`;
