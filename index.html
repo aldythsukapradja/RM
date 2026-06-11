@@ -1057,6 +1057,7 @@ const tflag=k=>flag(ISO(k));
 function avatarBG(name){const palettes=[['#1a1a2e','#16213e'],['#0f3460','#533483'],['#2d4059','#ea5455'],['#1b262c','#0f4c75'],['#364f6b','#3fc1c9'],['#303841','#d72323'],['#2b2e4a','#e84545'],['#0b0c10','#45567d'],['#1a1a2e','#e94560'],['#222831','#00adb5'],['#2c3333','#395B64'],['#1B2430','#51557E'],['#0d1b2a','#1b4965'],['#212529','#6c757d'],['#1d3557','#457b9d'],['#2b2d42','#8d99ae']];const h=hash32(name||'x');const p=palettes[h%palettes.length];return `linear-gradient(135deg,${p[0]},${p[1]})`}
 const initials=n=>(n||'?').trim().split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase();
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2200)}
+function syncAgo(){if(!S._lastSync)return '';const s=Math.floor((Date.now()-S._lastSync)/1000);if(s<10)return 'Live';if(s<60)return s+'s ago';if(s<3600)return Math.floor(s/60)+'m ago';return Math.floor(s/3600)+'h ago'}
 
 function resolveSlot(p,ref){if(typeof ref==='string'){const pos=ref[0],g=ref[1];return p.groups[g]?(pos==='1'?p.groups[g].first:p.groups[g].second):''}if(ref.t)return p.thirdAssign?p.thirdAssign[ref.t]:'';if(ref.w)return p.ko[ref.w]||''}
 function persistChat(){LS.set('chatMessages',S.chatMessages.slice(-18))}
@@ -1103,6 +1104,42 @@ async function syncCloudState(){
     const data=await cloudCall('getState',{});
     if(data.preds){S.preds=data.preds;LS.set('preds',S.preds)}
     if(data.official){S.official=data.official;LS.set('official',S.official)}
+    // Merge live match rows from the Sheet's Matches tab into S.official
+    if(data.matches&&Array.isArray(data.matches)){
+      if(!S.official.groupScores)S.official.groupScores={};
+      if(!S.official.matches)S.official.matches={};
+      data.matches.forEach(row=>{
+        const{matchId,homeScore,awayScore,status,winner,ending}=row;
+        if(!matchId)return;
+        if(matchId[0]==='G'){
+          // group match — store in groupScores
+          const gs=S.official.groupScores[matchId]||{};
+          if(homeScore!=null)gs.hs=+homeScore;
+          if(awayScore!=null)gs.as=+awayScore;
+          if(status)gs.status=status;
+          S.official.groupScores[matchId]=gs;
+        }else if(matchId[0]==='M'){
+          const id=+matchId.slice(1);
+          const m=S.official.matches[id]||(S.official.matches[id]={winner:'',status:'draft'});
+          if(homeScore!=null)m.hs=+homeScore;
+          if(awayScore!=null)m.as=+awayScore;
+          if(status)m.status=status;
+          if(winner)m.winner=winner;
+          // Final-specific: outcome type for the 3-pt ending bonus
+          if(id===104&&ending)S.official.final=Object.assign(S.official.final||{},{status,ending,champion:winner||''});
+          if(id===104&&winner&&status==='published'){
+            S.official.final=S.official.final||{};
+            S.official.final.champion=winner;
+            S.official.final.status='published';
+            if(homeScore!=null)S.official.final.scoreA=+homeScore;
+            if(awayScore!=null)S.official.final.scoreB=+awayScore;
+            if(ending)S.official.final.ending=ending;
+          }
+        }
+      });
+      LS.set('official',S.official);
+    }
+    S._lastSync=Date.now();
   }catch(e){}
 }
 
@@ -1114,6 +1151,7 @@ function render(){
   app.innerHTML=`
    <div class="topbar">
      <div class="brand"><span class="wm"><span class="rmo-badge">${RMO_BADGE(28)}</span>RMO WORLD CUP</span><span class="tag">2026</span></div>
+     ${S._lastSync?`<span style="font-size:10px;font-weight:700;color:var(--ink3);letter-spacing:.3px;padding:4px 9px;border-radius:99px;background:rgba(118,118,128,.1)">⬤ ${syncAgo()}</span>`:''}
      <div class="avatar" style="background:${avatarBG(S.user.name)}" onclick="go('profile')">${initials(S.user.name)}</div>
    </div>
    <div class="main" id="main"></div>
@@ -1123,7 +1161,16 @@ function render(){
   const v={predict:renderPredict,schedule:renderSchedule,matches:renderMatches,chatbot:renderChatbot,leaderboard:renderBoard,profile:renderProfile,admin:renderAdmin}[S.tab]||renderPredict;
   v($('#main'));
 }
-function go(tab){S.tab=tab;render();if(tab!=='chatbot')window.scrollTo({top:0,behavior:'smooth'})}
+function go(tab){
+  S.tab=tab;render();if(tab!=='chatbot')window.scrollTo({top:0,behavior:'smooth'});
+  // Silent background sync when opening live data tabs — no loader, no disruption
+  if((tab==='schedule'||tab==='leaderboard')&&cloudEnabled()){
+    const now=Date.now();const age=S._lastSync?now-S._lastSync:Infinity;
+    if(age>60000){// only resync if last sync was >60s ago
+      syncCloudState().then(()=>render()).catch(()=>{});
+    }
+  }
+}
 window.go=go;
 
 /* ============ LOGIN ============ */
@@ -1465,7 +1512,7 @@ function renderSchedule(m){
   const filt=S.schedFilter||'All';const hostF=S.schedHost||'All';
   let fixtures=[];
   if(filt==='Group'||filt==='All')GF.forEach((f,i)=>fixtures.push({d:f[0],t:f[1],rd:'Group '+f[2],grp:f[2],a:f[3],b:f[4],v:f[5],c:f[6],co:f[7],key:'G'+i}));
-  if(filt==='Knockout'||filt==='All')KF.forEach(f=>{const [a,b]=mySlot(f[2]);fixtures.push({d:f[0],t:f[1],rd:roundOf[f[2]]||'Final',ko:true,a,b,sa:KO[f[2]][0],sb:KO[f[2]][1],v:f[3],c:f[4],co:f[5],key:'M'+f[2]})});
+  if(filt==='Knockout'||filt==='All')KF.forEach(f=>{const [a,b]=officialSlot(f[2]);fixtures.push({d:f[0],t:f[1],rd:roundOf[f[2]]||'Final',ko:true,a,b,sa:KO[f[2]][0],sb:KO[f[2]][1],v:f[3],c:f[4],co:f[5],key:'M'+f[2]})});
   if(hostF!=='All')fixtures=fixtures.filter(f=>f.co===hostF);
   fixtures.sort((a,b)=>order(a)-order(b));
   const q=(S.schedQuery||'').toLowerCase().trim();
@@ -1483,6 +1530,38 @@ window.setSched=x=>{S.schedFilter=x;render()};
 window.setHost=x=>{S.schedHost=x;render()};
 window.schedSearchFn=v=>{S.schedQuery=v;render()};
 window.jumpDay=d=>{const day=d.replace(/_/g,' ');S.schedDay=day;const el=document.getElementById('day-'+d);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})};
+/* officialSlot: resolves the two teams for a KO match from OFFICIAL published data.
+   Falls back to the logged-in user's prediction only when real results are not yet published. */
+function officialSlot(id){
+  const o=S.official;
+  // Build resolver from official state
+  const fromOfficial=ref=>{
+    if(typeof ref==='string'){
+      const pos=ref[0],g=ref[1];
+      if(o.groupsPublished&&o.groups[g])return pos==='1'?o.groups[g].first:o.groups[g].second;
+      return '';
+    }
+    if(ref.t){
+      if((o.thirds||[]).length===8){
+        const byG={};o.thirds.forEach(k=>byG[GRP(k)]=k);
+        return assignThirds(o.thirds.map(GRP),byG)[ref.t]||'';
+      }
+      return '';
+    }
+    if(ref.w)return (o.matches[ref.w]&&o.matches[ref.w].winner)||'';
+    return '';
+  };
+  const a=fromOfficial(KO[id][0]);
+  const b=fromOfficial(KO[id][1]);
+  // Fall back to user's prediction only if official has nothing yet
+  if(!a&&!b){
+    const p=S.preds[S.user.name];
+    if(!p)return ['',''];
+    return [resolveSlot(p,KO[id][0]),resolveSlot(p,KO[id][1])];
+  }
+  return [a,b];
+}
+// Keep mySlot for any internal usage (predict wizard)
 function mySlot(id){const p=S.preds[S.user.name];if(!p)return ['',''];return [resolveSlot(p,KO[id][0]),resolveSlot(p,KO[id][1])]}
 const MO={Jun:6,Jul:7};function order(f){const [d,mo]=f.d.split(' ');return MO[mo]*100+ +d + (f.t<'12:00'?0.5:0)}
 function groupByDay(fx){let out='',cur='';fx.forEach(f=>{if(f.d!==cur){cur=f.d;out+=`<div class="daylt" id="day-${f.d.replace(/ /g,'_')}">${f.d}</div>`}out+=fixHTML(f)});return out||'<div style="color:var(--ink2);text-align:center;padding:30px">No matches found for this filter.</div>'}
