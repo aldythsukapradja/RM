@@ -1052,8 +1052,8 @@ seedDemo();
 /* ============ SCORING ============ */
 function score(p){
   const o=S.official;if(!p||!o)return{total:0,bd:{}};const bd={Groups:0,Thirds:0,R32:0,R16:0,QF:0,SF:0,Final:0};
-  // Per-group scoring: o.groups[g] is set only when that group is fully resolved,
-  // so points accrue group-by-group (matches the server scorePrediction_).
+  // Per-group LIVE scoring: o.groups[g] holds the CURRENT provisional standings,
+  // so points update after every match (and may rise/fall). Mirrors scorePrediction_.
   GROUPS.forEach(g=>{if(p.groups[g]&&o.groups&&o.groups[g]){if(p.groups[g].first===o.groups[g].first)bd.Groups+=WEIGHTS.g1;if(p.groups[g].second===o.groups[g].second)bd.Groups+=WEIGHTS.g2}});
   (p.thirds||[]).forEach(t=>{if((o.thirds||[]).includes(t))bd.Thirds+=WEIGHTS.third});
   Object.keys(o.matches).forEach(id=>{const m=o.matches[id];if(!m.winner)return;const r=rkey(+id);if(+id===104)return;if(p.ko&&p.ko[id]===m.winner)bd[r]=(bd[r]||0)+WEIGHTS[r]});
@@ -2096,7 +2096,9 @@ window.setGScore=(key,side,val)=>{const o=S.official;if(!o.groupScores[key])o.gr
 window.publishGroup=g=>{
   if(!groupComplete(g)){toast('Fill all group scores first');return}
   const st=computeGroupStandings(g);
-  S.official.groups[g]={first:st[0].k,second:st[1].k,third:st[2].k};
+  // complete:true — publish is gated on groupComplete(g) (all 6 scores in), so the
+  // group is final; this lets the KO bracket display resolve this group's slots.
+  S.official.groups[g]={first:st[0].k,second:st[1].k,third:st[2].k,complete:true};
   gfIndexFor(g).forEach(i=>{const gs=S.official.groupScores['G'+i];if(gs)gs.status='published'});
   // mark groupsPublished true once all 12 done
   S.official.groupsPublished=GROUPS.every(x=>S.official.groups[x]&&S.official.groups[x].first);
