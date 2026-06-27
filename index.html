@@ -1247,8 +1247,13 @@ async function syncCloudState(){
     if(data.official){S.official=data.official;LS.set('official',S.official)}
     if(data.matches){S.matches=data.matches;LS.set('matches',S.matches)}
     S._lastSync=Date.now();
-  }catch(e){}
+  }catch(e){console.warn('syncCloudState failed',e)}
 }
+window.syncNow=async()=>{
+  if(!cloudEnabled()){toast('Cloud backend not configured');return}
+  toast('Syncing…');
+  try{await syncCloudState();toast('Synced from Sheet');render()}catch(e){toast('Sync failed: '+(e.message||''))}
+};
 
 /* ============ RENDER ROOT ============ */
 function render(){
@@ -1273,7 +1278,7 @@ function go(tab){
   S.tab=tab;render();if(tab!=='chatbot')window.scrollTo({top:0,behavior:'smooth'});
   // Silent background sync when opening live data tabs — fetch fresh on every tap
   // (light 2s guard only to prevent accidental double-fire from rapid taps).
-  if((tab==='schedule'||tab==='leaderboard')&&cloudEnabled()){
+  if((tab==='predict'||tab==='schedule'||tab==='leaderboard')&&cloudEnabled()){
     const now=Date.now();const age=S._lastSync?now-S._lastSync:Infinity;
     if(age>2000){
       syncCloudState().then(()=>render()).catch(()=>{});
@@ -1632,7 +1637,14 @@ function officialMatchTeams(id){
 }
 function officialKnockoutReady(){return COLS[0].ids.every(id=>officialSlot(id).every(Boolean))}
 function koTestBracketActive(){return KNOCKOUT_ENTRY_OPEN&&KNOCKOUT_USE_TEST_BRACKET_WHEN_UNRESOLVED&&!officialKnockoutReady()}
-function knockoutReady(){return KNOCKOUT_ENTRY_OPEN&&(officialKnockoutReady()||koTestBracketActive())}
+function knockoutReady(){return KNOCKOUT_ENTRY_OPEN}
+function r32ResolvedCount(){return COLS[0].ids.filter(id=>officialSlot(id).every(Boolean)).length}
+function r32StatusHTML(){
+  const done=r32ResolvedCount(),total=COLS[0].ids.length;
+  if(done===total)return '';
+  const missing=COLS[0].ids.filter(id=>!officialSlot(id).every(Boolean)).slice(0,6).map(id=>'M'+id).join(', ');
+  return `<div class="glass" style="padding:12px 14px;margin-bottom:10px;color:#5f6b7a;background:rgba(0,87,255,.08);font-size:12px;font-weight:800;line-height:1.45">Dynamic bracket: ${done}/${total} Round of 32 fixtures resolved from the Sheet. ${missing?`Waiting for ${missing}${total-done>6?'…':''}.`:''}<br><button class="btn ghost" style="margin-top:8px;padding:8px 12px" onclick="syncNow()">Sync now</button></div>`;
+}
 function koTestBracket(){
   const p=S.oracle||genBracket('KNOCKOUT_TEST_BRACKET',0.16);
   if(!p.thirdAssign&&p.thirds&&p.thirds.length){
@@ -1704,6 +1716,7 @@ function renderKOPredict(m){
   const col=COLS[S.koStep],done=col.ids.filter(koComplete).length;
   const canBack=S.koStep>0,canNext=done===col.ids.length;
   m.innerHTML=koRailHTML()+`<div class="split-head"><div class="page-h" style="margin:0"><div class="lt">Score prediction</div><h1>${col.l}</h1><p>Enter each score. Winners advance automatically through your bracket.</p></div><button class="info-btn" onclick="openRules('knockout')">${svgIc('info')}</button></div>
+    ${r32StatusHTML()}
     ${koTestBracketActive()?`<div class="glass" style="padding:12px 14px;margin-bottom:10px;color:#9a6500;background:rgba(255,149,0,.10);font-size:12px;font-weight:800">Test mode: using a temporary bracket until the real Round of 32 is resolved.</div>`:''}
     <div class="statcard glass"><span class="l">Completed</span><span class="v"><b>${done}</b> / ${col.ids.length}</span></div>
     ${col.ids.map(id=>koMatchCard(id)).join('')}
