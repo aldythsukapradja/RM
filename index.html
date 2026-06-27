@@ -1022,7 +1022,7 @@ const CHAT_SUGGESTIONS=[
   'Autofill my full bracket'
 ];
 const THINK_STEPS=['Thinking. . .'];
-let S={user:LS.get('user',null),userPw:LS.get('userPw',''),preds:LS.get('preds',{}),official:LS.get('official',null),oracle:LS.get('oracle',null),tab:'predict',step:0,draft:null,curGroup:'A',koRound:0,schedFilter:'All',mRound:'Round of 16',lbMode:'Total',chatMessages:LS.get('chatMessages',[]),chatDraft:'',geminiKey:HARDCODED_GEMINI_KEY,agentBusy:false,agentPhase:0};
+let S={user:LS.get('user',null),userPw:LS.get('userPw',''),preds:LS.get('preds',{}),preds2:LS.get('preds2',{}),official:LS.get('official',null),oracle:LS.get('oracle',null),tab:'predict',step:0,draft:null,draft2:null,ko2Mode:false,koStep:0,curGroup:'A',koRound:0,schedFilter:'All',mRound:'Round of 16',lbMode:'Total',lbTab:'full',chatMessages:LS.get('chatMessages',[]),chatDraft:'',geminiKey:HARDCODED_GEMINI_KEY,agentBusy:false,agentPhase:0};
 const WEIGHTS={g1:3,g2:3,third:2,R32:2,R16:3,QF:5,SF:8,finalist:4,champ:15,exact:5,ending:3};
 /* ============ PREDICT TAB LOCK ============
    When false: Predict tab shows a read-only full-page bracket view for the
@@ -1066,6 +1066,26 @@ function standings(){
   Object.keys(S.preds).forEach(n=>{if(n==='__demo')return;rows.push({name:n,pts:score(S.preds[n]).total,kind:(S.user&&n===S.user.name)?'you':'player'})});
   rows.sort((a,b)=>b.pts-a.pts);return rows;
 }
+/* ============ KNOCKOUT BRACKET COMPETITION (Comp 2) ============ */
+function scoreKO(p2){
+  const o=S.official;if(!p2||!o)return{total:0,bd:{}};
+  const bd={R32:0,R16:0,QF:0,SF:0,Final:0};
+  Object.keys(o.matches).forEach(id=>{const m=o.matches[id];if(!m.winner)return;const r=rkey(+id);if(+id===104)return;if(p2.ko&&p2.ko[id]===m.winner)bd[r]=(bd[r]||0)+WEIGHTS[r]});
+  if(o.final&&o.final.champion&&p2.final){if(p2.final.a&&[o.final.a,o.final.b].includes(p2.final.a))bd.Final+=WEIGHTS.finalist;if(p2.final.b&&[o.final.a,o.final.b].includes(p2.final.b))bd.Final+=WEIGHTS.finalist;if(p2.final.champion===o.final.champion)bd.Final+=WEIGHTS.champ;if(+p2.final.scoreA===+o.final.scoreA&&+p2.final.scoreB===+o.final.scoreB)bd.Final+=WEIGHTS.exact;if(p2.final.ending===o.final.ending)bd.Final+=WEIGHTS.ending}
+  const total=Object.values(bd).reduce((a,b)=>a+b,0);return{total,bd};
+}
+function standingsKO(){
+  const rows=[];
+  Object.keys(S.preds2).forEach(n=>{rows.push({name:n,pts:scoreKO(S.preds2[n]).total,kind:(S.user&&n===S.user.name)?'you':'player'})});
+  rows.sort((a,b)=>b.pts-a.pts);return rows;
+}
+function resolveKO2Slot(ref){
+  const o=S.official;
+  if(typeof ref==='string'){const p=ref[0],g=ref[1];return o.groups[g]?(p==='1'?o.groups[g].first:o.groups[g].second):''}
+  if(ref.t){if((o.thirds||[]).length===8){const byG={};o.thirds.forEach(k=>byG[GRP(k)]=k);return assignThirds(o.thirds.map(GRP),byG)[ref.t]||''}return ''}
+  if(ref.w)return (S.draft2&&S.draft2.ko&&S.draft2.ko[ref.w])||''
+}
+function koTeams2(id){return [resolveKO2Slot(KO[id][0]),resolveKO2Slot(KO[id][1])]}
 
 /* ============ HELPERS ============ */
 const $=s=>document.querySelector(s);
@@ -1125,6 +1145,7 @@ async function syncCloudState(){
     // final, groupsPublished). We take it as the single source of truth — no
     // client-side merge that could be lost on reboot.
     if(data.official){S.official=data.official;LS.set('official',S.official)}
+    if(data.preds2){S.preds2=data.preds2;LS.set('preds2',S.preds2)}
     S._lastSync=Date.now();
   }catch(e){}
 }
@@ -1291,6 +1312,7 @@ function renderBracketView(m,name){
 }
 function renderPredict(m){
   if(S.user.admin){S.tab='admin';return renderAdmin(m)}
+  if(S.ko2Mode){return renderKO2Predict(m)}
   // LOCKED: bracket entry closed for this cycle — show read-only full-page bracket view
   if(!BRACKET_ENTRY_OPEN){return renderBracketView(m,S.user.name)}
   ensureDraft();
@@ -1945,20 +1967,31 @@ window.chatSend=async()=>{
   }
 };
 
-/* ============ LEADERBOARD (V4: players only) ============ */
+/* ============ LEADERBOARD — dual competition ============ */
 function renderBoard(m){
-  let rows=standings();
-  m.innerHTML=`<div class="page-h"><div class="lt">● Live standings</div><h1>Standings</h1></div>`;
+  const isKO=S.lbTab==='ko';
+  const ko2Open=S.official&&(S.official.ko2EntryOpen||false);
+  let rows=isKO?standingsKO():standings();
+  m.innerHTML=`<div class="page-h"><div class="lt">● Live standings</div><h1>Standings</h1></div>
+   <div style="display:flex;justify-content:center;margin-bottom:14px"><div class="seg">
+     <button class="${!isKO?'on':''}" onclick="S.lbTab='full';render()">🏆 Full Tournament</button>
+     <button class="${isKO?'on':''}" onclick="S.lbTab='ko';render()">⚔️ KO Bracket</button>
+   </div></div>`;
+  if(isKO){
+    if(ko2Open){m.innerHTML+=`<div class="glass" style="padding:12px 14px;text-align:center;color:var(--ink2);font-size:13px;border-radius:14px;margin-bottom:12px">⚔️ KO Bracket entry is open — go to <b>Profile</b> to submit yours.</div>`}
+    if(!Object.keys(S.preds2).length){m.innerHTML+=`<div class="glass" style="padding:30px;text-align:center;color:var(--ink2)">No KO brackets submitted yet.<br><span style="font-size:13px">Entry opens once all groups are published.</span></div>`;return}
+  }
   if(rows.length===0){m.innerHTML+=`<div class="glass" style="padding:30px;text-align:center;color:var(--ink2)">No brackets submitted yet. Fill yours in <b>Predict</b> to appear here.</div>`;return}
-  // podium for top 3
   if(rows.length>=2){
     const top=rows.slice(0,3);
     const order=[top[1],top[0],top[2]].filter(Boolean);
     m.innerHTML+=`<div class="podium">${order.map((r)=>{const rank=rows.indexOf(r);const cls=rank===0?'p1':rank===1?'p2':'p3';const medal=rank===0?'🥇':rank===1?'🥈':'🥉';return `<div class="pod ${cls} glass"><div class="medal">${medal}</div><div class="av" style="background:${avatarBG(r.name)}">${initials(r.name)}</div><div class="nm">${r.name}</div><div class="pt">${r.pts}</div></div>`}).join('')}</div>`;
   }
-  m.innerHTML+=`<div class="section-lt">Full table</div>
+  const tableLabel=isKO?'⚔️ KO Bracket standings':'🏆 Full Tournament standings';
+  const clickFn=isKO?`openKOBreak`:`openBreak`;
+  m.innerHTML+=`<div class="section-lt">${tableLabel}</div>
    <div class="glass" style="padding:6px">
-   ${rows.map((r,i)=>`<div class="lbrow ${r.kind==='you'?'you':''}" onclick="openBreak('${r.name}')">
+   ${rows.map((r,i)=>`<div class="lbrow ${r.kind==='you'?'you':''}" onclick="${clickFn}('${r.name}')">
      <span class="rk">${i+1}</span>
      <span class="av" style="background:${avatarBG(r.name)}">${initials(r.name)}</span>
      <span class="nm">${r.name}${r.kind==='you'?' <span style="color:var(--tint);font-size:11px">· you</span>':''}</span>
@@ -1966,6 +1999,18 @@ function renderBoard(m){
    </div>`).join('')}
    </div>`;
 }
+window.openKOBreak=(name)=>{
+  const p2=S.preds2[name];if(!p2)return;const sc=scoreKO(p2);
+  const fin=p2.final||{};
+  openModal(name+' · KO bracket',`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+      <span class="av" style="width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;background:${avatarBG(name)}">${initials(name)}</span>
+      <div><div style="font-weight:800;font-size:18px">${name}</div><div style="color:var(--ink2)">${sc.total} pts · KO bracket</div></div>
+    </div>
+    ${fin.champion?`<div class="champ-bar" style="margin-bottom:12px">${tflag(fin.champion)}<div><span class="cl">🏆 KO Champion${fin.scoreA!=null?' · '+fin.scoreA+'–'+fin.scoreB+(fin.ending==='penalties'?' (pens)':''):''}</span><span class="cn">${NAME(fin.champion)}</span></div></div>`:''}
+    <div class="sum-lt" style="margin:16px 0 7px">📊 KO Points Breakdown</div>
+    ${['R32','R16','QF','SF','Final'].map(k=>`<div class="breakrow"><span>${k}</span><b>${sc.bd[k]||0}</b></div>`).join('')}`);
+};
 window.openBreak=(name)=>{
   const p=S.preds[name];if(!p)return;const sc=score(p);
   const firsts=GROUPS.map(g=>p.groups&&p.groups[g]&&p.groups[g].first).filter(Boolean);
@@ -1994,12 +2039,15 @@ window.openBreak=(name)=>{
 function renderProfile(m){
   if(S.user.admin){S.tab='admin';return renderAdmin(m)}
   const me=S.preds[S.user.name];const rows=standings();const rk=rows.findIndex(r=>r.name===S.user.name);const sc=me?score(me):{total:0,bd:{}};
+  const me2=S.preds2[S.user.name];const sc2=me2?scoreKO(me2):{total:0,bd:{}};
+  const ko2Open=S.official&&(S.official.ko2EntryOpen||false);
   const avwrap=`<div class="p2-avwrap"><div class="p2-ring"></div><div class="p2-av" style="background:${avatarBG(S.user.name)}">${initials(S.user.name)}</div></div>`;
   if(!me){
     m.innerHTML=`<div class="prof2">
       <div class="prof2-hero glass">${avwrap}<div class="p2-name">${S.user.name}</div><div class="p2-rank">No bracket submitted yet</div></div>
       <div class="p2-actions">
         ${(BRACKET_ENTRY_OPEN||S.user.admin)?`<button class="btn primary block" onclick="editBracket()">✏️ Make your bracket</button>`:`<div class="glass" style="padding:14px;text-align:center;color:var(--ink2);font-size:13px;border-radius:14px">Bracket entry is closed for this cycle.</div>`}
+        ${ko2Open?`<button class="btn primary block" style="background:linear-gradient(135deg,#5B2D8E,#9B27AF)" onclick="editKOBracket()">⚔️ Enter KO bracket</button>`:''}
         <button class="btn danger block" onclick="logout()">${svgIc('logout')} Log out</button>
       </div>
     </div>`;
@@ -2032,6 +2080,18 @@ function renderProfile(m){
    </div>
 
    <button class="btn ghost block" onclick="go('predict')">🔍 View full bracket</button>
+
+   ${(ko2Open||me2)?`<div class="glass" style="padding:16px;margin-top:8px;border-radius:18px;border:1px solid rgba(155,39,175,.3)">
+     <div class="sum-lt" style="color:#c084fc;margin-bottom:10px">⚔️ KO Bracket Competition</div>
+     ${me2?`<div style="text-align:center;margin-bottom:8px"><span style="font-size:26px;font-weight:900;color:#c084fc">${sc2.total}</span><span style="font-size:12px;color:var(--ink2);margin-left:6px">KO POINTS</span></div>
+     <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:10px">${['R32','R16','QF','SF','Final'].map(k=>`<div style="text-align:center;background:var(--solid);border-radius:10px;padding:6px 2px"><div style="font-weight:800;font-size:14px">${sc2.bd[k]||0}</div><div style="font-size:10px;color:var(--ink2)">${k}</div></div>`).join('')}</div>
+     ${me2.final&&me2.final.champion?`<div class="champ-bar" style="margin-bottom:0">${tflag(me2.final.champion)}<div><span class="cl">🏆 KO champion pick</span><span class="cn">${NAME(me2.final.champion)}</span></div></div>`:''}
+     `:'<div style="color:var(--ink2);font-size:13px;text-align:center;padding:4px 0">No KO bracket submitted yet.</div>'}
+     <div style="margin-top:10px">
+       ${ko2Open?`<button class="btn primary block" style="background:linear-gradient(135deg,#5B2D8E,#9B27AF)" onclick="editKOBracket()">${me2?'✏️ Edit KO bracket':'⚔️ Enter KO bracket'}</button>`:'<div style="font-size:12px;color:var(--ink2);text-align:center">KO bracket entry is closed.</div>'}
+     </div>
+   </div>`:''}
+
    <div class="p2-actions">
      ${(BRACKET_ENTRY_OPEN||S.user.admin)?`<button class="btn primary" onclick="editBracket()">✏️ Edit bracket</button>`:''}
      <button class="btn danger${(BRACKET_ENTRY_OPEN||S.user.admin)?'':' block'}" onclick="logout()">${svgIc('logout')} Log out</button>
@@ -2039,7 +2099,84 @@ function renderProfile(m){
   </div>`;
 }
 window.editBracket=()=>{if(!BRACKET_ENTRY_OPEN&&!(S.user&&S.user.admin)){toast('Bracket entry is closed');return}S.draft=S.preds[S.user.name]?JSON.parse(JSON.stringify(S.preds[S.user.name])):null;ensureDraft();if(S.draft.thirds&&S.draft.thirds.length===8)buildKO();S.step=1;S.tab='predict';render()};
-window.logout=()=>{S.user=null;S.userPw='';LS.set('user',null);LS.set('userPw','');S.draft=null;render()};
+window.logout=()=>{S.user=null;S.userPw='';LS.set('user',null);LS.set('userPw','');S.draft=null;S.draft2=null;S.ko2Mode=false;render()};
+window.toggleKO2=()=>{S.official.ko2EntryOpen=!S.official.ko2EntryOpen;LS.set('official',S.official);saveOfficialCloud();render()};
+
+/* ============ KO BRACKET WIZARD (Comp 2) ============ */
+window.editKOBracket=()=>{
+  if(!(S.official&&S.official.ko2EntryOpen)&&!S.user.admin){toast('KO bracket entry is not open yet');return}
+  S.draft2=S.preds2[S.user.name]?JSON.parse(JSON.stringify(S.preds2[S.user.name])):{ko:{},final:{}};
+  S.ko2Mode=true;S.koStep=1;S.tab='predict';render();scrollTopMain();
+};
+function renderKO2Predict(m){
+  if(S.koStep>=1&&S.koStep<=5){const col=COLS[S.koStep-1];renderKO2Step(m,col,S.koStep)}
+  else if(S.koStep===6){renderKO2Final(m)}
+  else{S.koStep=1;render()}
+}
+function renderKO2Step(m,col,step){
+  if(!S.draft2)S.draft2={ko:{},final:{}};
+  const picks=col.ids.filter(id=>S.draft2.ko&&S.draft2.ko[id]).length;
+  const allDone=picks===col.ids.length;
+  m.innerHTML=`<div class="page-h"><div class="lt">⚔️ KO Bracket · Round ${step} of 6</div><h1>${col.l}</h1><p>Tap the team you think advances. Based on the actual qualified teams.</p></div>
+  <div class="statcard glass"><span class="l">Picks made</span><span class="v"><b>${picks}</b> / ${col.ids.length}</span></div>
+  ${col.ids.map(id=>matchHTML2(id)).join('')}
+  <div class="navbtns">
+    <button class="btn ghost" onclick="${step>1?`S.koStep=${step-1};render();scrollTopMain()`:`S.ko2Mode=false;S.tab='profile';render()`}">← ${step>1?'Back':'Cancel'}</button>
+    <button class="btn primary" ${!allDone?'disabled':''} onclick="S.koStep=${step<5?step+1:6};render();scrollTopMain()">Next →</button>
+  </div>`;
+}
+function matchHTML2(id){
+  const [a,b]=koTeams2(id);const w=S.draft2&&S.draft2.ko&&S.draft2.ko[id];
+  const tile=(k,side)=>{
+    if(!k)return `<div class="tile tbd"><div class="nm">${slotLabel(KO[id][side])}</div></div>`;
+    return `<div class="tile ${w===k?'win':''}" onclick="pickKO2(${id},'${k}')">${tflag(k)}<div class="nm">${NAME(k)}</div><div class="winp">✓ Winner</div></div>`;
+  };
+  return `<div class="mlabel">Match ${id}</div><div class="match">${tile(a,0)}<div class="vs">vs</div>${tile(b,1)}</div>`;
+}
+window.pickKO2=(id,k)=>{
+  if(!S.draft2.ko)S.draft2.ko={};
+  if(S.draft2.ko[id]===k)S.draft2.ko[id]='';else S.draft2.ko[id]=k;
+  clearDown2(id);render();
+};
+function clearDown2(id){
+  (parentOf[id]||[]).forEach(p=>{if(S.draft2.ko[p]){S.draft2.ko[p]='';clearDown2(p)}else clearDown2(p)});
+  if(id===101||id===102){if(S.draft2.final)S.draft2.final={};S.draft2.ko[104]=''}
+}
+function renderKO2Final(m){
+  const a=S.draft2.ko[101],b=S.draft2.ko[102];
+  if(!a||!b){m.innerHTML=`<div class="glass" style="padding:24px;text-align:center;color:var(--ink2)">Finish the semi-finals first.</div><div class="navbtns"><button class="btn ghost" onclick="S.koStep=5;render()">← Back</button><span></span></div>`;return}
+  if(!S.draft2.final)S.draft2.final={};const f=S.draft2.final;f.a=a;f.b=b;
+  const champ=computeChamp(f);
+  m.innerHTML=`<div class="page-h"><div class="lt">⚔️ KO Bracket · Round 6 of 6</div><h1>The Final</h1><p>Call the score. Level after 90? Pick the penalty winner.</p></div>
+   <div class="glass" style="padding:20px">
+     <div class="match" style="align-items:center"><div class="tile" style="cursor:default">${tflag(a)}<div class="nm">${NAME(a)}</div></div><div class="vs">vs</div><div class="tile" style="cursor:default">${tflag(b)}<div class="nm">${NAME(b)}</div></div></div>
+     <div class="section-lt" style="text-align:center">Final score</div>
+     <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:6px">${stepper2('A',f.scoreA)}<span style="font-weight:900;font-size:24px;color:var(--ink3)">:</span>${stepper2('B',f.scoreB)}</div>
+     <div class="section-lt" style="text-align:center">How does it end?</div>
+     <div style="display:flex;justify-content:center"><div class="seg">${['normal','extra','penalties'].map(e=>`<button class="${f.ending===e?'on':''}" onclick="setEnd2('${e}')">${{normal:'Normal',extra:'Extra Time',penalties:'Penalties'}[e]}</button>`).join('')}</div></div>
+     ${f.ending==='penalties'?`<div class="section-lt" style="text-align:center">Shootout winner</div><div style="display:flex;gap:10px;justify-content:center">${[a,b].map(k=>`<button class="btn ${f.penWin===k?'gold':'ghost'}" onclick="setPen2('${k}')">${NAME(k)}</button>`).join('')}</div>`:''}
+     <div style="text-align:center;margin-top:16px"><div class="lt" style="color:var(--gold);font-weight:800;letter-spacing:2px">🏆 Your KO champion</div><div style="font-size:26px;font-weight:900;margin-top:4px">${champ?`<span style="display:inline-flex;align-items:center;gap:10px">${tflag(champ)} ${NAME(champ)}</span>`:'<span style="color:var(--ink3);font-size:16px">enter a score</span>'}</div></div>
+   </div>
+   <div class="navbtns"><button class="btn ghost" onclick="S.koStep=5;render()">← Back</button><button class="btn gold" ${!champ?'disabled':''} onclick="submitKOBracket()">Submit KO bracket ✓</button></div>`;
+}
+function stepper2(side,val){return `<div style="display:flex;align-items:center;gap:8px"><button class="btn ghost" style="width:40px;padding:8px" onclick="bumpScore2('${side}',-1)">–</button><div style="width:54px;height:64px;border-radius:14px;background:var(--solid);border:1px solid var(--sep);display:grid;place-items:center;font-size:34px;font-weight:900">${val??0}</div><button class="btn ghost" style="width:40px;padding:8px" onclick="bumpScore2('${side}',1)">+</button></div>`}
+window.bumpScore2=(side,d)=>{if(!S.draft2.final)S.draft2.final={};const f=S.draft2.final;const key='score'+side;f[key]=Math.max(0,Math.min(15,(+f[key]||0)+d));if(f.ending==='penalties'&&+f.scoreA!==+f.scoreB)f.ending='normal';render()};
+window.setEnd2=e=>{if(!S.draft2.final)S.draft2.final={};S.draft2.final.ending=e;if(e!=='penalties')S.draft2.final.penWin='';render()};
+window.setPen2=k=>{if(!S.draft2.final)S.draft2.final={};S.draft2.final.penWin=k;render()};
+window.submitKOBracket=async()=>{
+  const f=S.draft2.final;if(!f){toast('Fill in the final first');return}
+  f.champion=computeChamp(f);if(!f.champion){toast('Pick a champion / penalty winner');return}
+  S.draft2.ko[104]=f.champion;
+  S.preds2[S.user.name]=JSON.parse(JSON.stringify(S.draft2));
+  LS.set('preds2',S.preds2);
+  if(cloudEnabled()&&S.user&&!S.user.admin&&S.userPw){
+    try{
+      const data=await cloudCall('savePrediction2',{name:S.user.name,password:S.userPw,prediction2:S.draft2});
+      if(data.preds2){S.preds2=data.preds2;LS.set('preds2',S.preds2)}
+    }catch(err){toast('Saved locally — cloud sync failed')}
+  }
+  S.ko2Mode=false;toast('⚔️ KO bracket submitted!');S.tab='leaderboard';S.lbTab='ko';render();
+};
 
 /* ============ ADMIN (V5: groups + thirds + scores + sheet sync) ============ */
 function gfIndexFor(g){const out=[];GF.forEach((f,i)=>{if(f[2]===g)out.push(i)});return out}
@@ -2065,6 +2202,7 @@ function renderAdmin(m){
   else{const ci={'R32':0,'R16':1,'QF':2,'SF':3,'F':4}[tab];const r=COLS[ci];body=`<div class="section-lt">Enter knockout results — tap winner, optionally add score</div>${r.ids.map(id=>admMatch(id)).join('')}`}
   m.innerHTML=`<div class="page-h"><div class="lt">Organiser · Panda</div><h1>Admin</h1><p>Enter real results — group scores, advancing thirds, and knockouts. Sync with the Google Sheet anytime.</p></div>
    <div class="adm-toggle glass"><span style="font-weight:700">Predictions ${o.locked?'locked':'open'}</span><div class="switch ${o.locked?'on':''}" onclick="toggleLock()"></div></div>
+   <div class="adm-toggle glass"><span style="font-weight:700">⚔️ KO Bracket entry <span style="font-size:11px;font-weight:400;color:var(--ink2)">(Comp 2 — opens after all groups done)</span></span><div class="switch ${o.ko2EntryOpen?'on':''}" onclick="toggleKO2()"></div></div>
    <div class="adm-toggle glass"><span style="font-weight:700">🐼 Panda benchmark</span><span style="font-weight:900;font-size:18px">${pandaSc.total} <span style="font-size:11px;font-weight:700;color:var(--ink2)">pts</span></span></div>
    <button class="btn ghost block" style="margin-bottom:10px" onclick="adminSync()">${svgIc('sync')} Sync from Google Sheet</button>
    <div style="display:flex;justify-content:center;margin-bottom:10px"><div class="seg" style="flex-wrap:wrap">${tabs.map(([k,l])=>`<button class="${tab===k?'on':''}" onclick="setAdmTab('${k}')">${l}</button>`).join('')}</div></div>
