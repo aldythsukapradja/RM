@@ -1,6 +1,11 @@
 /**
- * RMO WorldCup2026 — Google Apps Script v2
+ * RMO WorldCup2026 — Google Apps Script v3 Dynamic KO
  * ------------------------------------------------------------------
+ * Changes from v2:
+ *   1. Dynamic KO teams: Matches!C labels like "RSA vs CAN" are parsed into
+ *      official.matches[id].a / .b so the frontend never needs hardcoded R32 teams.
+ *   2. Best-third slots are resolved server-side after all groups complete.
+ *
  * Changes from v1:
  *   1. New "Matches" tab — pre-populated with all 104 fixtures on first run.
  *      You edit scores + status directly in this tab. The app reads it on sync.
@@ -350,14 +355,20 @@ function getState_(ss) {
     for (let i = 1; i < mRows.length; i++) {
       const [matchId, date, teams, homeScore, awayScore, status, winner, ending] = mRows[i];
       if (!matchId) continue;
+      const hasHome = homeScore !== '' && homeScore !== null;
+      const hasAway = awayScore !== '' && awayScore !== null;
+      const rawStatus = String(status || '').trim();
+      // If both scores are entered, treat blank/draft/upcoming rows as published.
+      // This makes copy-pasted score tables work without manually editing column F.
+      const inferredStatus = (hasHome && hasAway && (!rawStatus || /^draft$/i.test(rawStatus) || /^upcoming$/i.test(rawStatus))) ? 'published' : (rawStatus || 'draft');
       const row = {
         matchId: String(matchId).trim(),
         date:    String(date || ''),
         teams:   String(teams || ''),
-        status:  String(status || 'draft').trim()
+        status:  inferredStatus
       };
-      if (homeScore !== '' && homeScore !== null) row.homeScore = Number(homeScore);
-      if (awayScore !== '' && awayScore !== null) row.awayScore = Number(awayScore);
+      if (hasHome) row.homeScore = Number(homeScore);
+      if (hasAway) row.awayScore = Number(awayScore);
       if (winner)  row.winner  = String(winner).trim();
       if (ending)  row.ending  = String(ending).trim();
       matches.push(row);
@@ -386,6 +397,8 @@ function getState_(ss) {
     } else if (id[0] === 'M') {
       const mid = id.slice(1);
       const m = official.matches[mid] || { winner: '', status: 'draft' };
+      const teams = parseTeamsLabel_(row.teams);
+      if (teams) { m.a = teams[0]; m.b = teams[1]; }
       if (row.homeScore != null) m.hs = row.homeScore;
       if (row.awayScore != null) m.as = row.awayScore;
       if (row.status)            m.status = row.status;
@@ -404,6 +417,9 @@ function getState_(ss) {
 
   // ── Resolve group standings → 1st/2nd/3rd, set groupsPublished ──
   resolveGroupsIntoOfficial_(official);
+  // ── Resolve KO teams from the official bracket map + any manually entered Matches labels ──
+  resolveKOTeamsIntoOfficial_(official);
+
   // ── Set final.a / final.b from SF winners (M101, M102) ──
   if (official.matches['101'] && official.matches['101'].winner) official.final.a = official.matches['101'].winner;
   if (official.matches['102'] && official.matches['102'].winner) official.final.b = official.matches['102'].winner;
@@ -428,6 +444,21 @@ function getState_(ss) {
 /* ── Group resolution: compute 1st/2nd/3rd from published group scores ──
    Mirrors the client's computeGroupStandings (pts → GD → GF). */
 const GS_GROUPS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+
+// Derived group-team map used by the dynamic knockout resolver.
+// Important: do not maintain this manually; GF_SEED is the source of truth.
+const GS_GROUP_TEAMS = (function () {
+  const out = {};
+  GS_GROUPS.forEach(g => out[g] = []);
+  GF_SEED.forEach((f, i) => {
+    const g = GS_GROUPS[Math.floor(i / 6)];
+    const home = String(f[2] || '').trim().toUpperCase();
+    const away = String(f[3] || '').trim().toUpperCase();
+    if (home && out[g].indexOf(home) < 0) out[g].push(home);
+    if (away && out[g].indexOf(away) < 0) out[g].push(away);
+  });
+  return out;
+})();
 
 /* Resolve group standings from published Matches scores.
    GF_SEED rows are [matchId, date, home, away] — home=f[2], away=f[3].
@@ -684,6 +715,51 @@ const KO_MAP = {
   97:[{w:89},{w:90}],98:[{w:93},{w:94}],99:[{w:91},{w:92}],100:[{w:95},{w:96}],101:[{w:97},{w:98}],102:[{w:99},{w:100}],104:[{w:101},{w:102}]
 };
 
+
+function teamCodeSet_() {
+  const out = {};
+  Object.keys(GS_GROUP_TEAMS).forEach(g => GS_GROUP_TEAMS[g].forEach(k => out[k] = true));
+  return out;
+}
+const TEAM_CODE_SET = teamCodeSet_();
+
+function parseTeamsLabel_(label) {
+  const s = String(label || '').trim().toUpperCase();
+  const m = s.match(/^([A-Z0-9]{2,4})\s+VS\s+([A-Z0-9]{2,4})$/);
+  if (!m) return null;
+  return (TEAM_CODE_SET[m[1]] && TEAM_CODE_SET[m[2]]) ? [m[1], m[2]] : null;
+}
+
+function groupOfTeam_(team) {
+  for (const g in GS_GROUP_TEAMS) if (GS_GROUP_TEAMS[g].indexOf(team) >= 0) return g;
+  return '';
+}
+
+function assignThirds_(thirdTeams) {
+  const advGroups = thirdTeams.map(groupOfTeam_).filter(Boolean);
+  const byGroup = {};
+  thirdTeams.forEach(t => { const g = groupOfTeam_(t); if (g) byGroup[g] = t; });
+  const slots = Object.keys(THIRD_MAP || {}), used = {}, assign = {};
+  function bt(i) {
+    if (i === slots.length) return true;
+    const slot = slots[i];
+    const options = THIRD_MAP[slot] || [];
+    for (let j = 0; j < options.length; j++) {
+      const g = options[j];
+      if (advGroups.indexOf(g) >= 0 && !used[g]) {
+        used[g] = true; assign[slot] = g;
+        if (bt(i + 1)) return true;
+        used[g] = false; delete assign[slot];
+      }
+    }
+    return false;
+  }
+  bt(0);
+  const out = {};
+  Object.keys(assign).forEach(slot => out[slot] = byGroup[assign[slot]] || '');
+  return out;
+}
+
 /* Resolve a KO feeder slot to an actual team code from official state. */
 function resolveKOSlot_(ref, official) {
   if (typeof ref === 'string') {
@@ -696,7 +772,8 @@ function resolveKOSlot_(ref, official) {
     return '';
   }
   if (ref && ref.t) {
-    // best-3rd slot — resolved client-side via assignThirds once thirds are set
+    const thirds = (official.thirds || []).filter(Boolean);
+    if (thirds.length === 8) return assignThirds_(thirds)[ref.t] || '';
     return '';
   }
   if (ref && ref.w) {
@@ -704,6 +781,19 @@ function resolveKOSlot_(ref, official) {
     return (m && m.winner) || '';
   }
   return '';
+}
+
+
+function resolveKOTeamsIntoOfficial_(official) {
+  if (!official.matches) official.matches = {};
+  Object.keys(KO_MAP).forEach(id => {
+    const slots = KO_MAP[id];
+    const m = official.matches[String(id)] || { winner: '', status: 'draft' };
+    const a = m.a || resolveKOSlot_(slots[0], official);
+    const b = m.b || resolveKOSlot_(slots[1], official);
+    if (a && b) { m.a = a; m.b = b; }
+    official.matches[String(id)] = m;
+  });
 }
 
 /* Update Matches-tab Col C (teams label) for KO rows based on resolved teams.
@@ -719,8 +809,9 @@ function resolveKOTeams_(ss, official) {
     const num = +id.slice(1);
     const slots = KO_MAP[num];
     if (!slots) continue;
-    const a = resolveKOSlot_(slots[0], official);
-    const b = resolveKOSlot_(slots[1], official);
+    const m = official.matches && official.matches[String(num)];
+    const a = (m && m.a) || resolveKOSlot_(slots[0], official);
+    const b = (m && m.b) || resolveKOSlot_(slots[1], official);
     const seed = KF_SEED.find(f => f[0] === id);
     const label = (a && b) ? a + ' vs ' + b : (seed ? seed[2] : 'Match ' + id);
     if (data[i][2] !== label) updates.push({ row: i + 1, label: label });
