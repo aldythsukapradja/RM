@@ -322,8 +322,16 @@ function getState_(ss) {
   for (let i = 1; i < predRows.length; i++) {
     const name = String(predRows[i][0] || '').trim();
     const json = String(predRows[i][1] || '').trim();
+    const updatedAt = cellToIso_(predRows[i][2]);
     if (!name || !json) continue;
-    try { preds[name] = JSON.parse(json); } catch (e) {}
+    try {
+      const p = JSON.parse(json);
+      if (updatedAt) {
+        if (!p.updatedAt) p.updatedAt = updatedAt;
+        if (!p.submittedAt) p.submittedAt = updatedAt;
+      }
+      preds[name] = p;
+    } catch (e) {}
   }
 
   // Knockout-only predictions
@@ -333,8 +341,15 @@ function getState_(ss) {
   for (let i = 1; i < koPredRows.length; i++) {
     const name = String(koPredRows[i][0] || '').trim();
     const json = String(koPredRows[i][1] || '').trim();
+    const submittedAt = cellToIso_(koPredRows[i][2]);
+    const updatedAt = cellToIso_(koPredRows[i][3]) || submittedAt;
     if (!name || !json) continue;
-    try { koPreds[name] = JSON.parse(json); } catch (e) {}
+    try {
+      const p = JSON.parse(json);
+      if (submittedAt && !p.submittedAt) p.submittedAt = submittedAt;
+      if (updatedAt && !p.updatedAt) p.updatedAt = updatedAt;
+      koPreds[name] = p;
+    } catch (e) {}
   }
 
   // State blob (official, oracle)
@@ -849,6 +864,14 @@ function validateUser_(ss, name, password) {
     if (String(rows[i][0]).toLowerCase() === name.toLowerCase() && String(rows[i][1]) === password) return;
   }
   throw new Error('Authentication failed.');
+}
+
+function cellToIso_(value) {
+  if (!value) return '';
+  if (Object.prototype.toString.call(value) === '[object Date]' && !isNaN(value.getTime())) {
+    return value.toISOString();
+  }
+  return String(value);
 }
 
 function json_(payload) {
